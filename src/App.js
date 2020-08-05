@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import {BrowserRouter, Route} from 'react-router-dom';
+import ExaminerLogin from './Examiner/examiner_login.js';
+import ExaminerRegister from './Examiner/examiner_register.js';
+import ExamineeLogin from './Examinee/examinee_login.js';
+import ExamineeRegister from './Examinee/examinee_register.js';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <div>
+          <Route exact={true} path='/examiner/login' render={() => (
+            <div className="App">
+              <ExaminerLogin />
+            </div>
+          )}/>
+          <Route exact={true} path='/examiner/register' render={() => (
+            <div className="App">
+              <ExaminerRegister />
+            </div>
+          )}/>
+          <Route exact={true} path='/examinee/login' render={() => (
+            <div className="App">
+              <ExamineeLogin />
+            </div>
+          )}/>
+          <Route exact={true} path='/examinee/register' render={() => (
+            <div className="App">
+              <ExamineeRegister />
+            </div>
+          )}/>
+        </div>
+      </BrowserRouter>
+    );
+  }
 }
 
 export default App;

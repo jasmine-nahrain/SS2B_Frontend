@@ -1,11 +1,24 @@
+* {
+  font-family: sans-serif;
+}
+
 .App {
   text-align: center;
+  overflow-x: hidden;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
+
+.Uts-logo {
+  height: 150px;
+  width: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  }
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
@@ -14,6 +27,11 @@
 }
 
 .App-header {
+  background-color: #282c34;
+  color: white;
+}
+
+.App-body {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -35,4 +53,46 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Styling for the Login and Regsiter Page */
+
+@media screen and (min-width: 1250px) {
+  .form-background {
+    background-color: white;
+    padding: 5%;
+
+  }
+}
+
+@media screen and (max-width: 1250px) {
+  .form-background {
+    background-color: white;
+    padding: 5%;
+
+  }
+}
+
+
+.h1 {
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 10%;
+}
+
+input[type="text"], input[type="password"], input[type="email"], input[type="textarea"], input[type="number"] {
+  background-color: rgba(0,0,0,0);
+  border-color: rgba(0,0,0,0);
+  border-radius: 0px;
+  border-bottom-color: rgba(0,0,0,0.3);
+}
+
+.register-text {
+  color: black;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }

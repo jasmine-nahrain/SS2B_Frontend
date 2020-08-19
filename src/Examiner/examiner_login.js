@@ -58,10 +58,10 @@ class ExaminerLogin extends Component {
   onSubmit = async (e) => {
     e.preventDefault();
 
-    const user = {
-      email: this.state.email,
-      password: this.state.password
-    };
+    // const user = {
+    //   email: this.state.email,
+    //   password: this.state.password
+    // };
 
     //login
   }
@@ -73,7 +73,7 @@ class ExaminerLogin extends Component {
         <Body>
           <Form className="form-background" onSubmit={this.onSubmit}>
             <Title style={{textAlign:"center"}}>
-              <img src={logo} class="Uts-logo"/>
+              <img src={logo} class="Uts-logo" alt="logo"/>
               <Text>Exam Login</Text>
             </Title>
             <Form.Group controlId="formBasicEmail">

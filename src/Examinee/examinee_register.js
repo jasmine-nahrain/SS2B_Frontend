@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Form, Button, Label } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
@@ -93,16 +93,16 @@ class ExamineeRegister extends Component {
   onSubmit = async (e) => {
     e.preventDefault();
 
-    const newUser = {
-      // need to add admin registration
-      student_id: this.state.studentID,
-      is_admin: 0,
-      first_name: this.state.fname,
-      last_name: this.state.lname,
-      email: this.state.email,
-      password: this.state.password,
-      confirm_admin: "unconfirmed"
-    }
+    // const newUser = {
+    //   // need to add admin registration
+    //   student_id: this.state.studentID,
+    //   is_admin: 0,
+    //   first_name: this.state.fname,
+    //   last_name: this.state.lname,
+    //   email: this.state.email,
+    //   password: this.state.password,
+    //   confirm_admin: "unconfirmed"
+    // }
 
     // const invalid_password = !isValidPassword(this.state.password);
     // const mismatched_password = this.state.password !== this.state.confirmPassword;
@@ -137,7 +137,7 @@ Removed HTML that can be added back later
           <Body>
             <Form className="form-background" onSubmit={this.onSubmit} style={{padding:"0%"}}>
               <Title style={{ textAlign: "center" }}>
-                <img src={logo} class="Uts-logo" />
+                <img src={logo} class="Uts-logo" alt="logo" />
                 <Text>Register as a Examinee</Text>
               </Title>
               <Form.Group controlId="formFName">

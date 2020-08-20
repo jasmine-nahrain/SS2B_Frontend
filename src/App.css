@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Noto+Sans&family=Noto+Sans+JP&display=swap');
+
 * {
-  font-family: sans-serif;
+  font-family: Noto Sans JP;
 }
 
 .App {
@@ -98,11 +100,17 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
 }
 
 .admin-table {
-  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  /* box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22); */
   padding-bottom: 20px;
   background: #fafafa;
   /* overflow-x: scroll; */
 }
+@media screen and (max-width: 1000px) {
+  .admin-table {
+    overflow-x: scroll;
+  }
+}
+
 
 .containerAdmin {
   width: 90%;

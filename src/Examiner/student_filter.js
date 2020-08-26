@@ -1,6 +1,7 @@
 import '../App.css';
 import React, { Component } from 'react';
 import { BrowserRouter, withRouter } from "react-router-dom";
+import styled from 'styled-components';
 
 // Main Components
 import filterFactory, { textFilter, numberFilter } from 'react-bootstrap-table2-filter';
@@ -9,46 +10,104 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
+import ToolkitProvider, { Search, CSVExport  } from 'react-bootstrap-table2-toolkit';
 
+const { SearchBar } = Search;
+const { ExportCSVButton } = CSVExport;
+
+const Header = styled.header`
+background-color: #2196f3;
+color: white;
+padding: 1%;
+`;
+const Dot = styled.span`
+height: 15px;
+width: 15px;
+box-shadow: 0px 1px 5px 1px ${props => (props.cellContent == true ? 'green' : 'red')};
+background-color: ${props => (props.cellContent == true ? 'green' : 'red')};
+border-radius: 50%;
+display: inline-block;
+`;
+ var i = 1;
 
 // dummy data to use in the meantime.
-const graded_select = {
-  0: 'Not Graded',
-  1: 'Graded'
-};
+var graded_select = [
+  {
+  student_id: 23456,
+  student_fname: 'Jasmine',
+  student_lname: "Emanouel",
+  exam_id: 12345,
+  exam_name: "3456ygv",
+  subject: "ftyuhjbv"
+},
+{
+student_id: 1234567,
+student_fname: 'Clark',
+student_lname: "Kent",
+exam_id: 12345,
+exam_name: "3456ygv",
+subject: "ftyuhjbv"
+},
+{
+student_id: 838383883,
+student_fname: 'Julia',
+student_lname: "Gillard",
+exam_id: 654,
+exam_name: "rdxcbg",
+subject: "chgsddd",
+status: true,
+}
+];
 
 var table_columns = [{
   dataField: 'student_id',
   text: 'Student ID',
-  filter: numberFilter({withoutEmptyComparatorOption: true, comparatorStyle: {width: 0, padding: 0, visibility: "hidden"}, numberStyle: {marginRight: 0, width: '100%'}}),
+  sort: true
+  // filter: numberFilter({
+  //   withoutEmptyComparatorOption: true,
+  //   comparatorStyle: {width: 0, padding: 0, visibility: "hidden"},
+  //   numberStyle: {marginRight: 0, width: '100%'}
+  // }),
 }, {
   dataField: 'student_fname',
   text: 'Student First Name',
-  filter: textFilter(),
+  // filter: textFilter(),
   sort: true
 }, {
   dataField: 'student_lname',
   text: 'Student Last Name',
-  filter: textFilter(),
+  sort: true,
+  // filter: textFilter(),
 }, {
   dataField: 'exam_id',
   text: 'Exam ID',
-  filter: numberFilter({withoutEmptyComparatorOption: true, comparatorStyle: {width: 0, padding: 0, visibility: "hidden"}, numberStyle: {marginRight: 0, width: '100%'}}),
+  sort: true,
+  // filter: numberFilter({
+  //   withoutEmptyComparatorOption: true,
+  //   comparatorStyle: {width: 0, padding: 0, visibility: "hidden"},
+  //   numberStyle: {marginRight: 0, width: '100%'}
+  // }),
 }, {
   dataField: 'exam_name',
   text: 'Exam Name',
-  filter: textFilter(),
+  sort: true,
+  // filter: textFilter(),
 }, {
   dataField: 'subject',
   text: 'Subject',
-  filter: textFilter(),
+  sort: true,
+  // filter: textFilter(),
 }, {
-  dataField: 'in_progress',
-  text: 'In Progress',
+  dataField: 'status',
+  text: 'Status',
+  sort: true,
   headerStyle: () => {return{width:"7%"}},
+  formatter: (cellContent, row) => (
+    <Dot cellContent={cellContent}/ >
+  ),
 }, {
   dataField: 'view',
-  text: 'View',
+  text: '',
   headerStyle: () => {return{width:"5%"}},
   events: {
     onClick: (e, column, columnIndex, row) => {
@@ -63,7 +122,7 @@ var table_columns = [{
 // Gets the length of the payload data to determine roof of pagination.
 const customTotal = (from, to, size) => (
   <span className="react-bootstrap-table-pagination-total">
-    Showing { from } to { to } of { size } Results
+  Showing { from } to { to } of { size } Results
   </span>
 );
 
@@ -84,75 +143,84 @@ class StudentFilter extends Component {
     // const is_admin = parseInt(localStorage.getItem('is_admin'));
     // if (!is_admin) window.location.href = '/';
     // else {
-      var data = await this.getCircuits();
-      this.setState({
-        table_data: data
-      });
-      // Needs to be defined at this point because only now do we have a length for table_data
-      tablePaginationOptions = {
-        paginationSize: 4,
-        pageStartIndex: 0,
-        firstPageText: 'First',
-        prePageText: 'Back',
-        nextPageText: 'Next',
-        lastPageText: 'Last',
-        nextPageTitle: 'First page',
-        prePageTitle: 'Pre page',
-        firstPageTitle: 'Next page',
-        lastPageTitle: 'Last page',
-        showTotal: true,
-        paginationTotalRenderer: customTotal,
-        disablePageTitle: true,
-        sizePerPageList: [{
-          text: '5', value: 5
-        }, {
-          text: '10', value: 10
-        }, {
-          text: 'All', value: this.state.table_data.length
-        }]
-      };
+    // this.setState({
+    //   table_data: data
+    // });
+    // Needs to be defined at this point because only now do we have a length for table_data
+    tablePaginationOptions = {
+      paginationSize: 4,
+      pageStartIndex: 0,
+      firstPageText: 'First',
+      prePageText: 'Back',
+      nextPageText: 'Next',
+      lastPageText: 'Last',
+      nextPageTitle: 'First page',
+      prePageTitle: 'Pre page',
+      firstPageTitle: 'Next page',
+      lastPageTitle: 'Last page',
+      showTotal: true,
+      paginationTotalRenderer: customTotal,
+      disablePageTitle: true,
+      sizePerPageList: [{
+        text: '5', value: 5
+      }, {
+        text: '10', value: 10
+      }, {
+        text: 'All', value: this.state.table_data.length
+      }]
+    };
     // }
-  }
-
-  getCircuits = async () => {
-    var list = [];
-   //  const results = await retrieveCircuits({
-   //    'is_submitted': 1
-   // });
-    // for (var i = 0; i < results['circuits'].length; i++) {
-    //     list[i] = results['circuits'][i];
-    // }
-    //console.log(list);
-    return list;
-  }
-
-  onSubmit = (e) => {
-    e.preventDefault();
-    localStorage.setItem('student_id', this.state.studentID);
-    // window.location.href = '/';
   }
 
   render() {
+    const searchBar = {
+      width: '100vh',
+      color: 'black',
+      borderBottomColor: 'rgba(0,0,0,0)',
+      backgroundColor: 'rgba(255,255,255,.5)',
+      borderRadius: '1vh'
+    }
+
     // const admin_id = getUserID(false);
     // const is_admin = parseInt(localStorage.getItem('is_admin'));
     // if (admin_id && is_admin) {
-      return (
-        <BrowserRouter>
-          <div className="App">
+    return (
+      <BrowserRouter>
+      <div className="App">
+      <ToolkitProvider
+      keyField="student_id"
+      data={ graded_select }
+      columns={ table_columns }
+      search
+      >
+      {
+        props => (
+          <div>
+          <Header >
             <h1>Student List</h1>
-              <div><br></br></div>
-              <div class="containerAdmin admin-table">
-                  <BootstrapTable
-                  bodyClasses="tbodyContainer"
-                  keyField='student_id'
-                  data={ this.state.table_data }
-                  columns={ table_columns }
-                  pagination={ paginationFactory(tablePaginationOptions) }
-                  filter={ filterFactory() }  />
-              </div>
+            <SearchBar { ...props.searchProps } style={searchBar} />
+          </Header>
+          <div class="containerAdmin admin-table">
+          <hr/>
+          <BootstrapTable
+          bootstrap4
+          { ...props.baseProps }
+          bodyClasses="tbodyContainer"
+          keyField='student_id'
+          data={graded_select }
+          columns={ table_columns }
+          pagination={ paginationFactory(tablePaginationOptions) }
+          filter={ filterFactory() }  />
+          <ExportCSVButton class="btn btn-primary" { ...props.csvProps }>Export CSV</ExportCSVButton>
           </div>
-        </BrowserRouter>
-      );
+          </div>
+
+        )
+      }
+      </ToolkitProvider>
+      </div>
+      </BrowserRouter>
+    );
     // } else {
     //   window.location.href = '/';
     // }

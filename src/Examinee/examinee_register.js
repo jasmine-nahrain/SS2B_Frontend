@@ -169,7 +169,7 @@ Removed HTML that can be added back later
             </Form>
             <div style={{padding:"0.5%"}}>
               <hr />
-              <a href="/admin-register" role="button"><h6 class="register-text">Register as Admin.</h6></a>
+              <a href="/examiner/register" role="button"><h6 class="register-text">Register as Examiner.</h6></a>
               <a href="/" role="button"><h6 class="register-text">Already a member? Login here.</h6></a>
             </div>
           </Body>

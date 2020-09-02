@@ -90,7 +90,7 @@ class ExamineeLogin extends Component {
               Email or Password is incorrect.
             </Form.Text>
             <hr/>
-            <a href="/register" role="button"><h6 class="register-text">Not a member? Register here.</h6></a>
+            <a href="/examinee/register" role="button"><h6 class="register-text">Not a member? Register here.</h6></a>
           </Form>
         </Body>
       </div>

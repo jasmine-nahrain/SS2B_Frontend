@@ -11,6 +11,7 @@ import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search, CSVExport  } from 'react-bootstrap-table2-toolkit';
+import {Tab, Tabs} from 'react-bootstrap';
 
 const { SearchBar } = Search;
 const { ExportCSVButton } = CSVExport;
@@ -60,18 +61,6 @@ status: true,
 ];
 
 var table_columns = [{
-  dataField: 'student_id',
-  text: 'Student ID',
-  sort: true
-}, {
-  dataField: 'student_fname',
-  text: 'Student First Name',
-  sort: true
-}, {
-  dataField: 'student_lname',
-  text: 'Student Last Name',
-  sort: true,
-}, {
   dataField: 'exam_id',
   text: 'Exam ID',
   sort: true,
@@ -90,17 +79,6 @@ var table_columns = [{
   formatter: (cellContent, row) => (
     <Dot cellContent={cellContent}/ >
   ),
-}, {
-  dataField: 'view',
-  text: '',
-  events: {
-    onClick: (e, column, columnIndex, row) => {
-      // window.location.href = '/';
-    },
-  },
-  formatter: (cellContent, row) => (
-    <button class="btn btn-primary">View</button>
-  ),
 }]
 
 // Gets the length of the payload data to determine roof of pagination.
@@ -112,7 +90,7 @@ const customTotal = (from, to, size) => (
 
 var tablePaginationOptions;
 
-class StudentFilter extends Component {
+class ManageExam extends Component {
 
   constructor(props) {
     super(props);
@@ -160,7 +138,7 @@ class StudentFilter extends Component {
     const searchBar = {
       width: '100vh',
       color: 'black',
-      borderBottomColor: 'rgba(0,0,0,0)',
+      borderColor: 'rgba(0,0,0,0)',
       backgroundColor: 'rgba(255,255,255,.5)',
       borderRadius: '1vh'
     }
@@ -171,37 +149,75 @@ class StudentFilter extends Component {
     return (
       <BrowserRouter>
       <div className="App">
-      <ToolkitProvider
-      keyField="student_id"
-      data={ graded_select }
-      columns={ table_columns }
-      search
-      >
-      {
-        props => (
-          <div>
-          <Header >
-            <h1>Student List</h1>
+      <Header >
+        <h1>Exam List</h1>
+      </Header>
+      <br/>
+      <Tabs defaultActiveKey="upcoming" id="uncontrolled-tab-example" style={{width: '90%', marginLeft: 'auto', marginRight: 'auto'}}>
+        <Tab eventKey="upcoming" title="Upcoming" >
+        <ToolkitProvider
+        keyField="student_id"
+        data={ graded_select }
+        columns={ table_columns }
+        search
+        >
+        {
+          props => (
+            <div>
+            <div class="containerAdmin admin-table">
+            <br/>
             <SearchBar { ...props.searchProps } style={searchBar} />
-          </Header>
-          <div class="containerAdmin admin-table">
-          <br/>
-          <BootstrapTable
-          bootstrap4
-          { ...props.baseProps }
-          bodyClasses="tbodyContainer"
-          keyField='student_id'
-          data={graded_select }
-          columns={ table_columns }
-          pagination={ paginationFactory(tablePaginationOptions) }
-          filter={ filterFactory() }  />
-          <ExportCSVButton class="btn btn-primary" { ...props.csvProps }>Export CSV</ExportCSVButton>
-          </div>
-          </div>
+            <br/>
+            <BootstrapTable
+            bootstrap4
+            { ...props.baseProps }
+            bodyClasses="tbodyContainer"
+            keyField='student_id'
+            data={graded_select }
+            columns={ table_columns }
+            pagination={ paginationFactory(tablePaginationOptions) }
+            filter={ filterFactory() }  />
+            <ExportCSVButton class="btn btn-primary" { ...props.csvProps }>Export CSV</ExportCSVButton>
+            </div>
+            </div>
 
-        )
-      }
-      </ToolkitProvider>
+          )
+        }
+        </ToolkitProvider>
+        </Tab>
+        <Tab eventKey="past" title="Past">
+        <ToolkitProvider
+        keyField="student_id"
+        data={ graded_select }
+        columns={ table_columns }
+        search
+        >
+        {
+          props => (
+            <div>
+            <div class="containerAdmin admin-table">
+            <br/>
+            <SearchBar { ...props.searchProps } style={searchBar} />
+            <br/>
+            <BootstrapTable
+            bootstrap4
+            { ...props.baseProps }
+            bodyClasses="tbodyContainer"
+            keyField='student_id'
+            data={graded_select }
+            columns={ table_columns }
+            pagination={ paginationFactory(tablePaginationOptions) }
+            filter={ filterFactory() }  />
+            <ExportCSVButton class="btn btn-primary" { ...props.csvProps }>Export CSV</ExportCSVButton>
+            </div>
+            </div>
+
+          )
+        }
+        </ToolkitProvider>
+        </Tab>
+      </Tabs>
+
       </div>
       </BrowserRouter>
     );
@@ -209,4 +225,4 @@ class StudentFilter extends Component {
     //   window.location.href = '/';
     // }
   }
-} export default withRouter(StudentFilter);
+} export default withRouter(ManageExam);

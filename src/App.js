@@ -4,6 +4,7 @@ import ExaminerRegister from './Examiner/examiner_register.js';
 import ExamineeLogin from './Examinee/login.js';
 import ExamineeRegister from './Examinee/examinee_register.js';
 import StudentFilter from './Examiner/student_filter.js';
+import ManageExam from './Examiner/manage_exam.js';
 
 class App extends Component {
   render() {
@@ -28,6 +29,11 @@ class App extends Component {
           <Route exact={true} path='/examiner/' render={() => (
             <div className="App">
               <StudentFilter />
+            </div>
+          )}/>
+          <Route exact={true} path='/examiner/manage' render={() => (
+            <div className="App">
+              <ManageExam />
             </div>
           )}/>
         </div>

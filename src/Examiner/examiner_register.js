@@ -149,11 +149,11 @@ Removed HTML that can be added back later
               </Form.Group>
 
               <Form.Group controlId="formStudentID">
-                <Form.Control type="number" name="studentID" min="10000" max="9999999999" placeholder="Student ID" value={this.state.studentID} onChange={this.onChangeStudentID} required />
+                <Form.Control type="number" name="studentID" min="10000" max="9999999999" placeholder="User ID" value={this.state.studentID} onChange={this.onChangeStudentID} required />
               </Form.Group>
 
               <Form.Group controlId="formEmail">
-                <Form.Control type="email" name="email" placeholder="Student Email" value={this.state.email} onChange={this.onChangeEmail} required />
+                <Form.Control type="email" name="email" placeholder="User Email" value={this.state.email} onChange={this.onChangeEmail} required />
               </Form.Group>
 
               <Form.Group controlId="formPassword">
@@ -169,7 +169,7 @@ Removed HTML that can be added back later
             </Form>
             <div style={{padding:"0.5%"}}>
               <hr />
-              <a href="/admin-register" role="button"><h6 class="register-text">Register as Admin.</h6></a>
+              <a href="/examinee/register" role="button"><h6 class="register-text">Not a Examiner? Register here.</h6></a>
               <a href="/" role="button"><h6 class="register-text">Already a member? Login here.</h6></a>
             </div>
           </Body>

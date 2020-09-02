@@ -47,7 +47,7 @@ class ExaminerRegister extends Component {
       email: '',
       password: '',
       confirmPassword: '',
-      confirmAdmin: '',
+      confirmExaminer: '',
       invalid_password: false,
       invalid_details: false,
       mismatched_password: false
@@ -87,6 +87,12 @@ class ExaminerRegister extends Component {
   onChangeConfirmPassword(e) {
     this.setState({
       confirmPassword: e.target.value
+    })
+  }
+
+  onChangeConfirmExaminer(e){
+    this.setState({
+      confirmExaminer: e.target.value
     })
   }
 
@@ -162,6 +168,10 @@ Removed HTML that can be added back later
 
               <Form.Group controlId="formConfirmPassword">
                 <Form.Control type="password" name="confirmPassword" placeholder="Confirm Password" value={this.state.confirmPassword} onChange={this.onChangeConfirmPassword} required />
+              </Form.Group>
+
+              <Form.Group controlId="formConfirmExaminer">
+                <Form.Control type="password" name="confirmExaminer" placeholder="Confirm Examiner Code" value={this.state.confirmExaminer} onChange={this.onChangeConfirmExaminer} required />
               </Form.Group>
               <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>
                 Register

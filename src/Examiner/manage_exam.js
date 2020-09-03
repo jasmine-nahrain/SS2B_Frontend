@@ -2,6 +2,7 @@ import '../App.css';
 import React, { Component } from 'react';
 import { BrowserRouter, withRouter } from "react-router-dom";
 import styled from 'styled-components';
+import EditIcon from '../images/edit.svg';
 
 // Main Components
 import filterFactory, { textFilter, numberFilter } from 'react-bootstrap-table2-filter';
@@ -17,9 +18,10 @@ const { SearchBar } = Search;
 const { ExportCSVButton } = CSVExport;
 
 const Header = styled.header`
-background-color: #2196f3;
-color: white;
-padding: 1%;
+/* background-color: #e6e6e6; */
+/* color: white; */
+/* padding: 1%; */
+padding-top: 3%;
 `;
 const Dot = styled.span`
 height: 15px;
@@ -60,22 +62,57 @@ status: true,
 }
 ];
 
-var table_columns = [{
+var upcoming_exams = [{
+  dataField: 'edit',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white', width: "5%"},
+  formatter: (cellContent, row) => (
+    <a href="/"><img src={EditIcon} /></a>
+  ),
+}, {
   dataField: 'exam_id',
   text: 'Exam ID',
   sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
 }, {
   dataField: 'exam_name',
   text: 'Exam Name',
   sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
 }, {
   dataField: 'subject',
   text: 'Subject',
   sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
 }, {
   dataField: 'status',
   text: 'Status',
   sort: true,
+  headerStyle: {background: '#007bff', color: 'white'},
+  formatter: (cellContent, row) => (
+    <Dot cellContent={cellContent}/ >
+  ),
+}]
+var past_exams = [ {
+  dataField: 'exam_id',
+  text: 'Exam ID',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
+}, {
+  dataField: 'exam_name',
+  text: 'Exam Name',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
+}, {
+  dataField: 'subject',
+  text: 'Subject',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
+}, {
+  dataField: 'status',
+  text: 'Status',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'},
   formatter: (cellContent, row) => (
     <Dot cellContent={cellContent}/ >
   ),
@@ -135,13 +172,12 @@ class ManageExam extends Component {
   }
 
   render() {
-    const searchBar = {
-      width: '100vh',
-      color: 'black',
-      borderColor: 'rgba(0,0,0,0)',
-      backgroundColor: 'rgba(255,255,255,.5)',
-      borderRadius: '1vh'
-    }
+
+
+    const defaultSorted = [{
+        dataField: 'exam_id',
+        order: 'asc'
+    }];
 
     // const admin_id = getUserID(false);
     // const is_admin = parseInt(localStorage.getItem('is_admin'));
@@ -150,35 +186,44 @@ class ManageExam extends Component {
       <BrowserRouter>
       <div className="App">
       <Header >
-        <h1>Exam List</h1>
+        <h1><b>Exam List</b></h1>
+        <hr style={{width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/>
       </Header>
       <br/>
       <Tabs defaultActiveKey="upcoming" id="uncontrolled-tab-example" style={{width: '90%', marginLeft: 'auto', marginRight: 'auto'}}>
-        <Tab eventKey="upcoming" title="Upcoming" >
+        <Tab eventKey="upcoming" title="Upcoming" style={{backgroundColor: 'white'}} >
         <ToolkitProvider
         keyField="student_id"
         data={ graded_select }
-        columns={ table_columns }
+        columns={ upcoming_exams }
         search
+        exportCSV={{
+          fileName: 'upcoming_exam_list.csv',
+          onlyExportSelection: true,
+          exportAll: true
+        }}
         >
         {
           props => (
             <div>
-            <div class="containerAdmin admin-table">
-            <br/>
-            <SearchBar { ...props.searchProps } style={searchBar} />
-            <br/>
-            <BootstrapTable
-            bootstrap4
-            { ...props.baseProps }
-            bodyClasses="tbodyContainer"
-            keyField='student_id'
-            data={graded_select }
-            columns={ table_columns }
-            pagination={ paginationFactory(tablePaginationOptions) }
-            filter={ filterFactory() }  />
-            <ExportCSVButton class="btn btn-primary" { ...props.csvProps }>Export CSV</ExportCSVButton>
-            </div>
+              <div class="containerAdmin admin-table">
+                <br/>
+                <ExportCSVButton class="btn btn-primary" { ...props.csvProps } style={{float:'left', marginRight: '10px'}}>Export CSV</ExportCSVButton>
+                <button class="btn btn-primary" style={{float:'left'}}>Create New Exam</button>
+                <SearchBar { ...props.searchProps }/>
+                <br/>
+                <BootstrapTable
+                  bootstrap4
+                  { ...props.baseProps }
+                  bodyClasses="tbodyContainer"
+                  keyField='student_id'
+                  data={graded_select }
+                  columns={ upcoming_exams }
+                  pagination={ paginationFactory(tablePaginationOptions) }
+                  hover
+                  defaultSorted={ defaultSorted }
+                  filter={ filterFactory() }  />
+              </div>
             </div>
 
           )
@@ -189,15 +234,21 @@ class ManageExam extends Component {
         <ToolkitProvider
         keyField="student_id"
         data={ graded_select }
-        columns={ table_columns }
+        columns={ past_exams }
         search
+        exportCSV={{
+          fileName: 'past_exam_list.csv',
+          onlyExportSelection: true,
+          exportAll: true
+        }}
         >
         {
           props => (
             <div>
             <div class="containerAdmin admin-table">
             <br/>
-            <SearchBar { ...props.searchProps } style={searchBar} />
+            <ExportCSVButton class="btn btn-primary" { ...props.csvProps } style={{float:'left', marginRight: '10px'}}>Export CSV</ExportCSVButton>
+            <SearchBar { ...props.searchProps } />
             <br/>
             <BootstrapTable
             bootstrap4
@@ -205,13 +256,12 @@ class ManageExam extends Component {
             bodyClasses="tbodyContainer"
             keyField='student_id'
             data={graded_select }
-            columns={ table_columns }
+            columns={ past_exams }
             pagination={ paginationFactory(tablePaginationOptions) }
+            defaultSorted={ defaultSorted }
             filter={ filterFactory() }  />
-            <ExportCSVButton class="btn btn-primary" { ...props.csvProps }>Export CSV</ExportCSVButton>
             </div>
             </div>
-
           )
         }
         </ToolkitProvider>

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
+import {getUserID} from '../functions.js'
 
 const Body = styled.body`
   background-color: white;
@@ -18,7 +19,7 @@ const Body = styled.body`
   color: black;
 `;
 
-const Title = styled.div`
+const Title = styled.h2`
     padding:14px 5px 14px 0px;
   `;
 
@@ -34,12 +35,17 @@ class CreateExam extends Component {
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeStartDate = this.onChangeStartDate.bind(this);
     this.onChangeEndDate = this.onChangeEndDate.bind(this);
+    this.onChangeStartTime = this.onChangeStartTime.bind(this);
+    this.onChangeEndTime = this.onChangeEndTime.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
       name: '',
       start_date: Date,
       end_date: Date,
+      start_time: Date,
+      end_time: Date,
+      exam_id: Number,
     }
   }
 
@@ -58,34 +64,68 @@ class CreateExam extends Component {
       end_date: e.target.value
     });
   }
+  onChangeStartTime(e) {
+    this.setState({
+      start_time: e.target.value
+    });
+  }
+  onChangeEndTime(e) {
+    this.setState({
+      end_time: e.target.value
+    });
+  }
 
   onSubmit = async (e) => {
     e.preventDefault();
   }
 
   render() {
+    // const admin_id = getUserID(false);
+    // const is_admin = parseInt(localStorage.getItem('is_admin'));
+    // if (admin_id && is_admin) {
     return (
       <BrowserRouter>
         <div className="App">
           <Body>
-            <Form className="form-background" onSubmit={this.onSubmit} style={{padding:"0%"}}>
+            <Form className="create-exam-background" onSubmit={this.onSubmit}>
               <Title style={{ textAlign: "center" }}>
-                <img src={logo} class="Uts-logo" alt="logo" />
                 <Text>Create a New Exam</Text>
               </Title>
-              <Form.Group controlId="formName">
-                <Form.Control type="text" name="name" placeholder="Exam Name" value={this.state.name} onChange={this.onChangeName} required />
-              </Form.Group>
 
-              <Form.Group controlId="formStartDate">
-                <Form.Label style={{fontSize: '16px'}}>Start Date</Form.Label>
-                <Form.Control type="date" name="start_date" placeholder="Start Date" value={this.state.start_date} onChange={this.onChangeStartDate} required />
-              </Form.Group>
+              <Col style={{marginRight: "2%"}}>
+                <Form.Group controlId="formName">
+                  <Form.Control type="text" name="name" placeholder="Exam Name" value={this.state.name} onChange={this.onChangeName} required />
+                </Form.Group>
 
-              <Form.Group controlId="formStudentID">
-                <Form.Label style={{fontSize: '16px'}}>End Date</Form.Label>
-                <Form.Control type="date" name="end_date" placeholder="End Date" value={this.state.end_date} onChange={this.onChangeEndDate} required />
-              </Form.Group>
+                <Form.Group controlId="formName">
+                  <Form.Control as="textarea" name="name" placeholder="Exam Description" rows="3" value={this.state.name} onChange={this.onChangeName} required />
+                </Form.Group>
+              </Col>
+
+              <Col xs={6} md="auto">
+                <Row>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginRight: '10px'}}>
+                    <Form.Label>Start Date</Form.Label>
+                    <Form.Control type="date" name="start_date" placeholder="Start Date" value={this.state.start_date} onChange={this.onChangeStartDate} required />
+                  </Form.Group>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginLeft: '10px'}}>
+                    <Form.Label>Start Time</Form.Label>
+                    <Form.Control type="time" name="start_date" placeholder="Start Date" value={this.state.start_date} onChange={this.onChangeStartTime} required />
+                  </Form.Group>
+
+                </Row>
+                <Row>
+                  <Form.Group controlId="formStudentID" style={{fontSize: '16px', marginRight: '10px'}}>
+                    <Form.Label>End Date</Form.Label>
+                    <Form.Control type="date" name="end_date" placeholder="End Date" value={this.state.end_date} onChange={this.onChangeEndDate} required />
+                  </Form.Group>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginLeft: '10px'}}>
+                    <Form.Label>End Time</Form.Label>
+                    <Form.Control type="time" name="start_date" placeholder="Start Date" value={this.state.start_date} onChange={this.onChangeEndTime} required />
+                  </Form.Group>
+                </Row>
+              </Col>
+
               <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>
                 Register
           </Button>
@@ -94,5 +134,8 @@ class CreateExam extends Component {
         </div>
       </BrowserRouter>
     );
+  // } else {
+  //   window.location.href = '/';
+  // }
   }
 } export default withRouter(CreateExam);

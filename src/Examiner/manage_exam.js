@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import EditIcon from '../images/edit.svg';
 
 // Main Components
-import filterFactory, { textFilter, numberFilter } from 'react-bootstrap-table2-filter';
+import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
@@ -18,9 +18,6 @@ const { SearchBar } = Search;
 const { ExportCSVButton } = CSVExport;
 
 const Header = styled.header`
-/* background-color: #e6e6e6; */
-/* color: white; */
-/* padding: 1%; */
 padding-top: 3%;
 `;
 const Dot = styled.span`
@@ -31,7 +28,6 @@ background-color: ${props => (props.cellContent == true ? 'green' : 'red')};
 border-radius: 50%;
 display: inline-block;
 `;
- var i = 1;
 
 // dummy data to use in the meantime.
 var graded_select = [
@@ -41,6 +37,7 @@ var graded_select = [
   student_lname: "Emanouel",
   exam_id: 12345,
   exam_name: "3456ygv",
+  exam_date: "12/11/2023",
   subject: "ftyuhjbv"
 },
 {
@@ -49,6 +46,7 @@ student_fname: 'Clark',
 student_lname: "Kent",
 exam_id: 12345,
 exam_name: "3456ygv",
+exam_date: "1/1/2021",
 subject: "ftyuhjbv"
 },
 {
@@ -57,6 +55,7 @@ student_fname: 'Julia',
 student_lname: "Gillard",
 exam_id: 654,
 exam_name: "rdxcbg",
+exam_date: "12/11/2020",
 subject: "chgsddd",
 status: true,
 }
@@ -77,6 +76,11 @@ var upcoming_exams = [{
 }, {
   dataField: 'exam_name',
   text: 'Exam Name',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
+}, {
+  dataField: 'exam_date',
+  text: 'Exam Date',
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
 }, {
@@ -175,7 +179,7 @@ class ManageExam extends Component {
 
 
     const defaultSorted = [{
-        dataField: 'exam_id',
+        dataField: 'exam_date',
         order: 'asc'
     }];
 

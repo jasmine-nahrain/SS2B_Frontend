@@ -128,3 +128,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
     margin-right: auto;
     margin-left: auto;
 }
+
+.search-label {
+  float: right;
+}

@@ -117,3 +117,14 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   margin-left: auto;
   margin-right: auto;
 }
+
+.exam-name {
+
+}
+.title-text {
+  margin: 1rem 0;
+
+}
+.exam-rules {
+  font-size: 1rem;
+}

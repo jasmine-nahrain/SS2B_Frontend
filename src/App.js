@@ -3,7 +3,9 @@ import {BrowserRouter, Route} from 'react-router-dom';
 import ExaminerRegister from './Examiner/examiner_register.js';
 import ExamineeLogin from './Examinee/login.js';
 import ExamineeRegister from './Examinee/examinee_register.js';
+import ExamineeEndPage from  './Examinee/examinee_endpage.js';
 import StudentFilter from './Examiner/student_filter.js';
+import ExaminerPortal from './Examiner/examiner_portal.js';
 import CreateExam from './Examiner/create_exam.js';
 
 class App extends Component {
@@ -34,6 +36,16 @@ class App extends Component {
           <Route exact={true} path='/examiner/create' render={() => (
             <div className="App">
               <CreateExam />
+            </div>
+          )}/>
+          <Route exact={true} path='/examinee/endpage' render={() => (
+            <div className="App">
+              <ExamineeEndPage />
+            </div>
+          )}/>
+          <Route exact={true} path='/examiner/portal' render={() => (
+            <div className="App">
+              <ExaminerPortal />
             </div>
           )}/>
         </div>

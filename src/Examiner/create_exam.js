@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 import {getUserID} from '../functions.js'
+import {createExam} from '../api_caller.js';
 
 const Body = styled.body`
   background-color: rgba(0,0,0,0);
@@ -133,16 +134,12 @@ getDurationTime = () => {
 
   onSubmit = async (e) => {
     e.preventDefault();
-    const duration = this.getDurationTime();
-    const newExam = {
-      exam_name: this.state.name,
-      subject_id: this.state.subjectID,
-      start_date: this.state.start_date + " " + this.state.start_time,
-      start_date: this.state.end_date + " " + this.state.end_time,
-      duration: duration,
-    }
 
-    console.log(newExam);
+    const duration = this.getDurationTime();
+    let start_date = this.state.start_date + " " + this.state.start_time;
+    let end_date = this.state.end_date + " " + this.state.end_time;
+
+    createExam(this.state.name, this.state.subjectID, start_date, end_date, duration);
   }
 
   render() {

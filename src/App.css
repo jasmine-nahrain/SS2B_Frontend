@@ -115,6 +115,12 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   margin-right: auto;
 }
 
+.create-exam-background {
+  box-shadow: 0 19px 38px 19px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  padding: 5%;
+  background-color: white;
+}
+
 .nav-tabs .nav-link {
     width: 50%;
 }

@@ -85,7 +85,7 @@
   padding-bottom: 10%;
 }
 
-input[type="text"], input[type="password"], input[type="email"], input[type="textarea"], input[type="number"] {
+input[type="text"], input[type="password"], input[type="email"], input[type="textarea"], input[type="number"], input[type="date"] {
   background-color: rgba(0,0,0,0);
   border-color: rgba(0,0,0,0);
   border-radius: 0px;

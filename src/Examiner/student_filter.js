@@ -63,52 +63,36 @@ var table_columns = [{
   dataField: 'student_id',
   text: 'Student ID',
   sort: true
-  // filter: numberFilter({
-  //   withoutEmptyComparatorOption: true,
-  //   comparatorStyle: {width: 0, padding: 0, visibility: "hidden"},
-  //   numberStyle: {marginRight: 0, width: '100%'}
-  // }),
 }, {
   dataField: 'student_fname',
   text: 'Student First Name',
-  // filter: textFilter(),
   sort: true
 }, {
   dataField: 'student_lname',
   text: 'Student Last Name',
   sort: true,
-  // filter: textFilter(),
 }, {
   dataField: 'exam_id',
   text: 'Exam ID',
   sort: true,
-  // filter: numberFilter({
-  //   withoutEmptyComparatorOption: true,
-  //   comparatorStyle: {width: 0, padding: 0, visibility: "hidden"},
-  //   numberStyle: {marginRight: 0, width: '100%'}
-  // }),
 }, {
   dataField: 'exam_name',
   text: 'Exam Name',
   sort: true,
-  // filter: textFilter(),
 }, {
   dataField: 'subject',
   text: 'Subject',
   sort: true,
-  // filter: textFilter(),
 }, {
   dataField: 'status',
   text: 'Status',
   sort: true,
-  headerStyle: () => {return{width:"7%"}},
   formatter: (cellContent, row) => (
     <Dot cellContent={cellContent}/ >
   ),
 }, {
   dataField: 'view',
   text: '',
-  headerStyle: () => {return{width:"5%"}},
   events: {
     onClick: (e, column, columnIndex, row) => {
       // window.location.href = '/';
@@ -201,7 +185,7 @@ class StudentFilter extends Component {
             <SearchBar { ...props.searchProps } style={searchBar} />
           </Header>
           <div class="containerAdmin admin-table">
-          <hr/>
+          <br/>
           <BootstrapTable
           bootstrap4
           { ...props.baseProps }

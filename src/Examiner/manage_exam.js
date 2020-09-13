@@ -3,7 +3,9 @@ import React, { Component } from 'react';
 import { BrowserRouter, withRouter } from "react-router-dom";
 import styled from 'styled-components';
 import EditIcon from '../images/edit.svg';
-
+import { getExams } from '../api_caller.js';
+import CreateExam from './create_exam.js';
+import EditExam from './edit_exam.js';
 // Main Components
 import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -12,7 +14,7 @@ import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search, CSVExport  } from 'react-bootstrap-table2-toolkit';
-import {Tab, Tabs} from 'react-bootstrap';
+import {Tab, Tabs, OverlayTrigger, Button} from 'react-bootstrap';
 
 const { SearchBar } = Search;
 const { ExportCSVButton } = CSVExport;
@@ -29,44 +31,12 @@ border-radius: 50%;
 display: inline-block;
 `;
 
-// dummy data to use in the meantime.
-var graded_select = [
-  {
-  student_id: 23456,
-  student_fname: 'Jasmine',
-  student_lname: "Emanouel",
-  exam_id: 12345,
-  exam_name: "3456ygv",
-  exam_date: "12/11/2023",
-  subject: "ftyuhjbv"
-},
-{
-student_id: 1234567,
-student_fname: 'Clark',
-student_lname: "Kent",
-exam_id: 12345,
-exam_name: "3456ygv",
-exam_date: "1/1/2021",
-subject: "ftyuhjbv"
-},
-{
-student_id: 838383883,
-student_fname: 'Julia',
-student_lname: "Gillard",
-exam_id: 654,
-exam_name: "rdxcbg",
-exam_date: "12/11/2020",
-subject: "chgsddd",
-status: true,
-}
-];
-
 var upcoming_exams = [{
   dataField: 'edit',
   sort: true,
   headerStyle: {background: '#007bff', color: 'white', width: "5%"},
   formatter: (cellContent, row) => (
-    <a href="/"><img src={EditIcon} /></a>
+    <a href="/examiner/edit"><img src={EditIcon} /></a>
   ),
 }, {
   dataField: 'exam_id',
@@ -79,12 +49,22 @@ var upcoming_exams = [{
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
 }, {
-  dataField: 'exam_date',
-  text: 'Exam Date',
+  dataField: 'start_date',
+  text: 'Start Date',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
+},{
+  dataField: 'duration',
+  text: 'Duration',
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
 }, {
-  dataField: 'subject',
+  dataField: 'login_code',
+  text: 'Login Code',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
+}, {
+  dataField: 'subject_id',
   text: 'Subject',
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
@@ -108,18 +88,20 @@ var past_exams = [ {
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
 }, {
-  dataField: 'subject',
-  text: 'Subject',
+  dataField: 'start_date',
+  text: 'Start Date',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
+},{
+  dataField: 'end_date',
+  text: 'End Date',
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
 }, {
-  dataField: 'status',
-  text: 'Status',
+  dataField: 'subject_id',
+  text: 'Subject ID',
   sort: true,
-  headerStyle: {background: '#007bff', color: 'white'},
-  formatter: (cellContent, row) => (
-    <Dot cellContent={cellContent}/ >
-  ),
+  headerStyle: {background: '#007bff', color: 'white'}
 }]
 
 // Gets the length of the payload data to determine roof of pagination.
@@ -136,19 +118,23 @@ class ManageExam extends Component {
   constructor(props) {
     super(props);
 
+    this.seperateExamLists = this.seperateExamLists.bind(this);
+
     this.state = {
-      table_data: []
+      upcomingExams: [],
+      pastExams: [],
     };
   }
 
   async componentDidMount() {
     // Gets data before the render
+    const data = await getExams();
+    this.seperateExamLists(data);
+
     // const is_admin = parseInt(localStorage.getItem('is_admin'));
     // if (!is_admin) window.location.href = '/';
     // else {
-    // this.setState({
-    //   table_data: data
-    // });
+
     // Needs to be defined at this point because only now do we have a length for table_data
     tablePaginationOptions = {
       paginationSize: 4,
@@ -169,15 +155,32 @@ class ManageExam extends Component {
       }, {
         text: '10', value: 10
       }, {
-        text: 'All', value: this.state.table_data.length
+        text: 'All', value: this.state.upcomingExams.length
       }]
     };
     // }
   }
 
+  seperateExamLists(data) {
+    var upcomingExamList = [];
+    var pastExamList = [];
+    var currentDate = new Date().toLocaleDateString("GMT").split('/');
+      for(var i = 0; i < data.exams.length; i++) {
+        const end_date = data.exams[i].end_date.split(" ");
+         if(end_date[1] >= currentDate[0] && end_date[2] >= currentDate[1] &&
+           end_date[3] >= currentDate[2]) {
+              upcomingExamList.push(data.exams[i]);
+          } else {
+            pastExamList.push(data.exams[i]);
+          }
+      }
+      this.setState({
+        upcomingExams: upcomingExamList,
+        pastExams: pastExamList,
+      });
+  }
+
   render() {
-
-
     const defaultSorted = [{
         dataField: 'exam_date',
         order: 'asc'
@@ -198,7 +201,7 @@ class ManageExam extends Component {
         <Tab eventKey="upcoming" title="Upcoming" style={{backgroundColor: 'white'}} >
         <ToolkitProvider
         keyField="student_id"
-        data={ graded_select }
+        data={ this.state.upcomingExams }
         columns={ upcoming_exams }
         search
         exportCSV={{
@@ -213,7 +216,7 @@ class ManageExam extends Component {
               <div class="containerAdmin admin-table">
                 <br/>
                 <ExportCSVButton class="btn btn-primary" { ...props.csvProps } style={{float:'left', marginRight: '10px'}}>Export CSV</ExportCSVButton>
-                <button class="btn btn-primary" style={{float:'left'}}>Create New Exam</button>
+                <a href='/examiner/create'><button class="btn btn-primary" style={{float:'left'}}>Create New Exam</button></a>
                 <SearchBar { ...props.searchProps }/>
                 <br/>
                 <BootstrapTable
@@ -221,7 +224,7 @@ class ManageExam extends Component {
                   { ...props.baseProps }
                   bodyClasses="tbodyContainer"
                   keyField='student_id'
-                  data={graded_select }
+                  data={this.state.upcomingExams }
                   columns={ upcoming_exams }
                   pagination={ paginationFactory(tablePaginationOptions) }
                   hover
@@ -237,7 +240,7 @@ class ManageExam extends Component {
         <Tab eventKey="past" title="Past">
         <ToolkitProvider
         keyField="student_id"
-        data={ graded_select }
+        data={ this.state.pastExams }
         columns={ past_exams }
         search
         exportCSV={{
@@ -259,7 +262,7 @@ class ManageExam extends Component {
             { ...props.baseProps }
             bodyClasses="tbodyContainer"
             keyField='student_id'
-            data={graded_select }
+            data={this.state.pastExams }
             columns={ past_exams }
             pagination={ paginationFactory(tablePaginationOptions) }
             defaultSorted={ defaultSorted }

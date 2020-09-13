@@ -24,7 +24,32 @@ export const getExams = async () => {
         alert(`An error occured: "${error}"`);
     }
     return [[]];
+}
 
+/*
+API GET EXAMINEES to return list of exams
+Status codes: 200 OK
+*/
+export const getExaminees = async () => {
+    try {
+        const url = proxy + "examiner/examinee";
+
+        const response = await fetch(url, {
+            method: 'GET'
+        });
+
+        let parsedData = await response.json();
+        const status = await response.status;
+
+        console.log('parsedData:', parsedData);
+        console.log('status:', status);
+        if (status === 200) return parsedData;
+
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
+    return [[]];
 }
 
 /*

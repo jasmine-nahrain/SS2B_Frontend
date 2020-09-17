@@ -20,15 +20,6 @@ background-color: #2196f3;
 color: white;
 padding: 1%;
 `;
-const Dot = styled.span`
-height: 15px;
-width: 15px;
-box-shadow: 0px 1px 5px 1px ${props => (props.cellContent == true ? 'green' : 'red')};
-background-color: ${props => (props.cellContent == true ? 'green' : 'red')};
-border-radius: 50%;
-display: inline-block;
-`;
- var i = 1;
 
 var table_columns = [{
   dataField: 'user_id',

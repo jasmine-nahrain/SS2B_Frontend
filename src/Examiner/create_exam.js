@@ -129,7 +129,7 @@ getDurationTime = () => {
       alert("Invalid time. End time cannot be before start time.");
       this.setState({end_time: ''});
   }
-  return duration_year + "-" + duration_month + "-" + duration_day + " " + duration_hours + ":" + duration_minutes;
+  return duration_hours + ":" + duration_minutes;
 }
 
   onSubmit = async (e) => {
@@ -139,7 +139,11 @@ getDurationTime = () => {
     let start_date = this.state.start_date + " " + this.state.start_time;
     let end_date = this.state.end_date + " " + this.state.end_time;
 
-    createExam(this.state.name, this.state.subjectID, start_date, end_date, duration);
+    let parsedData = createExam(this.state.name, this.state.subjectID, start_date, end_date, duration);
+    if(parsedData) {
+      alert("Successfully created exam.");
+      window.location.href = '/examiner/manage';
+    }
   }
 
   render() {

@@ -6,6 +6,7 @@ import EditIcon from '../images/edit.svg';
 import { getExams } from '../api_caller.js';
 import CreateExam from './create_exam.js';
 import EditExam from './edit_exam.js';
+import {inProgress, getCurrentDate} from '../functions.js';
 // Main Components
 import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -25,18 +26,27 @@ padding-top: 3%;
 const Dot = styled.span`
 height: 15px;
 width: 15px;
-box-shadow: 0px 1px 5px 1px ${props => (props.cellContent == true ? 'green' : 'red')};
-background-color: ${props => (props.cellContent == true ? 'green' : 'red')};
+box-shadow: 0px 1px 5px 1px ${props => (inProgress(props.cellContent) == true ? 'green' : 'red')};
+background-color: ${props => (inProgress(props.cellContent) == true ? 'green' : 'red')};
 border-radius: 50%;
 display: inline-block;
+`;
+
+const A = styled.a`
+visibility: ${props => (inProgress(props.cellContent) == true ? 'hidden' : 'visible')};
 `;
 
 var upcoming_exams = [{
   dataField: 'edit',
   sort: true,
   headerStyle: {background: '#007bff', color: 'white', width: "5%"},
+  events: {
+    onClick: (e, column, columnIndex, row) => {
+        localStorage.setItem('exam', JSON.stringify(row));
+    },
+  },
   formatter: (cellContent, row) => (
-    <a href="/examiner/edit"><img src={EditIcon} /></a>
+    <A href="/examiner/edit" cellContent={row}><img src={EditIcon} /></A>
   ),
 }, {
   dataField: 'exam_id',
@@ -74,7 +84,7 @@ var upcoming_exams = [{
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'},
   formatter: (cellContent, row) => (
-    <Dot cellContent={cellContent}/ >
+    <Dot cellContent={row}/ >
   ),
 }]
 var past_exams = [ {
@@ -154,8 +164,6 @@ class ManageExam extends Component {
         text: '5', value: 5
       }, {
         text: '10', value: 10
-      }, {
-        text: 'All', value: this.state.upcomingExams.length
       }]
     };
     // }
@@ -164,11 +172,13 @@ class ManageExam extends Component {
   seperateExamLists(data) {
     var upcomingExamList = [];
     var pastExamList = [];
-    var currentDate = new Date().toLocaleDateString("GMT").split('/');
+    var currentDate = getCurrentDate();
+
       for(var i = 0; i < data.exams.length; i++) {
-        const end_date = data.exams[i].end_date.split(" ");
-         if(end_date[1] >= currentDate[0] && end_date[2] >= currentDate[1] &&
-           end_date[3] >= currentDate[2]) {
+        var end_date = data.exams[i].end_date.split('-');
+        const day = end_date[2].split(" ")
+         if(day[0] >= currentDate[0] && end_date[1] >= currentDate[1] &&
+           end_date[0] >= currentDate[2]) {
               upcomingExamList.push(data.exams[i]);
           } else {
             pastExamList.push(data.exams[i]);
@@ -182,7 +192,7 @@ class ManageExam extends Component {
 
   render() {
     const defaultSorted = [{
-        dataField: 'exam_date',
+        dataField: 'start_date',
         order: 'asc'
     }];
 
@@ -197,7 +207,7 @@ class ManageExam extends Component {
         <hr style={{width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/>
       </Header>
       <br/>
-      <Tabs defaultActiveKey="upcoming" id="uncontrolled-tab-example" style={{width: '90%', marginLeft: 'auto', marginRight: 'auto'}}>
+      <Tabs defaultActiveKey="upcoming" id="manage" style={{width: '90%', marginLeft: 'auto', marginRight: 'auto'}}>
         <Tab eventKey="upcoming" title="Upcoming" style={{backgroundColor: 'white'}} >
         <ToolkitProvider
         keyField="student_id"
@@ -217,7 +227,7 @@ class ManageExam extends Component {
                 <br/>
                 <ExportCSVButton class="btn btn-primary" { ...props.csvProps } style={{float:'left', marginRight: '10px'}}>Export CSV</ExportCSVButton>
                 <a href='/examiner/create'><button class="btn btn-primary" style={{float:'left'}}>Create New Exam</button></a>
-                <SearchBar { ...props.searchProps }/>
+                <SearchBar { ...props.searchProps } className="manage search"/>
                 <br/>
                 <BootstrapTable
                   bootstrap4

@@ -5,8 +5,8 @@ import { Form, Button, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
-import {getUserID} from '../functions.js'
-import {createExam} from '../api_caller.js';
+import {getUserID, getMonth, getCurrentDate} from '../functions.js'
+import {editExam, deleteExam} from '../api_caller.js';
 
 const Body = styled.body`
   background-color: rgba(0,0,0,0);
@@ -41,19 +41,46 @@ class EditExam extends Component {
     this.onChangeSubjectID = this.onChangeSubjectID.bind(this);
     this.onChangeDuration = this.onChangeDuration.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-    this.delete = this.delete.bind(this);
+    this.onDelete = this.onDelete.bind(this);
 
     this.state = {
-      name: '',
-      start_date: Date,
-      end_date: Date,
-      start_time: new Date(),
-      end_time: Date,
+      name: "",
+      start_date: "",
+      end_date: "",
+      start_time: "",
+      end_time: "",
       exam_id: Number,
       subjectID: Number,
       duration: Number,
+      can_edit_exam: true,
     }
-    console.log(this.state);
+  }
+
+  async componentDidMount() {
+    const exam = JSON.parse(localStorage.getItem('exam'));
+    var start_date = exam.start_date.split(" ");
+    var end_date = exam.start_date.split(" ");
+
+    var currentDate = getCurrentDate();
+    var has_started = start_date[0].split('-');
+    if(has_started[0] >= currentDate[0] && has_started[1] >= currentDate[1] &&
+      has_started[0] >= currentDate[2]) {
+         this.setState({can_edit_exam: true});
+     } else {
+       this.setState({can_edit_exam: false});
+     }
+    this.setState({
+      name: exam.exam_name,
+      start_date: start_date[0],
+      end_date: end_date[0],
+      start_time: start_date[1],
+      end_time: end_date[1],
+      exam_id: exam.exam_id,
+      subjectID: exam.subject_id,
+      duration: exam.duration,
+    });
+
+    console.log(exam);
   }
 
   onChangeName(e) {
@@ -65,6 +92,7 @@ class EditExam extends Component {
     this.setState({
       start_date: e.target.value
     });
+    console.log(e.target.value)
   }
   onChangeEndDate(e) {
     this.setState({
@@ -140,17 +168,22 @@ getDurationTime = () => {
     let start_date = this.state.start_date + " " + this.state.start_time;
     let end_date = this.state.end_date + " " + this.state.end_time;
 
-    // createExam(this.state.name, this.state.subjectID, start_date, end_date, duration);
+    editExam(this.state.exam_id, this.state.name, this.state.subjectID, start_date, end_date, duration);
   }
 
-  delete() {
-
+  onDelete = async (e) => {
+    if(window.confirm("Are you sure you want to delete exam #" + this.state.exam_id)) {
+      deleteExam(this.state.exam_id);
+      window.location.href = '/examiner/manage'
+    } else {
+      return;
+    }
   }
 
   render() {
     // const admin_id = getUserID(false);
     // const is_admin = parseInt(localStorage.getItem('is_admin'));
-    // if (admin_id && is_admin) {
+    if (this.state.can_edit_exam) {
     const today = new Date().toISOString().split("T")[0];
     return (
       <BrowserRouter>
@@ -158,7 +191,7 @@ getDurationTime = () => {
           <Body>
             <Form className="create-exam-background" onSubmit={this.onSubmit}>
               <Title style={{ textAlign: "center" }}>
-                <Text>Edit Exam #</Text>
+                <Text>Edit Exam #{this.state.exam_id}</Text>
               </Title>
 
               <Col>
@@ -180,7 +213,6 @@ getDurationTime = () => {
                       min={today}
                       name="start_date"
                       placeholder="Start Date"
-                      dateFormat="yyyy/MM/dd"
                       value={this.state.start_date}
                       onChange={this.onChangeStartDate}
                       required />
@@ -228,14 +260,14 @@ getDurationTime = () => {
               </Col>
 
               <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>Update</Button>
-              <Button variant="outline-danger" onClick={this.delete()} className="button" style={{width: '100%'}}>Delete</Button>
+              <Button variant="outline-danger" onClick={this.onDelete} className="button" style={{width: '100%'}}>Delete</Button>
             </Form>
           </Body>
         </div>
       </BrowserRouter>
     );
-  // } else {
-  //   window.location.href = '/';
-  // }
+  } else {
+    window.location.href = '/examiner/manage';
+  }
   }
 } export default withRouter(EditExam);

@@ -140,11 +140,11 @@ class ExamRules extends Component {
                     <p>Please check with your subject coordinator to confirm what items are permitted in your exam as this may differ subject to subject.</p>
                   </div>
                 </div>
-                <form class="exam-rules-button">
+                <div class="exam-rules-button">
                   <Button variant="outline-dark" className="button" style={{width: '100%'}}>
                       Accept Exam Rules
                   </Button>
-                </form>
+                </div>
           </Body>
         </div>
       </BrowserRouter>

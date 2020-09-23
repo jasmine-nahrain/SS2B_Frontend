@@ -7,6 +7,7 @@ import ExamineeEndPage from  './Examinee/examinee_endpage.js';
 import StudentFilter from './Examiner/student_filter.js';
 import ExaminerPortal from './Examiner/examiner_portal.js';
 import CreateExam from './Examiner/create_exam.js';
+import ExamDocumentDisplay from './Examinee/exam_document_display.js';
 
 class App extends Component {
   render() {
@@ -46,6 +47,11 @@ class App extends Component {
           <Route exact={true} path='/examiner/portal' render={() => (
             <div className="App">
               <ExaminerPortal />
+            </div>
+          )}/>
+          <Route exact={true} path='/examinee/examdisplay' render={() => (
+            <div className="App">
+              <ExamDocumentDisplay />
             </div>
           )}/>
         </div>

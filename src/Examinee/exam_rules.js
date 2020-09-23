@@ -31,13 +31,27 @@ class ExamRules extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        examName: 'Exam Name',
-        examRules: [
-            'Rule 1: Ad dolore velit tempor est sunt sit.',
-            'Rule 2: Reprehenderit ea ea minim labore eiusmod.',
-            'Rule 3: Excepteur velit laborum ut occaecat quis.',
-            'Rule 4: Ex dolor deserunt fugiat do.'
-        ],
+        examTime: props.examTime,
+        examName: props.examName,
+        examRules: `There are strict rules surrounding the conduct of exams at UTS.  It is a student's responsibility to understand behaviour which is acceptable in an examination. There are severe penalties for students engaging in misconduct and disciplinary action may be taken if examination rules are not followed.
+
+        You must display your current and valid student ID card before your exam. If you don’t have a current and valid student ID card, you can use other government-issued photo ID to verify your identity before you sit an AI or Live invigilated exam. This includes driver’s licenses or passports.
+        If you have an AI or live invigilated exam, you cannot leave your seat during the  exam except in exceptional circumstances. Please make sure that you visit the bathroom before you enter the exam room.
+        Any form of cheating, including use or possession of unauthorised material or notes, using mobile phones, taking images of the exam or replicating it in any way, or colluding with other students will not be tolerated. Severe penalties up to and including exclusion from the university apply for students caught cheating during an exam.
+        Reading time is for reading only. You are not permitted to write, highlight, make any marks on any exam material or make calculations during reading time. 
+        You can only sit an exam for a subject in which you are currently enrolled. It is your responsibility to ensure your subject enrolment is correct.
+        If you are late for your examination, you will not be permitted any extra time. You must complete your exam within the exam window, so make sure you leave enough time.
+        Items permitted in an online invigilated exam:
+        
+        Your mobile phone and other electronic devices (e.g iPads, tablets, smart watches) must be turned off and stored out of reach. If your phone is found to be switched on or rings during an exam, you may be charged with student misconduct.
+        Watches (except smart watches) should be removed from your wrist and placed on the desk or in your bag.
+        Items prohibited in an online invigilated exam include:
+        
+        Baseball caps
+        Pencil cases
+        Food
+        Drinks (clear plastic bottled water allowed).
+        Please check with your subject coordinator to confirm what items are permitted in your exam as this may differ subject to subject.`
     }
   }
 
@@ -91,26 +105,45 @@ class ExamRules extends Component {
               <Title style={{ textAlign: "center" }}>
                 <img src={logo} class="Uts-logo" alt="logo" />
                 <h1 class="exam-name title-text">{this.state.examName}</h1>
+                <h1 class="exam-name title-text">{this.state.examTime}</h1>
                 <br></br>
                 
               </Title>
               <Text class="title-text">Exam Rules</Text>
                 <br></br>
                 <div class="exam-rules">
-                    <>
-                        {this.state.examRules.map((rule, index) => (
-                            <p key={index}>{rule}</p>
-                        ))}
-                    </>
+                  <div>
+                    <p>There are strict <a href="http://www.gsu.uts.edu.au/rules/student/section-9.html#r9.2">rules surrounding the conduct of exams at UTS</a>.&nbsp; It is a student's responsibility to understand behaviour which is acceptable in an examination. There are severe penalties for students engaging in <a href="https://www.uts.edu.au/current-students/support/when-things-go-wrong/student-misconduct">misconduct</a> and disciplinary action may be taken if examination rules are not followed.</p>
+
+                    <ul>
+                      <li>You must display your current and valid<a href="https://www.uts.edu.au/current-students/managing-your-course/your-student-info/student-id-cards"> student ID card</a> before your exam. If you don’t have a current and valid student ID card, you can use other government-issued photo ID to verify your identity before you sit an AI or Live invigilated exam. This includes driver’s licenses or passports.</li>
+                      <li>If you have an AI or live invigilated exam, you cannot leave your seat during the &nbsp;exam except in exceptional circumstances. Please make sure that you visit the bathroom before you enter the exam room.</li>
+                      <li>Any form of cheating, including use or possession of unauthorised material or notes, using mobile phones, taking images of the exam or replicating it in any way, or colluding with other students will not be tolerated. Severe penalties up to and including exclusion from the university apply for students caught cheating during an exam.</li>
+                      <li>Reading time is for reading only. You are not permitted to write, highlight, make any marks on any exam material or make calculations during reading time.&nbsp;</li>
+                      <li>You can only sit an exam for a subject in which you are currently enrolled. It is your responsibility to ensure your <a href="https://www.uts.edu.au/node/78816/">subject enrolment</a> is correct.</li>
+                      <li>If you are late for your examination, you will not be permitted any extra time. You must complete your exam within the exam window, so make sure you leave enough time.</li>
+                    </ul>
+                    <p>Items permitted in an online invigilated exam:</p>
+
+                    <ul>
+                      <li>Your mobile phone and other electronic devices (e.g iPads, tablets, smart watches) must be <strong>turned off</strong> and stored out of reach. If your phone is found to be switched on or rings during an exam, you may be charged&nbsp;with <a href="https://www.uts.edu.au/current-students/support/when-things-go-wrong/student-misconduct">student misconduct</a>.</li>
+                      <li>Watches (except smart watches) should be removed from your wrist and placed on the desk or in your bag.</li>
+                    </ul>
+                    <p>Items prohibited in an online invigilated exam include:</p>
+
+                    <ul>
+                      <li>Baseball caps</li>
+                      <li>Pencil cases</li>
+                      <li>Food</li>
+                      <li>Drinks (clear plastic bottled water allowed).</li>
+                    </ul>
+                    <p>Please check with your subject coordinator to confirm what items are permitted in your exam as this may differ subject to subject.</p>
+                  </div>
                 </div>
-                <form>
-                    <label>
-                        Accept:
-                        <input type="checkbox" name="accept" />
-                    </label>
-                    <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>
-                        Submit
-                    </Button>
+                <form class="exam-rules-button">
+                  <Button variant="outline-dark" className="button" style={{width: '100%'}}>
+                      Accept Exam Rules
+                  </Button>
                 </form>
           </Body>
         </div>

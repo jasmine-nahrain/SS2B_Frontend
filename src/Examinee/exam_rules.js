@@ -36,46 +36,8 @@ class ExamRules extends Component {
     }
   }
 
-  onChangeFirstName(e) {
-    this.setState({
-      fname: e.target.value
-    });
-  }
-
-  onChangeLastName(e) {
-    this.setState({
-      lname: e.target.value
-    });
-  }
-
-  onChangeStudentID(e) {
-    this.setState({
-      studentID: e.target.value
-    });
-  }
-
-  onChangeEmail(e) {
-    this.setState({
-      email: e.target.value
-    });
-  }
-
-  onChangePassword(e) {
-    this.setState({
-      password: e.target.value
-    });
-  }
-
-  onChangeConfirmPassword(e) {
-    this.setState({
-      confirmPassword: e.target.value
-    })
-  }
-
   onSubmit = async (e) => {
     e.preventDefault();
-
-
   }
 
   render() {

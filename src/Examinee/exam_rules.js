@@ -33,25 +33,6 @@ class ExamRules extends Component {
     this.state = {
         examTime: props.examTime,
         examName: props.examName,
-        examRules: `There are strict rules surrounding the conduct of exams at UTS.  It is a student's responsibility to understand behaviour which is acceptable in an examination. There are severe penalties for students engaging in misconduct and disciplinary action may be taken if examination rules are not followed.
-
-        You must display your current and valid student ID card before your exam. If you don’t have a current and valid student ID card, you can use other government-issued photo ID to verify your identity before you sit an AI or Live invigilated exam. This includes driver’s licenses or passports.
-        If you have an AI or live invigilated exam, you cannot leave your seat during the  exam except in exceptional circumstances. Please make sure that you visit the bathroom before you enter the exam room.
-        Any form of cheating, including use or possession of unauthorised material or notes, using mobile phones, taking images of the exam or replicating it in any way, or colluding with other students will not be tolerated. Severe penalties up to and including exclusion from the university apply for students caught cheating during an exam.
-        Reading time is for reading only. You are not permitted to write, highlight, make any marks on any exam material or make calculations during reading time. 
-        You can only sit an exam for a subject in which you are currently enrolled. It is your responsibility to ensure your subject enrolment is correct.
-        If you are late for your examination, you will not be permitted any extra time. You must complete your exam within the exam window, so make sure you leave enough time.
-        Items permitted in an online invigilated exam:
-        
-        Your mobile phone and other electronic devices (e.g iPads, tablets, smart watches) must be turned off and stored out of reach. If your phone is found to be switched on or rings during an exam, you may be charged with student misconduct.
-        Watches (except smart watches) should be removed from your wrist and placed on the desk or in your bag.
-        Items prohibited in an online invigilated exam include:
-        
-        Baseball caps
-        Pencil cases
-        Food
-        Drinks (clear plastic bottled water allowed).
-        Please check with your subject coordinator to confirm what items are permitted in your exam as this may differ subject to subject.`
     }
   }
 

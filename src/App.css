@@ -115,6 +115,35 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   margin-right: auto;
 }
 
+.title-text {
+  margin: 1rem 0;
+
+}
+.exam-rules {
+  font-size: 1rem;
+  margin: 0 25%;
+}
+@media (max-width: 1200px) {
+  .exam-rules {
+    margin: 0 20%;
+  }
+}
+@media (max-width: 992px) {
+  .exam-rules {
+    margin: 0 10%;
+  }
+}
+@media (max-width: 576px) {
+  .exam-rules {
+    margin: 0 5%;
+  }
+}
+.exam-rules li {
+  margin-bottom: 1rem;
+}
+.exam-rules-button {
+  margin: 5%;
+}
 .create-exam-background {
   box-shadow: 0 19px 38px 19px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
   padding: 5%;

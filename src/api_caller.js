@@ -61,6 +61,83 @@ export const createExam = async (exam_name, subject_id, start_date, end_date, du
   }
 }
 
+/*
+API Check for Unallowed Objects
+Status codes: 200 OK, 400 BAD REQUEST, 500 INTERNAL SERVER ERROR
+*/
+export const deskcheck = async(image) => {
+    try {
+        const url = proxy + "examinee/deskcheck";
+
+        // Creates form data object and adds image <-- not sure how to do this part
+        var formdata = new FormData();
+        //formdata.append("image", fileInput.files[0], "/C:/Users/Justin/Desktop/image1.jpg");
+        // Delete this dummy line
+        formdata.append("dummyval", 12);
+
+        var requestOptions = {
+            method: 'POST',
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        const response = await fetch(url, requestOptions);
+
+        const status = response.status;
+        console.log(status);
+
+        if (status === 200) {
+            let parsedData = await response.json();
+            return parsedData
+        }
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
+    return null;
+}
+
+/*
+API Upload Face Auth Image and Authenticate User
+Status codes: 200 OK, 400 BAD REQUEST
+*/
+export const uploadFaceImage = async(user_id, image, authenticate=true) => {
+    try {
+        // Can either choose to upload image to authenticate or upload new image
+        let url = proxy;
+        if (authenticate) url += "examinee/face_authentication";
+        else url += "examinee/upload_face";
+
+        // Creates form data object and adds image & user id <-- not sure how to do get an image here
+        var formdata = new FormData();
+        //formdata.append("image", fileInput.files[0], "/C:/Users/Justin/Desktop/image1.jpg");
+        formdata.append("user_id", user_id);
+
+        var requestOptions = {
+            method: 'POST',
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        const response = await fetch(url, requestOptions);
+
+        const status = response.status;
+        console.log(status);
+
+        // If an upload of a new image, return True if successful
+        if (!authenticate) return status === 200;
+        // Else return if the sent image returned a positive id for the student
+        if (status === 200) {
+            let parsedData = await response.json();
+            return parsedData["positive_id"]
+        }
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
+    return false;
+}
+
 
 /*
 API Healthcheck to see if it's up and running

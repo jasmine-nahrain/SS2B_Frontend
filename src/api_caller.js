@@ -73,7 +73,7 @@ export const deskcheck = async(image) => {
         var formdata = new FormData();
         //formdata.append("image", fileInput.files[0], "/C:/Users/Justin/Desktop/image1.jpg");
         // Delete this dummy line
-        formdata.append("dummyval", 12);
+        formdata.append("image", image);
 
         var requestOptions = {
             method: 'POST',

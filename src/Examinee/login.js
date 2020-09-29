@@ -6,6 +6,7 @@ import '../App.css';
 import logo from '../images/logo.png';
 import { BrowserRouter } from "react-router-dom";
 import styled from 'styled-components';
+import { login } from './userInfo';
 
 const Title = styled.div`
   padding:14px 5px 14px 0px;
@@ -32,7 +33,7 @@ class ExamineeLogin extends Component {
   constructor(props) {
      super(props);
 
-     this.onChangeEmail = this.onChangeEmail.bind(this); //Needed for input fields if they change
+     this.onChangeUserId = this.onChangeUserId.bind(this); //Needed for input fields if they change
      this.onChangePassword = this.onChangePassword.bind(this);
      this.onSubmit = this.onSubmit.bind(this);
 
@@ -43,9 +44,9 @@ class ExamineeLogin extends Component {
      };
   }
 
-  onChangeEmail(e) {
+  onChangeUserId(e) {
     this.setState({
-        email: e.target.value
+        user_id: e.target.value
     });
   }
 
@@ -58,12 +59,24 @@ class ExamineeLogin extends Component {
   onSubmit = async (e) => {
     e.preventDefault();
 
-    // const user = {
-    //   email: this.state.email,
-    //   password: this.state.password
-    // };
+    const user = {
+      user_id: this.state.user_id,
+      password: this.state.password
+    };
 
     //login
+    await login(user).then(loggedin => {
+      if (loggedin) {
+        localStorage.setItem('user_id', this.state.user_id);
+        if (localStorage.is_examiner === "0") this.props.history.push('/dnd');
+        else this.props.history.push('/admin');
+
+      } else {
+        this.setState({
+          invalid_details: true
+        });
+      }
+    })
   }
 
   render() {
@@ -77,7 +90,7 @@ class ExamineeLogin extends Component {
               <Text>Exam Login</Text>
             </Title>
             <Form.Group controlId="formBasicEmail">
-              <Form.Control type="text" name="email" placeholder="Email" value={this.state.email} onChange={this.onChangeEmail} required/>
+              <Form.Control type="text" name="user_id" placeholder="User Id" value={this.state.user_id} onChange={this.onChangeUserId} required/>
             </Form.Group>
 
             <Form.Group controlId="formBasicPassword">

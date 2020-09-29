@@ -44,7 +44,6 @@ class ExaminerRegister extends Component {
       is_admin: '',
       fname: '',
       lname: '',
-      email: '',
       password: '',
       confirmPassword: '',
       confirmExaminer: '',
@@ -66,15 +65,9 @@ class ExaminerRegister extends Component {
     });
   }
 
-  onChangeStudentID(e) {
+  onChangeUserID(e) {
     this.setState({
-      studentID: e.target.value
-    });
-  }
-
-  onChangeEmail(e) {
-    this.setState({
-      email: e.target.value
+      userID: e.target.value
     });
   }
 
@@ -99,30 +92,35 @@ class ExaminerRegister extends Component {
   onSubmit = async (e) => {
     e.preventDefault();
 
-    // const newUser = {
-    //   // need to add admin registration
-    //   student_id: this.state.studentID,
-    //   is_admin: 0,
-    //   first_name: this.state.fname,
-    //   last_name: this.state.lname,
-    //   email: this.state.email,
-    //   password: this.state.password,
-    //   confirm_admin: "unconfirmed"
-    // }
+    const newUser = {
+      // need to add admin registration
+      user_id: this.state.userID,
+      is_examiner: 0,
+      first_name: this.state.fname,
+      last_name: this.state.lname,
+      password: this.state.password,
+      confirm_examiner: "unconfirmed"
+    }
 
-    // const invalid_password = !isValidPassword(this.state.password);
-    // const mismatched_password = this.state.password !== this.state.confirmPassword;
-    //let invalid_details = mismatched_password || invalid_password;
+    const invalid_password = !isValidPassword(this.state.password);
+    const mismatched_password = this.state.password !== this.state.confirmPassword;
+    let invalid_details = mismatched_password || invalid_password;
 
-    // if (!invalid_details) {
-    //   // create new account
-    // }
+    if (!invalid_details) {
+      // create new account
+      await register(newUser).then(registered => {
+        if (registered) {
+          alert('Your account was successfully created!');
+          this.props.history.push('/');
+        } else invalid_details = true;
+      });
+    }
 
-    // this.setState({
-    //   mismatched_password: mismatched_password,
-    //   invalid_password: invalid_password,
-    //   invalid_details: invalid_details
-    // });
+    this.setState({
+      mismatched_password: mismatched_password,
+      invalid_password: invalid_password,
+      invalid_details: invalid_details
+    });
   }
 
 /**
@@ -155,11 +153,7 @@ Removed HTML that can be added back later
               </Form.Group>
 
               <Form.Group controlId="formStudentID">
-                <Form.Control type="number" name="studentID" min="10000" max="9999999999" placeholder="User ID" value={this.state.studentID} onChange={this.onChangeStudentID} required />
-              </Form.Group>
-
-              <Form.Group controlId="formEmail">
-                <Form.Control type="email" name="email" placeholder="User Email" value={this.state.email} onChange={this.onChangeEmail} required />
+                <Form.Control type="number" name="studentID" min="10000" max="9999999999" placeholder="User ID" value={this.state.userID} onChange={this.onChangeUserID} required />
               </Form.Group>
 
               <Form.Group controlId="formPassword">

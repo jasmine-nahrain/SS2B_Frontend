@@ -5,6 +5,7 @@ import { Form, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
+import { register } from './userInfo';
 
 const Body = styled.body`
   background-color: white;

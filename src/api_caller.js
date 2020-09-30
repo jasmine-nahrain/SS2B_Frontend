@@ -146,14 +146,15 @@ Status codes: 200 OK, 400 Bad Request, 500 Internal Server Error
 */
 export const deleteExam = async (exam_id) => {
     try {
-        const url = proxy + "examiner/exam/delete/" + exam_id;
+        const url = proxy + "examiner/exam/delete";
         const data = JSON.stringify({
-            token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE0NzU4NDMsImlhdCI6MTYwMTQ3NDA0Mywic3ViIjo4MjgyODI4ODJ9.h0NcRpVD0pmNvMbjqcfKARgHkGvYniJW8pqHUyR16-E"
+            token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE0NzU4NDMsImlhdCI6MTYwMTQ3NDA0Mywic3ViIjo4MjgyODI4ODJ9.h0NcRpVD0pmNvMbjqcfKARgHkGvYniJW8pqHUyR16-E",
+            "exam_id": exam_id
         });
 
         //console.log('data:', data);
         const response = await fetch(url, {
-            method: 'DELETE',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -163,8 +164,6 @@ export const deleteExam = async (exam_id) => {
         const status = await response.status;
         //console.log('status:', status);
         return status === 200;
-
-
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);

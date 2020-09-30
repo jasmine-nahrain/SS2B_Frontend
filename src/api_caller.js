@@ -90,6 +90,14 @@ export const deskcheck = async(image) => {
             let parsedData = await response.json();
             return parsedData
         }
+        // fetch(url, requestOptions).then(function(response) {
+        // // The response is a Response instance.
+        // // You parse the data into a useable format using `.json()`
+        //     return response.json();
+        // }).then(function(data) {
+        // // `data` is the parsed version of the JSON returned from the above endpoint.
+        //     console.log(data);  // { "userId": 1, "id": 1, "title": "...", "body": "..." }
+        // });
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);

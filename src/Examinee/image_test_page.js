@@ -28,14 +28,6 @@ const WebcamCapture = React.forwardRef((props, ref) => (
   </>
 ));
 
-// const WebcamCapture = () => {
-//   const webcamRef = React.useRef(null);
- 
-//   return (
-    
-//   );
-// };
-
 const Content = styled.div`
   background-color: white;
   background-blend-mode: multiply;
@@ -46,6 +38,11 @@ const Content = styled.div`
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: black;
+`;
+
+const WebcamContainer = styled.div`
+  display: flex;
+  max-width: 75%;
 `;
 
 const Title = styled.div`
@@ -60,6 +57,9 @@ class ImageTestPage extends Component {
   constructor(props) {
     super(props);
     this.webcam = React.createRef();
+    this.state = {
+      detections: []
+    }
   }
 
   dataURItoBlob = (dataURI) => {
@@ -78,12 +78,17 @@ class ImageTestPage extends Component {
     return new Blob([ia], {type:mimeString});
   }
 
-  capture = () => {
+  capture = async() => {
     let imageSrc = this.webcam.current.getScreenshot();
-    console.log(imageSrc)
     let blob = this.dataURItoBlob(imageSrc);
-    console.log(blob)
-    deskcheck(blob)
+    let response = await deskcheck(blob);
+    console.log(response)
+    this.setState({
+      detections: [{'-1': 'refresh'}]
+    });
+    this.setState({
+      detections: response
+    });
   }
 
   onSubmit = async (e) => {
@@ -95,7 +100,18 @@ class ImageTestPage extends Component {
       <BrowserRouter>
         <div className="App">
           <Content>
-            <WebcamCapture ref={this.webcam}></WebcamCapture>
+            <WebcamContainer>
+              <div className="video-container">
+                <WebcamCapture ref={this.webcam}></WebcamCapture>
+              </div>
+              <div className="detection-list">
+                <ul>
+                  {this.state.detections.map(function(item, idx){
+                    return (<li key={idx}>{item.label}</li>)
+                  })}
+                </ul>
+              </div>
+            </WebcamContainer>
             <Button onClick={this.capture}>Capture photo</Button>
           </Content>
         </div>

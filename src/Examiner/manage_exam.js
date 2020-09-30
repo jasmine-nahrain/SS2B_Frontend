@@ -177,8 +177,7 @@ class ManageExam extends Component {
       for(var i = 0; i < data.exams.length; i++) {
         var start_date = data.exams[i].start_date.split('-');
         const day = start_date[2].split(" ")
-        console.log(currentDate[0]);
-        console.log(day[0])
+        console.log(start_date);
          if(parseInt(day[0]) >= parseInt(currentDate[0]) && parseInt(start_date[1]) == parseInt(currentDate[1]) &&
            parseInt(start_date[0]) >= parseInt(currentDate[2])) {
                //if in current month

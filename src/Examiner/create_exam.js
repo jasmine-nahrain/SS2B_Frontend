@@ -5,7 +5,7 @@ import { Form, Button, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
-import {getUserID} from '../functions.js'
+import {getUserID, getEndDate} from '../functions.js'
 import {createExam} from '../api_caller.js';
 
 const Body = styled.body`
@@ -35,11 +35,10 @@ class CreateExam extends Component {
 
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeStartDate = this.onChangeStartDate.bind(this);
-    this.onChangeEndDate = this.onChangeEndDate.bind(this);
     this.onChangeStartTime = this.onChangeStartTime.bind(this);
-    this.onChangeEndTime = this.onChangeEndTime.bind(this);
+    this.onChangeDurationHours = this.onChangeDurationHours.bind(this);
+    this.onChangeDurationMinutes = this.onChangeDurationMinutes.bind(this);
     this.onChangeSubjectID = this.onChangeSubjectID.bind(this);
-    this.onChangeDuration = this.onChangeDuration.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
@@ -50,7 +49,8 @@ class CreateExam extends Component {
       end_time: Date,
       exam_id: Number,
       subjectID: Number,
-      duration: Number,
+      duration_hours: Number,
+      duration_minutes: Number,
     }
     console.log(this.state);
   }
@@ -65,19 +65,11 @@ class CreateExam extends Component {
       start_date: e.target.value
     });
   }
-  onChangeEndDate(e) {
-    this.setState({
-      end_date: e.target.value
-    });
-  }
   onChangeStartTime(e) {
+    console.log(e.target.value)
+
     this.setState({
       start_time: e.target.value
-    });
-  }
-  onChangeEndTime(e) {
-    this.setState({
-      end_time: e.target.value
     });
   }
 
@@ -86,63 +78,31 @@ onChangeSubjectID(e) {
     subjectID: e.target.value
   });
 }
-onChangeDuration(e) {
+onChangeDurationHours(e) {
   this.setState({
-    duration: e.target.value
+    duration_hours: e.target.value
+  });
+}
+onChangeDurationMinutes(e) {
+  this.setState({
+    duration_minutes: e.target.value
   });
 }
 
-getDurationTime = () => {
-  var duration_hours = this.state.end_time.split(":")[0] - this.state.start_time.split(":")[0];
-  var duration_minutes = this.state.end_time.split(":")[1] - this.state.start_time.split(":")[1];
-  var duration_year = this.state.end_date.split('-')[0] - this.state.start_date.split('-')[0];
-  var duration_month = this.state.end_date.split('-')[1] - this.state.start_date.split('-')[1];
-  var duration_day = this.state.end_date.split('-')[2] - this.state.start_date.split('-')[2];
 
-  if(duration_minutes < 0) {
-    duration_hours--;
-    duration_minutes = 60 + duration_minutes;
-    if(duration_minutes > 60) {
-      duration_minutes -= 60;
-      duration_hours++;
-    }
-  }
-
-  if(duration_hours < 0) {
-    duration_hours += 24;
-    duration_day--;
-  }
-
-  if(duration_hours < 10) {
-    duration_hours = "0" + duration_hours;
-  }
-  if(duration_minutes < 10) {
-    duration_minutes = "0" + duration_minutes;
-  }
-
-  if(duration_year == 0 && duration_month == 0 && duration_day < 0) {
-    alert("Invalid time. End time cannot be before start time.");
-    this.setState({end_date: ''});
-    this.setState({end_time: ''});
-  }
-  if(duration_year == 0 && duration_month == 0 && duration_day == 0 && duration_hours < 0) {
-      alert("Invalid time. End time cannot be before start time.");
-      this.setState({end_time: ''});
-  }
-  return duration_hours + ":" + duration_minutes;
-}
 
   onSubmit = async (e) => {
     e.preventDefault();
 
-    const duration = this.getDurationTime();
     let start_date = this.state.start_date + " " + this.state.start_time;
-    let end_date = this.state.end_date + " " + this.state.end_time;
+    let end_date = getEndDate(this.state.start_time, this.state.start_date, this.state.duration_hours, this.state.duration_minutes);
+    const duration = this.state.duration_hours + ':' + this.state.duration_minutes;
 
     let parsedData = createExam(this.state.name, this.state.subjectID, start_date, end_date, duration);
+    console.log(parsedData);
     if(parsedData) {
-      alert("Successfully created exam.");
-      window.location.href = '/examiner/manage';
+      // alert("Successfully created exam.");
+      // window.location.href = '/examiner/manage';
     }
   }
 
@@ -168,11 +128,8 @@ getDurationTime = () => {
                 <Form.Group controlId="formName">
                   <Form.Control type="number" name="name" placeholder="Subject ID" value={this.state.subjectID} onChange={this.onChangeSubjectID} required />
                 </Form.Group>
-              </Col>
 
-              <Col xs={6} md="auto">
-                <Row>
-                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginRight: '10px'}}>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
                     <Form.Label>Start Date</Form.Label>
                     <Form.Control
                       type="date"
@@ -184,7 +141,7 @@ getDurationTime = () => {
                       onChange={this.onChangeStartDate}
                       required />
                   </Form.Group>
-                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginLeft: '10px'}}>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
                     <Form.Label>Start Time</Form.Label>
                     <Form.Control
                       type="time"
@@ -197,33 +154,25 @@ getDurationTime = () => {
                       onChange={this.onChangeStartTime}
                       required />
                   </Form.Group>
-
-                </Row>
-                <Row>
-                  <Form.Group controlId="formStudentID" style={{fontSize: '16px', marginRight: '10px'}}>
-                    <Form.Label>End Date</Form.Label>
+                <h6>Duration</h6>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', float: 'left'}}>
                     <Form.Control
-                      type="date"
-                      name="end_date"
-                      min={this.state.start_date}
-                      placeholder="End Date"
-                      dateFormat="yyyy/MM/dd"
-                      value={this.state.end_date}
-                      onChange={this.onChangeEndDate}
+                      type="number"
+                      name="duration_hours"
+                      placeholder="Hours"
+                      value={this.state.duration_hours}
+                      onChange={this.onChangeDurationHours}
                       required />
                   </Form.Group>
-                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginLeft: '10px'}}>
-                    <Form.Label>End Time</Form.Label>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px',float: 'left'}}>
                     <Form.Control
-                      type="time"
-                      name="start_date"
-                      placeholder="Start Date"
-                      dateFormat="hh:mm"
-                      value={this.state.end_time}
-                      onChange={this.onChangeEndTime}
+                      type="number"
+                      name="duration_minutes"
+                      placeholder="Minutes"
+                      value={this.state.duration_minutes}
+                      onChange={this.onChangeDurationMinutes}
                       required />
                   </Form.Group>
-                </Row>
               </Col>
 
               <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>

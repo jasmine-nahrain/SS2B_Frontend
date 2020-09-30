@@ -41,3 +41,26 @@ export const inProgress = (row) => {
      return false;
    }
 }
+
+
+export const getEndDate = (start_time, start_date, duration_hours, duration_minutes) => {
+  var time = start_time.split(':');
+  time[0] = parseInt(time[0]) + parseInt(duration_hours);
+  time[1] = parseInt(time[1]) + parseInt(duration_minutes);
+  var startDate = start_date.split('-');
+
+  for(var i = 0; i < startDate.length; i++) {
+    startDate[i] = parseInt(startDate[i]);
+  }
+
+  if(time[1] >= 60) {
+    time[1] -= 60;
+    time[0] += 1;
+  }
+  if(time[0] >= 24) {
+    time[0] -= 24;
+    startDate[2]++;
+  }
+  let date = new Date(startDate[0], startDate[1]-1, startDate[2], time[0], time[1]);
+  return date;
+}

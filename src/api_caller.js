@@ -7,9 +7,16 @@ Status codes: 200 OK
 export const getExams = async () => {
     try {
         const url = proxy + "examiner/exam";
+        const data = JSON.stringify({
+            token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE0NzU4NDMsImlhdCI6MTYwMTQ3NDA0Mywic3ViIjo4MjgyODI4ODJ9.h0NcRpVD0pmNvMbjqcfKARgHkGvYniJW8pqHUyR16-E"
+        });
 
         const response = await fetch(url, {
-            method: 'GET'
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: data,
         });
 
         let parsedData = await response.json();
@@ -34,9 +41,16 @@ Status codes: 200 OK
 export const getExaminees = async () => {
     try {
         const url = proxy + "examiner/examinee";
+        const data = JSON.stringify({
+            token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE0NzU4NDMsImlhdCI6MTYwMTQ3NDA0Mywic3ViIjo4MjgyODI4ODJ9.h0NcRpVD0pmNvMbjqcfKARgHkGvYniJW8pqHUyR16-E"
+        });
 
         const response = await fetch(url, {
-            method: 'GET'
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: data,
         });
 
         let parsedData = await response.json();
@@ -65,7 +79,8 @@ export const createExam = async (exam_name, subject_id, start_date, end_date, du
         "subject_id": subject_id,
         "start_date": start_date,
         "end_date": end_date,
-        "duration": duration
+        "duration": duration,
+        token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE0NzU4NDMsImlhdCI6MTYwMTQ3NDA0Mywic3ViIjo4MjgyODI4ODJ9.h0NcRpVD0pmNvMbjqcfKARgHkGvYniJW8pqHUyR16-E"
     });
 
     const response = await fetch(url, {
@@ -101,7 +116,8 @@ export const editExam = async (exam_id, exam_name, subject_id, start_date, end_d
         "subject_id": subject_id,
         "start_date": start_date,
         "end_date": end_date,
-        "duration": duration
+        "duration": duration,
+        token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE0NzU4NDMsImlhdCI6MTYwMTQ3NDA0Mywic3ViIjo4MjgyODI4ODJ9.h0NcRpVD0pmNvMbjqcfKARgHkGvYniJW8pqHUyR16-E"
     });
 
     const response = await fetch(url, {
@@ -131,7 +147,9 @@ Status codes: 200 OK, 400 Bad Request, 500 Internal Server Error
 export const deleteExam = async (exam_id) => {
     try {
         const url = proxy + "examiner/exam/delete/" + exam_id;
-
+        const data = JSON.stringify({
+            token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE0NzU4NDMsImlhdCI6MTYwMTQ3NDA0Mywic3ViIjo4MjgyODI4ODJ9.h0NcRpVD0pmNvMbjqcfKARgHkGvYniJW8pqHUyR16-E"
+        });
 
         //console.log('data:', data);
         const response = await fetch(url, {
@@ -139,6 +157,7 @@ export const deleteExam = async (exam_id) => {
             headers: {
                 'Content-Type': 'application/json'
             },
+            body: data
         });
 
         const status = await response.status;

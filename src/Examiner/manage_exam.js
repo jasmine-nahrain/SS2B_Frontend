@@ -173,12 +173,19 @@ class ManageExam extends Component {
     var upcomingExamList = [];
     var pastExamList = [];
     var currentDate = getCurrentDate();
-
+      console.log(parseInt(currentDate[1]))
       for(var i = 0; i < data.exams.length; i++) {
-        var end_date = data.exams[i].end_date.split('-');
-        const day = end_date[2].split(" ")
-         if(day[0] >= currentDate[0] && end_date[1] >= currentDate[1] &&
-           end_date[0] >= currentDate[2]) {
+        var start_date = data.exams[i].start_date.split('-');
+        const day = start_date[2].split(" ")
+        console.log(currentDate[0]);
+        console.log(day[0])
+         if(parseInt(day[0]) >= parseInt(currentDate[0]) && parseInt(start_date[1]) == parseInt(currentDate[1]) &&
+           parseInt(start_date[0]) >= parseInt(currentDate[2])) {
+               //if in current month
+             upcomingExamList.push(data.exams[i]);
+         } else if(parseInt(start_date[1]) > parseInt(currentDate[1]) &&
+           parseInt(start_date[0]) >= parseInt(currentDate[2])) {
+             //if in future month
               upcomingExamList.push(data.exams[i]);
           } else {
             pastExamList.push(data.exams[i]);

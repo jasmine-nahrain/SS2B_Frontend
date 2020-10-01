@@ -101,8 +101,8 @@ onChangeDurationMinutes(e) {
     let parsedData = createExam(this.state.name, this.state.subjectID, start_date, end_date, duration);
     console.log(parsedData);
     if(parsedData) {
-      // alert("Successfully created exam.");
-      // window.location.href = '/examiner/manage';
+      alert("Successfully created exam.");
+      window.location.href = '/examiner/manage';
     }
   }
 

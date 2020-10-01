@@ -7,6 +7,7 @@ import StudentFilter from './Examiner/student_filter.js';
 import ManageExam from './Examiner/manage_exam.js';
 import CreateExam from './Examiner/create_exam.js';
 import EditExam from './Examiner/edit_exam.js';
+import ExamRules from './Examinee/exam_rules.js';
 
 class App extends Component {
   render() {
@@ -47,7 +48,12 @@ class App extends Component {
             <div className="App">
               <EditExam />
             </div>
-          )}/>
+          )}/>                                                        
+          <Route exact={true} path='/examinee/rules' render={() => (
+            <div className="App">
+              <ExamRules />
+            </div>
+          )}/>         
         </div>
       </BrowserRouter>
     );

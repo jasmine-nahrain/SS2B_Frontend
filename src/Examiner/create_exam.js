@@ -5,7 +5,7 @@ import { Form, Button, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
-import {getUserID, getEndDate} from '../functions.js'
+import {getUserID, getDate, getTime} from '../functions.js'
 import {createExam} from '../api_caller.js';
 
 const Body = styled.body`
@@ -39,6 +39,8 @@ class CreateExam extends Component {
     this.onChangeDurationHours = this.onChangeDurationHours.bind(this);
     this.onChangeDurationMinutes = this.onChangeDurationMinutes.bind(this);
     this.onChangeSubjectID = this.onChangeSubjectID.bind(this);
+    this.onChangeEndDate = this.onChangeEndDate.bind(this);
+    this.onChangeEndTime = this.onChangeEndTime.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
@@ -89,17 +91,27 @@ onChangeDurationMinutes(e) {
   });
 }
 
+onChangeEndDate(e) {
+  this.setState({
+    end_date: e.target.value
+  });
+}
+
+onChangeEndTime(e) {
+  this.setState({
+    end_time: e.target.value
+  });
+}
 
 
   onSubmit = async (e) => {
     e.preventDefault();
-
-    let start_date = this.state.start_date + " " + this.state.start_time;
-    let end_date = getEndDate(this.state.start_time, this.state.start_date, this.state.duration_hours, this.state.duration_minutes);
-    const duration = this.state.duration_hours + ':' + this.state.duration_minutes;
-
+    
+    let start_date = getDate(this.state.start_date, this.state.start_time);
+    const duration = getTime(this.state.duration_hours, this.state.duration_minutes);
+    let end_date = getDate(this.state.end_date, this.state.end_time);
     let parsedData = createExam(this.state.name, this.state.subjectID, start_date, end_date, duration);
-    console.log(parsedData);
+
     if(parsedData) {
       alert("Successfully created exam.");
       window.location.href = '/examiner/manage';
@@ -154,8 +166,31 @@ onChangeDurationMinutes(e) {
                       onChange={this.onChangeStartTime}
                       required />
                   </Form.Group>
+                  <Form.Group controlId="formStudentID" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
+                   <Form.Label>End Date</Form.Label>
+                   <Form.Control
+                     type="date"
+                     name="end_date"
+                     min={this.state.start_date}
+                     placeholder="End Date"
+                     dateFormat="yyyy/MM/dd"
+                     value={this.state.end_date}
+                     onChange={this.onChangeEndDate}
+                     required />
+                 </Form.Group>
+                 <Form.Group controlId="formStartDate" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
+                   <Form.Label>End Time</Form.Label>
+                   <Form.Control
+                     type="time"
+                     name="start_date"
+                     placeholder="Start Date"
+                     dateFormat="hh:mm"
+                     value={this.state.end_time}
+                     onChange={this.onChangeEndTime}
+                     required />
+                 </Form.Group>
                 <h6>Duration</h6>
-                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', float: 'left'}}>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
                     <Form.Control
                       type="number"
                       name="duration_hours"
@@ -164,7 +199,7 @@ onChangeDurationMinutes(e) {
                       onChange={this.onChangeDurationHours}
                       required />
                   </Form.Group>
-                  <Form.Group controlId="formStartDate" style={{fontSize: '16px',float: 'left'}}>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
                     <Form.Control
                       type="number"
                       name="duration_minutes"

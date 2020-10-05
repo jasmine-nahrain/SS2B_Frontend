@@ -5,7 +5,7 @@ import { Form, Button, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
-import {getUserID, getMonth, getCurrentDat, getEndDate} from '../functions.js'
+import {getUserID, getMonth, getTime, getDate} from '../functions.js'
 import {editExam, deleteExam} from '../api_caller.js';
 
 const Body = styled.body`
@@ -135,9 +135,9 @@ onChangeDurationMinutes(e) {
   onSubmit = async (e) => {
     e.preventDefault();
 
-    let start_date = this.state.start_date + " " + this.state.start_time;
-    let end_date = getEndDate(this.state.start_time, this.state.start_date, this.state.duration_hours, this.state.duration_minutes);
-    const duration = this.state.duration_hours + ':' + this.state.duration_minutes;
+    let start_date = getDate(this.state.start_date, this.state.start_time);
+    const duration = getTime(this.state.duration_hours, this.state.duration_minutes);
+    let end_date = getDate(this.state.end_date, this.state.end_time);
 
     editExam(this.state.exam_id, this.state.name, this.state.subjectID, start_date, end_date, duration);
   }
@@ -199,28 +199,51 @@ onChangeDurationMinutes(e) {
                       required />
                   </Form.Group>
 
-                  <h6>Duration</h6>
-                    <Form.Group controlId="formStartDate" style={{fontSize: '16px', float: 'left'}}>
-                      <Form.Control
-                        type="number"
-                        name="duration_hours"
-                        placeholder="Hours"
-                        value={this.state.duration_hours}
-                        onChange={this.onChangeDurationHours}
-                        required />
-                    </Form.Group>
-                    <Form.Group controlId="formStartDate" style={{fontSize: '16px',float: 'left'}}>
-                      <Form.Control
-                        type="number"
-                        name="duration_minutes"
-                        placeholder="Minutes"
-                        value={this.state.duration_minutes}
-                        onChange={this.onChangeDurationMinutes}
-                        required />
-                    </Form.Group>
+                  <Form.Group controlId="formStudentID" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
+                   <Form.Label>End Date</Form.Label>
+                   <Form.Control
+                     type="date"
+                     name="end_date"
+                     min={this.state.start_date}
+                     placeholder="End Date"
+                     dateFormat="yyyy/MM/dd"
+                     value={this.state.end_date}
+                     onChange={this.onChangeEndDate}
+                     required />
+                 </Form.Group>
+                 <Form.Group controlId="formStartDate" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
+                   <Form.Label>End Time</Form.Label>
+                   <Form.Control
+                     type="time"
+                     name="start_date"
+                     placeholder="Start Date"
+                     dateFormat="hh:mm"
+                     value={this.state.end_time}
+                     onChange={this.onChangeEndTime}
+                     required />
+                 </Form.Group>
+                <h6>Duration</h6>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
+                    <Form.Control
+                      type="number"
+                      name="duration_hours"
+                      placeholder="Hours"
+                      value={this.state.duration_hours}
+                      onChange={this.onChangeDurationHours}
+                      required />
+                  </Form.Group>
+                  <Form.Group controlId="formStartDate" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
+                    <Form.Control
+                      type="number"
+                      name="duration_minutes"
+                      placeholder="Minutes"
+                      value={this.state.duration_minutes}
+                      onChange={this.onChangeDurationMinutes}
+                      required />
+                  </Form.Group>
               </Col>
 
-              <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>Update</Button>
+              <Button variant="outline-dark" type="submit" className="button" style={{width: '100%', marginBottom: '1%'}}>Update</Button>
               <Button variant="outline-danger" onClick={this.onDelete} className="button" style={{width: '100%'}}>Delete</Button>
             </Form>
           </Body>

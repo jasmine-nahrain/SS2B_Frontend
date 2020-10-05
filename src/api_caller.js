@@ -1,6 +1,5 @@
 const proxy = 'http://127.0.0.1:8000/api/';
-const token =  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE1NTEwNDUsImlhdCI6MTYwMTU0OTI0NSwic3ViIjo4OTI3Mzk4fQ.WRtE82XSA0fkT-mvJMHbVYxvkd8tO7qIg3yw0UZSX7w";
-
+const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE5MTY0ODAsImlhdCI6MTYwMTkxNDY4MCwic3ViIjo4OTI3Mzk4fQ.O5hY-UK41Ztphxcq6gEA-5d-1JGLT5TXzOStzuxReNE";
 /*
 API GET EXAMS to return list of exams
 Status codes: 200 OK

@@ -64,3 +64,14 @@ export const getEndDate = (start_time, start_date, duration_hours, duration_minu
   let date = new Date(startDate[0], startDate[1]-1, startDate[2], time[0], time[1]);
   return date;
 }
+
+export const getDate = (date,  time) => {
+  var dateArr = date.split('-')
+  var timeArr =  time.split(':');
+  return new Date(dateArr[0], dateArr[1]-1, dateArr[2], timeArr[0], timeArr[1]);
+}
+
+export const getTime = (hours, minutes) => {
+  let now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes).toLocaleTimeString('it-IT');
+}

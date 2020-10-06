@@ -7,7 +7,7 @@ import StudentFilter from './Examiner/student_filter.js';
 import ManageExam from './Examiner/manage_exam.js';
 import CreateExam from './Examiner/create_exam.js';
 import ExamRules from './Examinee/exam_rules.js';
-import ImageTestPage from './Examinee/image_test_page.js'
+import PersonalDeskCheck from './Examinee/personal_desk_check.js'
 
 class App extends Component {
   render() {
@@ -49,9 +49,9 @@ class App extends Component {
               <ExamRules />
             </div>
           )}/>
-          <Route exact={true} path='/examinee/imagetest' render={() => (
+          <Route exact={true} path='/examinee/deskcheck' render={() => (
             <div className="App">
-              <ImageTestPage />
+              <PersonalDeskCheck/>
             </div>
           )}/>
         </div>

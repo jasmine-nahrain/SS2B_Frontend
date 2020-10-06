@@ -183,6 +183,7 @@ export const uploadFaceImage = async(user_id, image, authenticate=true) => {
     return false;
 }
 
+/*
 API Edit Exam to save new exam to db
 Status codes: 200 OK
 */

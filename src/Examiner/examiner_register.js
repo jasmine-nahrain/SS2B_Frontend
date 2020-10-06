@@ -5,7 +5,7 @@ import { Form, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
-import { register } from './userInfo';
+import { register, isValidPassword } from '../Examinee/userInfo';
 
 const Body = styled.body`
   background-color: white;
@@ -34,14 +34,13 @@ class ExaminerRegister extends Component {
 
     this.onChangeFirstName = this.onChangeFirstName.bind(this);
     this.onChangeLastName = this.onChangeLastName.bind(this);
-    this.onChangeStudentID = this.onChangeStudentID.bind(this);
-    this.onChangeEmail = this.onChangeEmail.bind(this);
+    this.onChangeUserID = this.onChangeUserID.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
     this.onChangeConfirmPassword = this.onChangeConfirmPassword.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
-      studentID: '',
+      userID: '',
       is_admin: '',
       fname: '',
       lname: '',
@@ -153,8 +152,8 @@ Removed HTML that can be added back later
                 <Form.Control type="text" name="lname" placeholder="Last Name" value={this.state.lname} onChange={this.onChangeLastName} required />
               </Form.Group>
 
-              <Form.Group controlId="formStudentID">
-                <Form.Control type="number" name="studentID" min="10000" max="9999999999" placeholder="User ID" value={this.state.userID} onChange={this.onChangeUserID} required />
+              <Form.Group controlId="formUserID">
+                <Form.Control type="number" name="userID" min="10000" max="9999999999" placeholder="User ID" value={this.state.userID} onChange={this.onChangeUserID} required />
               </Form.Group>
 
               <Form.Group controlId="formPassword">

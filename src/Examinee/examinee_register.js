@@ -5,7 +5,7 @@ import { Form, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
-import { register } from './userInfo';
+import { register, isValidPassword } from './userInfo';
 
 const Body = styled.body`
   background-color: white;
@@ -34,8 +34,7 @@ class ExamineeRegister extends Component {
 
     this.onChangeFirstName = this.onChangeFirstName.bind(this);
     this.onChangeLastName = this.onChangeLastName.bind(this);
-    this.onChangeStudentID = this.onChangeStudentID.bind(this);
-    this.onChangeEmail = this.onChangeEmail.bind(this);
+    this.onChangeUserID = this.onChangeUserID.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
     this.onChangeConfirmPassword = this.onChangeConfirmPassword.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -66,9 +65,9 @@ class ExamineeRegister extends Component {
     });
   }
 
-  onChangeStudentID(e) {
+  onChangeUserID(e) {
     this.setState({
-      studentID: e.target.value
+      userID: e.target.value
     });
   }
 
@@ -89,7 +88,7 @@ class ExamineeRegister extends Component {
 
     const newUser = {
       // need to add admin registration
-      user_id: this.state.studentID,
+      user_id: this.state.userID,
       is_examiner: 0,
       first_name: this.state.fname,
       last_name: this.state.lname,
@@ -146,8 +145,8 @@ Removed HTML that can be added back later
                 <Form.Control type="text" name="lname" placeholder="Last Name" value={this.state.lname} onChange={this.onChangeLastName} required />
               </Form.Group>
 
-              <Form.Group controlId="formStudentID">
-                <Form.Control type="number" name="studentID" min="10000" max="9999999999" placeholder="Student ID" value={this.state.studentID} onChange={this.onChangeStudentID} required />
+              <Form.Group controlId="formUserID">
+                <Form.Control type="number" name="userID" min="10000" max="9999999999" placeholder="Student ID" value={this.state.userID} onChange={this.onChangeUserID} required />
               </Form.Group>
 
               <Form.Group controlId="formPassword">

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 
 export const register = async newUser => {
     try {
@@ -44,3 +44,10 @@ export const login = async user => {
         return false;
     }
 }
+
+export const isValidPassword = (password) => {
+    var min_length = 8;
+    var letter = /[a-zA-Z]/;
+    var number = /[0-9]/;
+    return (password.length >= min_length) && number.test(password) && letter.test(password);
+  }

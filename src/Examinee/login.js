@@ -69,7 +69,7 @@ class ExamineeLogin extends Component {
       if (loggedin) {
         localStorage.setItem('user_id', this.state.user_id);
         if (localStorage.is_examiner === "0") this.props.history.push('/dnd');
-        else this.props.history.push('/admin');
+        else this.props.history.push('/examinee/rules');
 
       } else {
         this.setState({

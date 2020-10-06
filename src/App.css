@@ -164,9 +164,6 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
     margin-left: auto;
 }
 
-.search-label {
-  float: right;
-}
 .deskcheck-video-container video {
   height: 450px;
   width: 800px;

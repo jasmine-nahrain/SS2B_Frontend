@@ -143,9 +143,8 @@ getDurationTime = () => {
   }
 
   render() {
-    // const admin_id = getUserID(false);
-    // const is_admin = parseInt(localStorage.getItem('is_admin'));
-    // if (admin_id && is_admin) {
+    const is_examiner = parseInt(localStorage.getItem('is_examiner'));
+    if (is_examiner) {
     const today = new Date().toISOString().split("T")[0];
     return (
       <BrowserRouter>
@@ -230,8 +229,8 @@ getDurationTime = () => {
         </div>
       </BrowserRouter>
     );
-  // } else {
-  //   window.location.href = '/';
-  // }
+  } else {
+    window.location.href = '/examinee/rules';
+  }
   }
 } export default withRouter(CreateExam);

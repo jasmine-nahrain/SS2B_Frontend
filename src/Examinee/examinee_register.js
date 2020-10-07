@@ -101,31 +101,21 @@ class ExamineeRegister extends Component {
 
     if (!invalid_details) {
       // create new account
-      await register(newUser).then(registered => {
+      const registered = await register(newUser);
         if (registered) {
           alert('Your account was successfully created!');
           this.props.history.push('/');
-        } else invalid_details = true;
+        } else {
+          invalid_details = true;
+        }
+    } else {
+      this.setState({
+        mismatched_password: mismatched_password,
+        invalid_password: invalid_password,
+        invalid_details: invalid_details
       });
     }
-
-    this.setState({
-      mismatched_password: mismatched_password,
-      invalid_password: invalid_password,
-      invalid_details: invalid_details
-    });
   }
-
-/**
-Removed HTML that can be added back later
-<a style={this.state.invalid_details ? { textAlign: 'center', color: 'red' } : { visibility: 'hidden' }} >
-  <h5 >
-    {this.state.invalid_password ? ("Password needs to be at least 8 characters long with at least 1 number.")
-      : this.state.mismatched_password ? ("Password does not match.")
-        : ("An account with this student ID/email exists.")}
-  </h5>
-</a>
-*/
 
   render() {
     return (
@@ -158,7 +148,14 @@ Removed HTML that can be added back later
               </Form.Group>
               <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>
                 Register
-          </Button>
+              </Button>
+              <a style={this.state.invalid_details ? { textAlign: 'center', color: 'red', fontSize: '12px' } : { visibility: 'hidden' }} >
+                <p>
+                  {this.state.invalid_password ? ("Password needs to be at least 8 characters long with at least 1 number.")
+                    : this.state.mismatched_password ? ("Password does not match.")
+                      : ("An account with this student ID/email exists.")}
+                </p>
+              </a>
             </Form>
             <div style={{padding:"0.5%"}}>
               <hr />

@@ -65,18 +65,17 @@ class ExamineeLogin extends Component {
     };
 
     //login
-    await login(user).then(loggedin => {
-      if (loggedin) {
+    const loggedIn = login(user.user_id, user.password);
+    if(loggedIn) {
         localStorage.setItem('user_id', this.state.user_id);
         if (localStorage.is_examiner === "0") this.props.history.push('/dnd');
         else this.props.history.push('/examinee/rules');
-
-      } else {
+    } else {
         this.setState({
           invalid_details: true
         });
-      }
-    })
+    }
+
   }
 
   render() {

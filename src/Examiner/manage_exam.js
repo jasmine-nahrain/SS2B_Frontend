@@ -183,9 +183,8 @@ class ManageExam extends Component {
         order: 'asc'
     }];
 
-    // const admin_id = getUserID(false);
-    // const is_admin = parseInt(localStorage.getItem('is_admin'));
-    // if (admin_id && is_admin) {
+    const is_examiner = parseInt(localStorage.getItem('is_examiner'));
+    if (is_examiner) {
     return (
       <BrowserRouter>
       <div className="App">
@@ -275,8 +274,8 @@ class ManageExam extends Component {
       </div>
       </BrowserRouter>
     );
-    // } else {
-    //   window.location.href = '/';
-    // }
+    } else {
+      window.location.href = '/examinee/rules';
+    }
   }
 } export default withRouter(ManageExam);

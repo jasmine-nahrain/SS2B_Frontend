@@ -1,5 +1,5 @@
 const proxy = 'http://127.0.0.1:8000/api/';
-const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE5MTY0ODAsImlhdCI6MTYwMTkxNDY4MCwic3ViIjo4OTI3Mzk4fQ.O5hY-UK41Ztphxcq6gEA-5d-1JGLT5TXzOStzuxReNE";
+const token = localStorage.getItem('token');
 /*
 API GET EXAMS to return list of exams
 Status codes: 200 OK

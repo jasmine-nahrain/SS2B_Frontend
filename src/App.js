@@ -6,6 +6,7 @@ import ExamineeRegister from './Examinee/examinee_register.js';
 import StudentFilter from './Examiner/student_filter.js';
 import ManageExam from './Examiner/manage_exam.js';
 import CreateExam from './Examiner/create_exam.js';
+import EditExam from './Examiner/edit_exam.js';
 import ExamRules from './Examinee/exam_rules.js';
 import Redirect from './Examinee/redirect_page.js';
 
@@ -44,6 +45,11 @@ class App extends Component {
               <CreateExam />
             </div>
           )}/>
+          <Route exact={true} path='/examiner/edit' render={() => (
+            <div className="App">
+              <EditExam />
+            </div>
+          )}/>                                                        
           <Route exact={true} path='/examinee/rules' render={() => (
             <div className="App">
               <ExamRules />

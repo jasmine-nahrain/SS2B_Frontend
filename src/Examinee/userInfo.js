@@ -14,7 +14,7 @@ export const register = async (newUser) => {
       first_name: newUser.first_name,
       last_name: newUser.last_name,
       password: newUser.password,
-      confirm_examiner: newUser.confirm_examiner
+      examiner_passphrase: newUser.confirm_examiner
     });
 
     const res = await fetch(url, {
@@ -29,6 +29,9 @@ export const register = async (newUser) => {
     let parsedData = await res.json();
     console.log(parsedData)
     console.log(res)
+    if(status == 400) {
+      localStorage.setItem('error', parsedData.message);
+    }
     return status == 200 || status == 201;
 
   } catch (error) {

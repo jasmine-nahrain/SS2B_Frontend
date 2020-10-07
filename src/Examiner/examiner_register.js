@@ -50,7 +50,8 @@ class ExaminerRegister extends Component {
       confirmExaminer: '',
       invalid_password: false,
       invalid_details: false,
-      mismatched_password: false
+      mismatched_password: false,
+      invalid_passphrase: false
     }
   }
 
@@ -100,7 +101,7 @@ class ExaminerRegister extends Component {
       first_name: this.state.fname,
       last_name: this.state.lname,
       password: this.state.password,
-      confirm_examiner: "unconfirmed"
+      confirm_examiner: this.state.confirmExaminer
     }
 
     const invalid_password = !isValidPassword(this.state.password);
@@ -115,12 +116,13 @@ class ExaminerRegister extends Component {
           this.props.history.push('/');
         } else {
           invalid_details = true;
+          this.setState({invalid_passphrase: localStorage.getItem('error')});
         }
     } else {
       this.setState({
         mismatched_password: mismatched_password,
         invalid_password: invalid_password,
-        invalid_details: invalid_details
+        invalid_details: invalid_details,
       });
     }
   }
@@ -162,13 +164,14 @@ class ExaminerRegister extends Component {
               <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>
                 Register
               </Button>
-              <a style={this.state.invalid_details ? { textAlign: 'center', color: 'red', fontSize: '12px' } : { visibility: 'hidden' }} >
-                <p>
+                <p style={this.state.invalid_details ? { textAlign: 'center', color: 'red', fontSize: '12px' } : { visibility: 'hidden', height: '0' }}>
                   {this.state.invalid_password ? ("Password needs to be at least 8 characters long with at least 1 number.")
                     : this.state.mismatched_password ? ("Password does not match.")
                       : ("An account with this student ID/email exists.")}
                 </p>
-              </a>
+                <p style={this.state.invalid_passphrase ? { textAlign: 'center', color: 'red', fontSize: '12px', paddingTop: '10px', visibility: 'visible' } : { visibility: 'hidden', height: '0' }}>
+                  {this.state.invalid_passphrase ? ("Examiner passphrase incorrect") : ""}
+                </p>
             </Form>
             <div style={{padding:"0.5%"}}>
               <hr />

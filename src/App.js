@@ -9,6 +9,7 @@ import CreateExam from './Examiner/create_exam.js';
 import EditExam from './Examiner/edit_exam.js';
 import ExamRules from './Examinee/exam_rules.js';
 import Redirect from './Examinee/redirect_page.js';
+import VideoStreaming from './Examiner/video_streaming.js';
 
 class App extends Component {
   render() {
@@ -49,7 +50,7 @@ class App extends Component {
             <div className="App">
               <EditExam />
             </div>
-          )}/>                                                        
+          )}/>
           <Route exact={true} path='/examinee/rules' render={() => (
             <div className="App">
               <ExamRules />
@@ -58,6 +59,11 @@ class App extends Component {
           <Route exact={true} path='/examinee/redirect' render={() => (
             <div className="App">
               <Redirect />
+            </div>
+          )}/>
+          <Route exact={true} path='/examinee/stream' render={() => (
+            <div className="App">
+              <VideoStreaming />
             </div>
           )}/>
         </div>

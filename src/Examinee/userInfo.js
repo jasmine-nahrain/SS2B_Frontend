@@ -64,9 +64,9 @@ export const login = async (user_id, password) => {
 
     if (status === 200) {
         localStorage.setItem('token', parsedData.token);
-        if (parsedData.is_examiner) localStorage.setItem('examiner_id', parsedData.user_id);
-        else localStorage.setItem('user_id', parsedData.user_id);
-        localStorage.setItem('is_examiner', parsedData.is_examiner);
+        if (parsedData.user.is_examiner) localStorage.setItem('examiner_id', parsedData.user.user_id);
+        else localStorage.setItem('user_id', parsedData.user.user_id);
+        localStorage.setItem('is_examiner', JSON.stringify(parsedData.user.is_examiner));
     }
 
     return status == 200;

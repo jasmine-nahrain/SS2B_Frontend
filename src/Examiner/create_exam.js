@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
-import logo from '../images/logo.png';
 import {getUserID, getDate, getTime} from '../functions.js'
 import {createExam} from '../api_caller.js';
 
@@ -106,7 +105,7 @@ onChangeEndTime(e) {
 
   onSubmit = async (e) => {
     e.preventDefault();
-    
+
     let start_date = getDate(this.state.start_date, this.state.start_time);
     const duration = getTime(this.state.duration_hours, this.state.duration_minutes);
     let end_date = getDate(this.state.end_date, this.state.end_time);
@@ -218,7 +217,7 @@ onChangeEndTime(e) {
       </BrowserRouter>
     );
   } else {
-    window.location.href = '/examinee/rules';
+    window.location.href = '/examinee/redirect';
   }
   }
 } export default withRouter(CreateExam);

@@ -88,6 +88,26 @@ var upcoming = [{
   text: 'Start Date',
 }]
 
+var past = [{
+  dataField: 'user_id',
+  text: 'Student ID',
+  sort: true
+}, {
+  dataField: 'first_name',
+  text: 'Student First Name',
+  sort: true
+}, {
+  dataField: 'last_name',
+  text: 'Student Last Name',
+  sort: true,
+}, {
+  dataField: 'time_started',
+  text: 'Start Date',
+}, {
+  dataField: 'time_ended',
+  text: 'End Date',
+}]
+
 // Gets the length of the payload data to determine roof of pagination.
 const customTotal = (from, to, size) => (
   <span className="react-bootstrap-table-pagination-total">
@@ -95,7 +115,7 @@ const customTotal = (from, to, size) => (
   </span>
 );
 
-var tablePaginationOptions, tablePaginationOptionsUpcoming;
+var tablePaginationOptions, tablePaginationOptionsUpcoming, tablePaginationOptionsPast;
 
 class StudentFilter extends Component {
 
@@ -105,7 +125,8 @@ class StudentFilter extends Component {
 
     this.state = {
       table_data: [],
-      upcoming: []
+      upcoming: [],
+      past: [],
     };
   }
 
@@ -164,24 +185,50 @@ class StudentFilter extends Component {
           text: 'All', value: this.state.upcoming.length
         }]
       };
+
+      tablePaginationOptionsPast = {
+        paginationSize: 4,
+        pageStartIndex: 0,
+        firstPageText: 'First',
+        prePageText: 'Back',
+        nextPageText: 'Next',
+        lastPageText: 'Last',
+        nextPageTitle: 'First page',
+        prePageTitle: 'Pre page',
+        firstPageTitle: 'Next page',
+        lastPageTitle: 'Last page',
+        showTotal: true,
+        paginationTotalRenderer: customTotal,
+        disablePageTitle: true,
+        sizePerPageList: [{
+          text: '5', value: 5
+        }, {
+          text: '10', value: 10
+        }, {
+          text: 'All', value: this.state.past.length
+        }]
+      };
     }
   }
 
   getExaminees(data) {
-    var in_progress = [], upcoming = [];
-    for(var i = 0; i < data.exam_recordings.length; i++) {
-      if(data.exam_recordings[i].video_link !== null)
-        in_progress.push(data.exam_recordings[i]);
-      else if(new Date(data.exam_recordings[i].time_started) >= time)
-        upcoming.push(data.exam_recordings[i]);
-
-    }
+    var in_progress = [], upcoming = [], past = [];
+      for(var i = 0; i < data.exam_recordings.length; i++) {
+        if(data.exam_recordings[i].video_link !== null)
+          in_progress.push(data.exam_recordings[i]);
+        else if(new Date(data.exam_recordings[i].time_started) >= time) {
+          upcoming.push(data.exam_recordings[i]);
+        } else {
+          past.push(data.exam_recordings[i]);
+        }
+      }
     console.log(in_progress)
     console.log(upcoming)
 
     this.setState({
       table_data: in_progress,
-      upcoming: upcoming
+      upcoming: upcoming,
+      past: past
     });
 
   }
@@ -217,7 +264,7 @@ class StudentFilter extends Component {
               <div class="containerAdmin admin-table">
               <SearchBar { ...props.searchProps } style={searchBar} />
               <br/>
-              {this.state.table_data.length == 0 ? <p>No Upcoming Exams</p> :
+              {this.state.table_data.length == 0 ? <p>No Exams In Progress</p> :
               <BootstrapTable
               bootstrap4
               { ...props.baseProps }
@@ -256,6 +303,35 @@ class StudentFilter extends Component {
                 data={this.state.upcoming }
                 columns={ upcoming }
                 pagination={ paginationFactory(tablePaginationOptionsUpcoming) }
+                filter={ filterFactory() }/>
+              }
+              </div>
+            </div>
+          )}
+        </ToolkitProvider>
+        </Tab>
+        <Tab eventKey="past" title="Past" style={{backgroundColor: 'white'}} >
+          <ToolkitProvider
+          keyField="student_id"
+          data={ this.state.past }
+          columns={ past }
+          search
+          >
+          {
+            props => (
+              <div>
+                <div class="containerAdmin admin-table">
+                <SearchBar { ...props.searchProps } style={searchBar} />
+                <br/>
+                {this.state.past.length == 0 ? <p>No Past Exams</p> :
+                <BootstrapTable
+                bootstrap4
+                { ...props.baseProps }
+                bodyClasses="tbodyContainer"
+                keyField='student_id'
+                data={this.state.past }
+                columns={ past }
+                pagination={ paginationFactory(tablePaginationOptionsPast) }
                 filter={ filterFactory() }/>
               }
               </div>

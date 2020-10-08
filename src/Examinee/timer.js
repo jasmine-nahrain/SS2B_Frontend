@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 
 class CountDownTimer extends React.Component {
     state = {
-        minutes: 0,
+        minutes: 60,
         seconds: 10,
     }
 
@@ -40,7 +40,7 @@ class CountDownTimer extends React.Component {
             <div>
                 { minutes === 0 && seconds === 0
                     ? window.location.href ='/examinee/login'
-                    : <h1 id='timer'>Time Remaining: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}</h1>
+                    : <h1 id='timer'>Time Remaining: {minutes }:{seconds < 10 ? `0${seconds}` : seconds}</h1>
                 }
             </div>
         )

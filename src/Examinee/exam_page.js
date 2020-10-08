@@ -24,6 +24,7 @@ class ExamPage extends React.Component {
     return (
       <div>
         <img src={logo} className="move" alt="logo" />
+        <h1 className = "Something"><b>Examination Page</b></h1>
         {this.state.isActive ? <CountDownTimer /> : null}
         <button
           type="button"

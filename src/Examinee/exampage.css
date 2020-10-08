@@ -1,0 +1,6 @@
+.move{
+    Display: flex !important;
+    justify-content: flex-start !important;
+    height: 150px;
+}
+

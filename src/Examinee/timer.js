@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 
 class CountDownTimer extends React.Component {
     state = {
-        minutes: 60,
+        minutes: 120,
         seconds: 10,
     }
 

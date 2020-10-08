@@ -9,6 +9,7 @@ import CreateExam from './Examiner/create_exam.js';
 import ExamRules from './Examinee/exam_rules.js';
 import ExamPage from './Examinee/exam_page.js';
 import ExaminerPortal from './Examiner/examiner_portal.js';
+import ExamineeEndPage from './Examinee/exam_endpage.js';
 
 class App extends Component {
   render() {
@@ -60,6 +61,12 @@ class App extends Component {
               <ExaminerPortal />
             </div> 
           )}/>
+          <Route exact={true} path='/examinee/endpage' render={() => (
+            <div className="App">
+              <ExamineeEndPage/>
+            </div> 
+          )}/>
+          
         </div>
       </BrowserRouter>
     );

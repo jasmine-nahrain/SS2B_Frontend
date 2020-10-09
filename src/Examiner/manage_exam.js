@@ -3,7 +3,10 @@ import React, { Component } from 'react';
 import { BrowserRouter, withRouter } from "react-router-dom";
 import styled from 'styled-components';
 import EditIcon from '../images/edit.svg';
-
+import { getExams } from '../api_caller.js';
+import CreateExam from './create_exam.js';
+import EditExam from './edit_exam.js';
+import {inProgress, getCurrentDate} from '../functions.js';
 // Main Components
 import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -12,7 +15,7 @@ import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search, CSVExport  } from 'react-bootstrap-table2-toolkit';
-import {Tab, Tabs} from 'react-bootstrap';
+import {Tab, Tabs, OverlayTrigger, Button} from 'react-bootstrap';
 
 const { SearchBar } = Search;
 const { ExportCSVButton } = CSVExport;
@@ -23,50 +26,27 @@ padding-top: 3%;
 const Dot = styled.span`
 height: 15px;
 width: 15px;
-box-shadow: 0px 1px 5px 1px ${props => (props.cellContent == true ? 'green' : 'red')};
-background-color: ${props => (props.cellContent == true ? 'green' : 'red')};
+box-shadow: 0px 1px 5px 1px ${props => (inProgress(props.cellContent) == true ? 'green' : 'red')};
+background-color: ${props => (inProgress(props.cellContent) == true ? 'green' : 'red')};
 border-radius: 50%;
 display: inline-block;
 `;
 
-// dummy data to use in the meantime.
-var graded_select = [
-  {
-  student_id: 23456,
-  student_fname: 'Jasmine',
-  student_lname: "Emanouel",
-  exam_id: 12345,
-  exam_name: "3456ygv",
-  exam_date: "12/11/2023",
-  subject: "ftyuhjbv"
-},
-{
-student_id: 1234567,
-student_fname: 'Clark',
-student_lname: "Kent",
-exam_id: 12345,
-exam_name: "3456ygv",
-exam_date: "1/1/2021",
-subject: "ftyuhjbv"
-},
-{
-student_id: 838383883,
-student_fname: 'Julia',
-student_lname: "Gillard",
-exam_id: 654,
-exam_name: "rdxcbg",
-exam_date: "12/11/2020",
-subject: "chgsddd",
-status: true,
-}
-];
+const A = styled.a`
+visibility: ${props => (inProgress(props.cellContent) == true ? 'hidden' : 'visible')};
+`;
 
 var upcoming_exams = [{
   dataField: 'edit',
   sort: true,
   headerStyle: {background: '#007bff', color: 'white', width: "5%"},
+  events: {
+    onClick: (e, column, columnIndex, row) => {
+        localStorage.setItem('exam', JSON.stringify(row));
+    },
+  },
   formatter: (cellContent, row) => (
-    <a href="/"><img src={EditIcon} /></a>
+    <A href="/examiner/edit" cellContent={row}><img src={EditIcon} /></A>
   ),
 }, {
   dataField: 'exam_id',
@@ -79,12 +59,22 @@ var upcoming_exams = [{
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
 }, {
-  dataField: 'exam_date',
-  text: 'Exam Date',
+  dataField: 'start_date',
+  text: 'Start Date',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
+},{
+  dataField: 'duration',
+  text: 'Duration',
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
 }, {
-  dataField: 'subject',
+  dataField: 'login_code',
+  text: 'Login Code',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
+}, {
+  dataField: 'subject_id',
   text: 'Subject',
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
@@ -94,7 +84,7 @@ var upcoming_exams = [{
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'},
   formatter: (cellContent, row) => (
-    <Dot cellContent={cellContent}/ >
+    <Dot cellContent={row}/ >
   ),
 }]
 var past_exams = [ {
@@ -108,18 +98,20 @@ var past_exams = [ {
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
 }, {
-  dataField: 'subject',
-  text: 'Subject',
+  dataField: 'start_date',
+  text: 'Start Date',
+  sort: true,
+  headerStyle: {background: '#007bff', color: 'white'}
+},{
+  dataField: 'end_date',
+  text: 'End Date',
   sort: true,
   headerStyle: {background: '#007bff', color: 'white'}
 }, {
-  dataField: 'status',
-  text: 'Status',
+  dataField: 'subject_id',
+  text: 'Subject ID',
   sort: true,
-  headerStyle: {background: '#007bff', color: 'white'},
-  formatter: (cellContent, row) => (
-    <Dot cellContent={cellContent}/ >
-  ),
+  headerStyle: {background: '#007bff', color: 'white'}
 }]
 
 // Gets the length of the payload data to determine roof of pagination.
@@ -136,56 +128,81 @@ class ManageExam extends Component {
   constructor(props) {
     super(props);
 
+    this.seperateExamLists = this.seperateExamLists.bind(this);
+
     this.state = {
-      table_data: []
+      upcomingExams: [],
+      pastExams: [],
     };
   }
 
   async componentDidMount() {
     // Gets data before the render
-    // const is_admin = parseInt(localStorage.getItem('is_admin'));
-    // if (!is_admin) window.location.href = '/';
-    // else {
-    // this.setState({
-    //   table_data: data
-    // });
-    // Needs to be defined at this point because only now do we have a length for table_data
-    tablePaginationOptions = {
-      paginationSize: 4,
-      pageStartIndex: 0,
-      firstPageText: 'First',
-      prePageText: 'Back',
-      nextPageText: 'Next',
-      lastPageText: 'Last',
-      nextPageTitle: 'First page',
-      prePageTitle: 'Pre page',
-      firstPageTitle: 'Next page',
-      lastPageTitle: 'Last page',
-      showTotal: true,
-      paginationTotalRenderer: customTotal,
-      disablePageTitle: true,
-      sizePerPageList: [{
-        text: '5', value: 5
-      }, {
-        text: '10', value: 10
-      }, {
-        text: 'All', value: this.state.table_data.length
-      }]
-    };
-    // }
+    const data = await getExams();
+    this.seperateExamLists(data);
+
+    const is_examiner = parseInt(localStorage.getItem('is_examiner'));
+    if (!is_examiner) window.location.href = '/examinee/redirect';
+    else {
+      // Needs to be defined at this point because only now do we have a length for table_data
+      tablePaginationOptions = {
+        paginationSize: 4,
+        pageStartIndex: 0,
+        firstPageText: 'First',
+        prePageText: 'Back',
+        nextPageText: 'Next',
+        lastPageText: 'Last',
+        nextPageTitle: 'First page',
+        prePageTitle: 'Pre page',
+        firstPageTitle: 'Next page',
+        lastPageTitle: 'Last page',
+        showTotal: true,
+        paginationTotalRenderer: customTotal,
+        disablePageTitle: true,
+        sizePerPageList: [{
+          text: '5', value: 5
+        }, {
+          text: '10', value: 10
+        }]
+      };
+    }
+  }
+
+  seperateExamLists(data) {
+    var upcomingExamList = [];
+    var pastExamList = [];
+    var currentDate = getCurrentDate();
+      console.log(parseInt(currentDate[1]))
+      for(var i = 0; i < data.exams.length; i++) {
+        var start_date = data.exams[i].start_date.split('-');
+        const day = start_date[2].split(" ")
+        console.log(start_date);
+         if(parseInt(day[0]) >= parseInt(currentDate[0]) && parseInt(start_date[1]) == parseInt(currentDate[1]) &&
+           parseInt(start_date[0]) >= parseInt(currentDate[2])) {
+               //if in current month
+             upcomingExamList.push(data.exams[i]);
+         } else if(parseInt(start_date[1]) > parseInt(currentDate[1]) &&
+           parseInt(start_date[0]) >= parseInt(currentDate[2])) {
+             //if in future month
+              upcomingExamList.push(data.exams[i]);
+          } else {
+            pastExamList.push(data.exams[i]);
+          }
+      }
+      this.setState({
+        upcomingExams: upcomingExamList,
+        pastExams: pastExamList,
+      });
   }
 
   render() {
-
-
     const defaultSorted = [{
-        dataField: 'exam_date',
+        dataField: 'start_date',
         order: 'asc'
     }];
 
-    // const admin_id = getUserID(false);
-    // const is_admin = parseInt(localStorage.getItem('is_admin'));
-    // if (admin_id && is_admin) {
+    const is_examiner = parseInt(localStorage.getItem('is_examiner'));
+    if (is_examiner) {
     return (
       <BrowserRouter>
       <div className="App">
@@ -194,11 +211,11 @@ class ManageExam extends Component {
         <hr style={{width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/>
       </Header>
       <br/>
-      <Tabs defaultActiveKey="upcoming" id="uncontrolled-tab-example" style={{width: '90%', marginLeft: 'auto', marginRight: 'auto'}}>
+      <Tabs defaultActiveKey="upcoming" id="manage" style={{width: '90%', marginLeft: 'auto', marginRight: 'auto'}}>
         <Tab eventKey="upcoming" title="Upcoming" style={{backgroundColor: 'white'}} >
         <ToolkitProvider
         keyField="student_id"
-        data={ graded_select }
+        data={ this.state.upcomingExams }
         columns={ upcoming_exams }
         search
         exportCSV={{
@@ -213,15 +230,15 @@ class ManageExam extends Component {
               <div class="containerAdmin admin-table">
                 <br/>
                 <ExportCSVButton class="btn btn-primary" { ...props.csvProps } style={{float:'left', marginRight: '10px'}}>Export CSV</ExportCSVButton>
-                <button class="btn btn-primary" style={{float:'left'}}>Create New Exam</button>
-                <SearchBar { ...props.searchProps }/>
+                <a href='/examiner/create'><button class="btn btn-primary" style={{float:'left'}}>Create New Exam</button></a>
+                <SearchBar { ...props.searchProps } className="manage search"/>
                 <br/>
                 <BootstrapTable
                   bootstrap4
                   { ...props.baseProps }
                   bodyClasses="tbodyContainer"
                   keyField='student_id'
-                  data={graded_select }
+                  data={this.state.upcomingExams }
                   columns={ upcoming_exams }
                   pagination={ paginationFactory(tablePaginationOptions) }
                   hover
@@ -237,7 +254,7 @@ class ManageExam extends Component {
         <Tab eventKey="past" title="Past">
         <ToolkitProvider
         keyField="student_id"
-        data={ graded_select }
+        data={ this.state.pastExams }
         columns={ past_exams }
         search
         exportCSV={{
@@ -259,7 +276,7 @@ class ManageExam extends Component {
             { ...props.baseProps }
             bodyClasses="tbodyContainer"
             keyField='student_id'
-            data={graded_select }
+            data={this.state.pastExams }
             columns={ past_exams }
             pagination={ paginationFactory(tablePaginationOptions) }
             defaultSorted={ defaultSorted }
@@ -275,8 +292,8 @@ class ManageExam extends Component {
       </div>
       </BrowserRouter>
     );
-    // } else {
-    //   window.location.href = '/';
-    // }
+    } else {
+      window.location.href = '/examinee/redirect';
+    }
   }
 } export default withRouter(ManageExam);

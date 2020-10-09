@@ -4,8 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
-import {getUserID, getDate, getTime} from '../functions.js'
-import {createExam} from '../api_caller.js';
+import logo from '../images/logo.png';
+import {getUserID, getMonth, getTime, getDate} from '../functions.js'
+import {editExam, deleteExam} from '../api_caller.js';
 
 const Body = styled.body`
   background-color: rgba(0,0,0,0);
@@ -27,33 +28,65 @@ const Text = styled.span`
   vertical-align: text-top;
   `;
 
-class CreateExam extends Component {
+class EditExam extends Component {
 
   constructor(props) {
     super(props);
 
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeStartDate = this.onChangeStartDate.bind(this);
+    this.onChangeEndDate = this.onChangeEndDate.bind(this);
     this.onChangeStartTime = this.onChangeStartTime.bind(this);
+    this.onChangeEndTime = this.onChangeEndTime.bind(this);
+    this.onChangeSubjectID = this.onChangeSubjectID.bind(this);
     this.onChangeDurationHours = this.onChangeDurationHours.bind(this);
     this.onChangeDurationMinutes = this.onChangeDurationMinutes.bind(this);
-    this.onChangeSubjectID = this.onChangeSubjectID.bind(this);
-    this.onChangeEndDate = this.onChangeEndDate.bind(this);
-    this.onChangeEndTime = this.onChangeEndTime.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onDelete = this.onDelete.bind(this);
 
     this.state = {
-      name: '',
-      start_date: Date,
-      end_date: Date,
-      start_time: new Date(),
-      end_time: Date,
+      name: "",
+      start_date: "",
+      end_date: "",
+      start_time: "",
+      end_time: "",
       exam_id: Number,
       subjectID: Number,
       duration_hours: Number,
       duration_minutes: Number,
+      can_edit_exam: true,
     }
-    console.log(this.state);
+  }
+
+  async componentDidMount() {
+    const exam = JSON.parse(localStorage.getItem('exam'));
+    var start_date = exam.start_date.split(" ");
+    var end_date = exam.start_date.split(" ");
+    var duration = exam.duration.split(':');
+    var currentDate = new Date();
+    var has_started = start_date[0].split('-');
+    for(var i = 0; i < has_started.length; i++) {
+      has_started[i] = parseInt(has_started[i]);
+    }
+    if(has_started[0] >= currentDate.getYear() && has_started[1] >= currentDate.getMonth() &&
+      has_started[0] >= currentDate.getDay()) {
+         this.setState({can_edit_exam: true});
+     } else {
+       this.setState({can_edit_exam: false});
+     }
+    this.setState({
+      name: exam.exam_name,
+      start_date: start_date[0],
+      end_date: end_date[0],
+      start_time: start_date[1],
+      end_time: end_date[1],
+      exam_id: exam.exam_id,
+      subjectID: exam.subject_id,
+      duration_hours: duration[0],
+      duration_minutes: duration[1],
+    });
+
+    console.log(exam);
   }
 
   onChangeName(e) {
@@ -65,12 +98,21 @@ class CreateExam extends Component {
     this.setState({
       start_date: e.target.value
     });
+    console.log(e.target.value)
+  }
+  onChangeEndDate(e) {
+    this.setState({
+      end_date: e.target.value
+    });
   }
   onChangeStartTime(e) {
-    console.log(e.target.value)
-
     this.setState({
       start_time: e.target.value
+    });
+  }
+  onChangeEndTime(e) {
+    this.setState({
+      end_time: e.target.value
     });
   }
 
@@ -90,36 +132,28 @@ onChangeDurationMinutes(e) {
   });
 }
 
-onChangeEndDate(e) {
-  this.setState({
-    end_date: e.target.value
-  });
-}
-
-onChangeEndTime(e) {
-  this.setState({
-    end_time: e.target.value
-  });
-}
-
-
   onSubmit = async (e) => {
     e.preventDefault();
 
     let start_date = getDate(this.state.start_date, this.state.start_time);
     const duration = getTime(this.state.duration_hours, this.state.duration_minutes);
     let end_date = getDate(this.state.end_date, this.state.end_time);
-    let parsedData = createExam(this.state.name, this.state.subjectID, start_date, end_date, duration);
 
-    if(parsedData) {
-      alert("Successfully created exam.");
-      window.location.href = '/examiner/manage';
+    editExam(this.state.exam_id, this.state.name, this.state.subjectID, start_date, end_date, duration);
+  }
+
+  onDelete = async (e) => {
+    if(window.confirm("Are you sure you want to delete exam #" + this.state.exam_id)) {
+      deleteExam(this.state.exam_id);
+      window.location.href = '/examiner/manage'
+    } else {
+      return;
     }
   }
 
   render() {
     const is_examiner = parseInt(localStorage.getItem('is_examiner'));
-    if (is_examiner) {
+    if (this.state.can_edit_exam && is_examiner) {
     const today = new Date().toISOString().split("T")[0];
     return (
       <BrowserRouter>
@@ -127,7 +161,7 @@ onChangeEndTime(e) {
           <Body>
             <Form className="create-exam-background" onSubmit={this.onSubmit}>
               <Title style={{ textAlign: "center" }}>
-                <Text>Create a New Exam</Text>
+                <Text>Edit Exam #{this.state.exam_id}</Text>
               </Title>
 
               <Col>
@@ -139,14 +173,13 @@ onChangeEndTime(e) {
                   <Form.Control type="number" name="name" placeholder="Subject ID" value={this.state.subjectID} onChange={this.onChangeSubjectID} required />
                 </Form.Group>
 
-                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
+                <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
                     <Form.Label>Start Date</Form.Label>
                     <Form.Control
                       type="date"
                       min={today}
                       name="start_date"
                       placeholder="Start Date"
-                      dateFormat="yyyy/MM/dd"
                       value={this.state.start_date}
                       onChange={this.onChangeStartDate}
                       required />
@@ -164,6 +197,7 @@ onChangeEndTime(e) {
                       onChange={this.onChangeStartTime}
                       required />
                   </Form.Group>
+
                   <Form.Group controlId="formStudentID" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
                    <Form.Label>End Date</Form.Label>
                    <Form.Control
@@ -208,9 +242,8 @@ onChangeEndTime(e) {
                   </Form.Group>
               </Col>
 
-              <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>
-                Register
-          </Button>
+              <Button variant="outline-dark" type="submit" className="button" style={{width: '100%', marginBottom: '1%'}}>Update</Button>
+              <Button variant="outline-danger" onClick={this.onDelete} className="button" style={{width: '100%'}}>Delete</Button>
             </Form>
           </Body>
         </div>
@@ -220,4 +253,4 @@ onChangeEndTime(e) {
     window.location.href = '/examinee/redirect';
   }
   }
-} export default withRouter(CreateExam);
+} export default withRouter(EditExam);

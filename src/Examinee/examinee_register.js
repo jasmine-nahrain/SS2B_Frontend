@@ -5,6 +5,7 @@ import { Form, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
+import { register, isValidPassword } from './userInfo';
 
 const Body = styled.body`
   background-color: white;
@@ -33,18 +34,16 @@ class ExamineeRegister extends Component {
 
     this.onChangeFirstName = this.onChangeFirstName.bind(this);
     this.onChangeLastName = this.onChangeLastName.bind(this);
-    this.onChangeStudentID = this.onChangeStudentID.bind(this);
-    this.onChangeEmail = this.onChangeEmail.bind(this);
+    this.onChangeUserID = this.onChangeUserID.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
     this.onChangeConfirmPassword = this.onChangeConfirmPassword.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
       studentID: '',
-      is_admin: '',
+      is_examiner: '',
       fname: '',
       lname: '',
-      email: '',
       password: '',
       confirmPassword: '',
       confirmAdmin: '',
@@ -66,15 +65,9 @@ class ExamineeRegister extends Component {
     });
   }
 
-  onChangeStudentID(e) {
+  onChangeUserID(e) {
     this.setState({
-      studentID: e.target.value
-    });
-  }
-
-  onChangeEmail(e) {
-    this.setState({
-      email: e.target.value
+      userID: e.target.value
     });
   }
 
@@ -93,42 +86,36 @@ class ExamineeRegister extends Component {
   onSubmit = async (e) => {
     e.preventDefault();
 
-    // const newUser = {
-    //   // need to add admin registration
-    //   student_id: this.state.studentID,
-    //   is_admin: 0,
-    //   first_name: this.state.fname,
-    //   last_name: this.state.lname,
-    //   email: this.state.email,
-    //   password: this.state.password,
-    //   confirm_admin: "unconfirmed"
-    // }
+    const newUser = {
+      // need to add admin registration
+      user_id: this.state.userID,
+      is_examiner: 0,
+      first_name: this.state.fname,
+      last_name: this.state.lname,
+      password: this.state.password,
+    }
 
-    // const invalid_password = !isValidPassword(this.state.password);
-    // const mismatched_password = this.state.password !== this.state.confirmPassword;
-    //let invalid_details = mismatched_password || invalid_password;
+    const invalid_password = !isValidPassword(this.state.password);
+    const mismatched_password = this.state.password !== this.state.confirmPassword;
+    let invalid_details = mismatched_password || invalid_password;
 
-    // if (!invalid_details) {
-    //   // create new account
-    // }
-
-    // this.setState({
-    //   mismatched_password: mismatched_password,
-    //   invalid_password: invalid_password,
-    //   invalid_details: invalid_details
-    // });
+    if (!invalid_details) {
+      // create new account
+      const registered = await register(newUser);
+        if (registered) {
+          alert('Your account was successfully created!');
+          this.props.history.push('/');
+        } else {
+          invalid_details = true;
+        }
+    } else {
+      this.setState({
+        mismatched_password: mismatched_password,
+        invalid_password: invalid_password,
+        invalid_details: invalid_details
+      });
+    }
   }
-
-/**
-Removed HTML that can be added back later
-<a style={this.state.invalid_details ? { textAlign: 'center', color: 'red' } : { visibility: 'hidden' }} >
-  <h5 >
-    {this.state.invalid_password ? ("Password needs to be at least 8 characters long with at least 1 number.")
-      : this.state.mismatched_password ? ("Password does not match.")
-        : ("An account with this student ID/email exists.")}
-  </h5>
-</a>
-*/
 
   render() {
     return (
@@ -148,12 +135,8 @@ Removed HTML that can be added back later
                 <Form.Control type="text" name="lname" placeholder="Last Name" value={this.state.lname} onChange={this.onChangeLastName} required />
               </Form.Group>
 
-              <Form.Group controlId="formStudentID">
-                <Form.Control type="number" name="studentID" min="10000" max="9999999999" placeholder="Student ID" value={this.state.studentID} onChange={this.onChangeStudentID} required />
-              </Form.Group>
-
-              <Form.Group controlId="formEmail">
-                <Form.Control type="email" name="email" placeholder="Student Email" value={this.state.email} onChange={this.onChangeEmail} required />
+              <Form.Group controlId="formUserID">
+                <Form.Control type="number" name="userID" min="10000" max="9999999999" placeholder="Student ID" value={this.state.userID} onChange={this.onChangeUserID} required />
               </Form.Group>
 
               <Form.Group controlId="formPassword">
@@ -165,7 +148,14 @@ Removed HTML that can be added back later
               </Form.Group>
               <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>
                 Register
-          </Button>
+              </Button>
+              <a style={this.state.invalid_details ? { textAlign: 'center', color: 'red', fontSize: '12px' } : { visibility: 'hidden' }} >
+                <p>
+                  {this.state.invalid_password ? ("Password needs to be at least 8 characters long with at least 1 number.")
+                    : this.state.mismatched_password ? ("Password does not match.")
+                      : ("An account with this student ID/email exists.")}
+                </p>
+              </a>
             </Form>
             <div style={{padding:"0.5%"}}>
               <hr />

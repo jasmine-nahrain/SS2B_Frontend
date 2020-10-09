@@ -152,9 +152,8 @@ onChangeDurationMinutes(e) {
   }
 
   render() {
-    // const admin_id = getUserID(false);
-    // const is_admin = parseInt(localStorage.getItem('is_admin'));
-    if (this.state.can_edit_exam) {
+    const is_examiner = parseInt(localStorage.getItem('is_examiner'));
+    if (this.state.can_edit_exam && is_examiner) {
     const today = new Date().toISOString().split("T")[0];
     return (
       <BrowserRouter>
@@ -251,7 +250,7 @@ onChangeDurationMinutes(e) {
       </BrowserRouter>
     );
   } else {
-    window.location.href = '/examiner/manage';
+    window.location.href = '/examinee/redirect';
   }
   }
 } export default withRouter(EditExam);

@@ -1,6 +1,6 @@
 import "detectrtc/DetectRTC.js";
 import io from "socket.io-client";
-// import './scripts/adapter-latest.js';
+// import './adapter-latest.js';
 import "./IceServersHandler.js";
 import "./CodecsHandler.js";
 import "rtcpeerconnection/rtcpeerconnection.js";
@@ -15,7 +15,7 @@ document.createElement("footer");
 
 var config = {
   openSocket: function (config) {
-    console.log(new Date());
+    console.log("1");
     var SIGNALING_SERVER = 'http://localhost:3000'; //"https://socketio-over-nodejs2.herokuapp.com:443/";
 
     config.channel = config.channel || localStorage.getItem("exam_id"); //examId signifies exam being taken/exam being viewed
@@ -50,9 +50,11 @@ var config = {
     };
 
     socket.on("message", config.onmessage);
+    console.log(socket)
   },
   onRemoteStream: function (htmlElement) {
     videosContainer.appendChild(htmlElement);
+    console.log(htmlElement);
   },
   onRoomFound: function (room) {
     var alreadyExist = document.querySelector(
@@ -69,6 +71,7 @@ var config = {
       "</strong> is broadcasting his media!</td>" +
       '<td><button class="join">Join</button></td>';
     roomsList.appendChild(tr);
+    console.log(room.roomName);
 
     var joinRoomButton = tr.querySelector(".join");
     joinRoomButton.setAttribute("data-broadcaster", room.broadcaster);
@@ -109,13 +112,13 @@ export function setupNewBroadcastButtonClickHandler() {
     });
     hideUnnecessaryStuff();
   });
-  console.log(DetectRTC);
 }
 
 function captureUserMedia(callback) {
-  console.log(new Date());
   var constraints = null;
   var option = broadcastingOption ? broadcastingOption.value : "";
+  var video = document.querySelector('video');
+
 
   if (
     option != "Only Audio" &&
@@ -146,11 +149,11 @@ function captureUserMedia(callback) {
 
   var mediaConfig = {
     video: htmlElement,
+    audio: true,
     onsuccess: function (stream) {
       config.attachStream = stream;
-
+      videosContainer.srcObject = stream;
       videosContainer.appendChild(htmlElement);
-
       callback && callback();
     },
     onerror: function () {
@@ -166,8 +169,16 @@ function captureUserMedia(callback) {
       } else alert("unable to get access to your webcam");
     },
   };
+
   if (constraints) mediaConfig.constraints = constraints;
-  navigator.mediaDevices.getUserMedia(mediaConfig);
+  navigator.mediaDevices.getUserMedia(mediaConfig)
+  .then(function(stream) {
+    video.srcObject = stream;
+      config.attachStream = stream;
+    htmlElement.setAttribute('src', stream);
+    console.log(stream)
+    console.log(htmlElement)
+  });
 }
 
 var broadcastUI = broadcast(config);
@@ -180,8 +191,8 @@ var roomsList = document.getElementById("rooms-list");
 
 var broadcastingOption = document.getElementById("broadcasting-option");
 
-if (setupNewBroadcast)
-  setupNewBroadcast.onclick = setupNewBroadcastButtonClickHandler();
+// if (setupNewBroadcast)
+//   setupNewBroadcast.onclick = setupNewBroadcastButtonClickHandler();
 
 function hideUnnecessaryStuff() {
   var visibleElements = document.getElementsByClassName("visible"),

@@ -51,11 +51,23 @@ export const getExams = async () => {
 API GET EXAMINEES to return list of exams
 Status codes: 200 OK
 */
-export const getExaminees = async () => {
+export const getExaminees = async (parameters=null) => {
     try {
-        const url = proxy + "examiner/examinee";
+
         let token = localStorage.getItem('token');
         if (token === null) throw new MissingTokenError();
+
+        let params = '?';
+        if (parameters !== null) {
+            
+            for (var k in parameters) {
+                if (parameters.hasOwnProperty(k)) {
+                   params += "&"+k+"="+parameters[k];
+                }
+            }
+        }
+        const url = proxy + "examiner/examinee" + params;
+
         const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -63,15 +75,16 @@ export const getExaminees = async () => {
                 "Authorization": token
             },
         });
-
+        console.log(parameters);
         let parsedData = await response.json();
         const status = response.status;
 
-        //console.log('parsedData:', parsedData);
-        //console.log('status:', status);
+        console.log('parsedData:', parsedData);
+        console.log('status:', status);
         if (status === 200) return parsedData;
 
     } catch (error) {
+        console.error(error.stack || error);
         console.log(error);
         alert(`An error occured: "${error}"`);
     }

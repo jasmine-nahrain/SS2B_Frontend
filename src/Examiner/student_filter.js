@@ -10,7 +10,8 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
-import ToolkitProvider, { Search, CSVExport  } from 'react-bootstrap-table2-toolkit';
+import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
+import { Form } from 'react-bootstrap';
 
 const { SearchBar } = Search;
 const { ExportCSVButton } = CSVExport;
@@ -27,11 +28,11 @@ var table_columns = [{
   sort: true
 }, {
   dataField: 'first_name',
-  text: 'Student First Name',
+  text: 'First Name',
   sort: true
 }, {
   dataField: 'last_name',
-  text: 'Student Last Name',
+  text: 'Last Name',
   sort: true,
 }, {
   dataField: 'view',
@@ -49,7 +50,7 @@ var table_columns = [{
 // Gets the length of the payload data to determine roof of pagination.
 const customTotal = (from, to, size) => (
   <span className="react-bootstrap-table-pagination-total">
-  Showing { from } to { to } of { size } Results
+    Showing { from} to { to} of { size} Results
   </span>
 );
 
@@ -59,11 +60,36 @@ class StudentFilter extends Component {
 
   constructor(props) {
     super(props);
-    this.getExaminees = this.getExaminees.bind(this);
+    this.processExaminees = this.processExaminees.bind(this);
+    this.getFilteredExaminees = this.getFilteredExaminees.bind(this);
+    this.onChangeFirstName = this.onChangeFirstName.bind(this);
+    this.onChangeLastName = this.onChangeLastName.bind(this);
+    this.onChangeID = this.onChangeID.bind(this);
 
     this.state = {
-      table_data: []
+      table_data: [],
+      student_id: "",
+      first_name: "",
+      last_name: ""
     };
+  }
+
+  onChangeFirstName(e) {
+    this.setState({
+      first_name: e.target.value
+    });
+  }
+
+  onChangeLastName(e) {
+    this.setState({
+      last_name: e.target.value
+    });
+  }
+
+  onChangeID(e) {
+    this.setState({
+      student_id: e.target.value
+    });
   }
 
   async componentDidMount() {
@@ -71,8 +97,8 @@ class StudentFilter extends Component {
     const is_examiner = parseInt(localStorage.getItem('is_examiner'));
     if (!is_examiner) window.location.href = '/examinee/redirect';
     else {
-      const data = await getExaminees();
-      this.getExaminees(data);
+      const data = await this.getFilteredExaminees();
+      this.processExaminees(data);
 
       // Needs to be defined at this point because only now do we have a length for table_data
       tablePaginationOptions = {
@@ -100,19 +126,31 @@ class StudentFilter extends Component {
     }
   }
 
-  getExaminees(data) {
+  processExaminees = async(data) => {
     var examinees = [];
-    for(var i = 0; i < data.users.length; i++) {
-      if(data.users[i].is_examiner == 0) {
+    for (var i = 0; i < data.users.length; i++) {
+      if (data.users[i].is_examiner == 0) {
         examinees.push(data.users[i]);
       }
     }
-    console.log(examinees)
+    //console.log(examinees)
 
     this.setState({
       table_data: examinees
     });
 
+  }
+
+  getFilteredExaminees = async () => {
+    let parameters = {
+      'user_id': this.state.student_id,
+      'first_name': this.state.first_name,
+      'last_name': this.state.last_name,
+      'is_examiner':false
+    };
+    let data = await getExaminees(parameters);
+    await this.processExaminees(data);
+    return data;
   }
 
   render() {
@@ -125,44 +163,54 @@ class StudentFilter extends Component {
     }
 
     const is_examiner = parseInt(localStorage.getItem('is_examiner'));
-    if (is_examiner == 1) {
-    return (
-      <BrowserRouter>
-      <div className="App">
-      <ToolkitProvider
-      keyField="student_id"
-      data={ this.state.table_data }
-      columns={ table_columns }
-      search
-      >
-      {
-        props => (
-          <div>
-          <Header >
-            <h1>Student List</h1>
-            <SearchBar { ...props.searchProps } style={searchBar} />
-          </Header>
-          <div class="containerAdmin admin-table">
-          <br/>
-          <BootstrapTable
-          bootstrap4
-          { ...props.baseProps }
-          bodyClasses="tbodyContainer"
-          keyField='student_id'
-          data={this.state.table_data }
-          columns={ table_columns }
-          pagination={ paginationFactory(tablePaginationOptions) }
-          filter={ filterFactory() }  />
-          <ExportCSVButton class="btn btn-primary" { ...props.csvProps }>Export CSV</ExportCSVButton>
-          </div>
-          </div>
+    if (is_examiner) {
+      return (
+        <BrowserRouter>
+          <div className="App">
+            <ToolkitProvider
+              keyField="student_id"
+              data={this.state.table_data}
+              columns={table_columns}
+              search
+            >
+              {
+                props => (
+                  <div>
+                    <Header >
+                      <h1>Student List</h1>
+                      <SearchBar {...props.searchProps} style={searchBar} />
+                      <Form.Group controlId="formId">
+                        <Form.Control style={searchBar} type="number" name="student_id" placeholder="Student ID" value={this.state.student_id} onChange={this.onChangeID}/>
+                      </Form.Group>
+                      <Form.Group controlId="formId">
+                        <Form.Control style={searchBar} type="text" name="first_name" placeholder="First Name" value={this.state.first_name} onChange={this.onChangeFirstName}/>
+                      </Form.Group>
+                      <Form.Group controlId="formId">
+                        <Form.Control style={searchBar} type="text" name="last_name" placeholder="Last Name" value={this.state.last_name} onChange={this.onChangeLastName}/>
+                      </Form.Group>
+                        <button type="submit" onClick={this.getFilteredExaminees}></button>
+                    </Header>
+                    <div class="containerAdmin admin-table">
+                      <br />
+                      <BootstrapTable
+                        bootstrap4
+                        {...props.baseProps}
+                        bodyClasses="tbodyContainer"
+                        keyField='student_id'
+                        data={this.state.table_data}
+                        columns={table_columns}
+                        pagination={paginationFactory(tablePaginationOptions)}
+                        filter={filterFactory()} />
+                      <ExportCSVButton class="btn btn-primary" {...props.csvProps}>Export CSV</ExportCSVButton>
+                    </div>
+                  </div>
 
-        )
-      }
-      </ToolkitProvider>
-      </div>
-      </BrowserRouter>
-    );
+                )
+              }
+            </ToolkitProvider>
+          </div>
+        </BrowserRouter>
+      );
     } else {
       window.location.href = '/examinee/redirect';
     }

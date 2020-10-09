@@ -75,12 +75,12 @@ export const getExaminees = async (parameters=null) => {
                 "Authorization": token
             },
         });
-        console.log(parameters);
+        // console.log(parameters);
         let parsedData = await response.json();
         const status = response.status;
 
-        console.log('parsedData:', parsedData);
-        console.log('status:', status);
+        // console.log('parsedData:', parsedData);
+        // console.log('status:', status);
         if (status === 200) return parsedData;
 
     } catch (error) {

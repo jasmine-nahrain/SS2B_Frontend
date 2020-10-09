@@ -8,6 +8,9 @@ import ManageExam from './Examiner/manage_exam.js';
 import CreateExam from './Examiner/create_exam.js';
 import EditExam from './Examiner/edit_exam.js';
 import ExamRules from './Examinee/exam_rules.js';
+import ExamPage from './Examinee/exam_page.js';
+import ExaminerPortal from './Examiner/examiner_portal.js';
+import ExamineeEndPage from './Examinee/exam_endpage.js';
 import Redirect from './Examinee/redirect_page.js';
 import VideoStreaming from './Examiner/video_streaming.js';
 
@@ -55,6 +58,21 @@ class App extends Component {
             <div className="App">
               <ExamRules />
             </div>
+          )}/>
+          <Route exact={true} path='/examinee/exam' render={() => (
+            <div className="App">
+              <ExamPage />
+            </div> 
+          )}/>
+           <Route exact={true} path='/examiner/portal' render={() => (
+            <div className="App">
+              <ExaminerPortal />
+            </div> 
+          )}/>
+          <Route exact={true} path='/examinee/endpage' render={() => (
+            <div className="App">
+              <ExamineeEndPage/>
+            </div> 
           )}/>
           <Route exact={true} path='/examinee/redirect' render={() => (
             <div className="App">

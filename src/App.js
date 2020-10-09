@@ -62,6 +62,8 @@ class App extends Component {
           <Route exact={true} path='/examinee/deskcheck' render={() => (
             <div className="App">
               <PersonalDeskCheck/>
+            </div>
+          )}/>
           <Route exact={true} path='/examinee/exam' render={() => (
             <div className="App">
               <ExamPage />

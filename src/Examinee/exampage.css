@@ -1,0 +1,9 @@
+.move {
+    display:flex;
+    height: 125px;
+}
+
+.Something {
+    display:flex;
+    right: 80px;
+}

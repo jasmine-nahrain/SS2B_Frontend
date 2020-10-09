@@ -44,7 +44,7 @@ export const getExams = async () => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return [[]];
+    return {'exams':[], 'next_page_exists':false};
 }
 
 /*
@@ -75,7 +75,7 @@ export const getExaminees = async () => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return [[]];
+    return {'users':[], 'next_page_exists':false};;
 }
 
 /*
@@ -154,6 +154,7 @@ export const editExam = async (exam_id, exam_name, subject_id, start_date, end_d
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
+    return null;
 }
 
 /*
@@ -239,7 +240,7 @@ export const getExamRecording = async () => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return [[]];
+    return {'exam_recordings':[], 'next_page_exists':false};
 }
 
 /*
@@ -277,6 +278,7 @@ export const createExamRecording = async (exam_id, user_id, time_started) => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
+    return null;
 }
 
 
@@ -314,6 +316,7 @@ export const editExamRecording = async (action, exam_recording_id) => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
+    return null;
 }
 
 /*
@@ -380,7 +383,7 @@ export const getExamWarning = async () => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return [[]];
+    return {'exam_warnings':[], 'next_page_exists':false};
 }
 
 /*
@@ -418,6 +421,7 @@ export const createExamWarning = async (exam_recording_id, warning_time, descrip
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
+    return null;
 }
 
 
@@ -456,6 +460,7 @@ export const editExamWarning = async (exam_warning_id, warning_time, description
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
+    return null;
 }
 
 /*

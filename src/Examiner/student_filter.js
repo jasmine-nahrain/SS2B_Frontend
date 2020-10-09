@@ -68,36 +68,36 @@ class StudentFilter extends Component {
 
   async componentDidMount() {
     // Gets data before the render
-    // const is_admin = parseInt(localStorage.getItem('is_admin'));
-    // if (!is_admin) window.location.href = '/';
-    // else {
-    const data = await getExaminees();
-    this.getExaminees(data);
+    const is_examiner = parseInt(localStorage.getItem('is_examiner'));
+    if (!is_examiner) window.location.href = '/examinee/redirect';
+    else {
+      const data = await getExaminees();
+      this.getExaminees(data);
 
-    // Needs to be defined at this point because only now do we have a length for table_data
-    tablePaginationOptions = {
-      paginationSize: 4,
-      pageStartIndex: 0,
-      firstPageText: 'First',
-      prePageText: 'Back',
-      nextPageText: 'Next',
-      lastPageText: 'Last',
-      nextPageTitle: 'First page',
-      prePageTitle: 'Pre page',
-      firstPageTitle: 'Next page',
-      lastPageTitle: 'Last page',
-      showTotal: true,
-      paginationTotalRenderer: customTotal,
-      disablePageTitle: true,
-      sizePerPageList: [{
-        text: '5', value: 5
-      }, {
-        text: '10', value: 10
-      }, {
-        text: 'All', value: this.state.table_data.length
-      }]
-    };
-    // }
+      // Needs to be defined at this point because only now do we have a length for table_data
+      tablePaginationOptions = {
+        paginationSize: 4,
+        pageStartIndex: 0,
+        firstPageText: 'First',
+        prePageText: 'Back',
+        nextPageText: 'Next',
+        lastPageText: 'Last',
+        nextPageTitle: 'First page',
+        prePageTitle: 'Pre page',
+        firstPageTitle: 'Next page',
+        lastPageTitle: 'Last page',
+        showTotal: true,
+        paginationTotalRenderer: customTotal,
+        disablePageTitle: true,
+        sizePerPageList: [{
+          text: '5', value: 5
+        }, {
+          text: '10', value: 10
+        }, {
+          text: 'All', value: this.state.table_data.length
+        }]
+      };
+    }
   }
 
   getExaminees(data) {
@@ -125,7 +125,7 @@ class StudentFilter extends Component {
     }
 
     const is_examiner = parseInt(localStorage.getItem('is_examiner'));
-    if (is_examiner) {
+    if (is_examiner == 1) {
     return (
       <BrowserRouter>
       <div className="App">
@@ -164,7 +164,7 @@ class StudentFilter extends Component {
       </BrowserRouter>
     );
     } else {
-      window.location.href = '/examinee/rules';
+      window.location.href = '/examinee/redirect';
     }
   }
 } export default withRouter(StudentFilter);

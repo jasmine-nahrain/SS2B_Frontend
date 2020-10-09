@@ -141,32 +141,31 @@ class ManageExam extends Component {
     const data = await getExams();
     this.seperateExamLists(data);
 
-    // const is_admin = parseInt(localStorage.getItem('is_admin'));
-    // if (!is_admin) window.location.href = '/';
-    // else {
-
-    // Needs to be defined at this point because only now do we have a length for table_data
-    tablePaginationOptions = {
-      paginationSize: 4,
-      pageStartIndex: 0,
-      firstPageText: 'First',
-      prePageText: 'Back',
-      nextPageText: 'Next',
-      lastPageText: 'Last',
-      nextPageTitle: 'First page',
-      prePageTitle: 'Pre page',
-      firstPageTitle: 'Next page',
-      lastPageTitle: 'Last page',
-      showTotal: true,
-      paginationTotalRenderer: customTotal,
-      disablePageTitle: true,
-      sizePerPageList: [{
-        text: '5', value: 5
-      }, {
-        text: '10', value: 10
-      }]
-    };
-    // }
+    const is_examiner = parseInt(localStorage.getItem('is_examiner'));
+    if (!is_examiner) window.location.href = '/examinee/redirect';
+    else {
+      // Needs to be defined at this point because only now do we have a length for table_data
+      tablePaginationOptions = {
+        paginationSize: 4,
+        pageStartIndex: 0,
+        firstPageText: 'First',
+        prePageText: 'Back',
+        nextPageText: 'Next',
+        lastPageText: 'Last',
+        nextPageTitle: 'First page',
+        prePageTitle: 'Pre page',
+        firstPageTitle: 'Next page',
+        lastPageTitle: 'Last page',
+        showTotal: true,
+        paginationTotalRenderer: customTotal,
+        disablePageTitle: true,
+        sizePerPageList: [{
+          text: '5', value: 5
+        }, {
+          text: '10', value: 10
+        }]
+      };
+    }
   }
 
   seperateExamLists(data) {
@@ -294,7 +293,7 @@ class ManageExam extends Component {
       </BrowserRouter>
     );
     } else {
-      window.location.href = '/examinee/rules';
+      window.location.href = '/examinee/redirect';
     }
   }
 } export default withRouter(ManageExam);

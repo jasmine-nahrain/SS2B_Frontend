@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Form, Button } from 'react-bootstrap';
-import styled from 'styled-components';
-import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 import CountDownTimer from './timer.js'
-import exampage from './exampage.css'
+import styled from 'styled-components';
+import './exampage.css'
 
+const Vid = styled.div`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  height: 100%;
+`;
 
 class ExamPage extends React.Component {
   state = {
@@ -18,6 +23,7 @@ class ExamPage extends React.Component {
     this.setState({
       isActive: !this.state.isActive,
     });
+    this.btnReview.setAttribute("disabled", "disabled");
   };
 
   render() {
@@ -25,14 +31,22 @@ class ExamPage extends React.Component {
       <div>
         <img src={logo} className="move" alt="logo" />
         <h1 className = "Something"><b>Examination Page</b></h1>
-        {this.state.isActive ? <CountDownTimer /> : null}
-        <button
-          type="button"
-          class="btn btn-warning"
-          onClick={this.handleToggle}
-        >
-          Start Exam?
-        </button>
+        <Vid>
+          <iframe width="500" height="300" frameBorder="1">
+          </iframe>
+          <br/><br/><br/>
+          {this.state.isActive ? <CountDownTimer /> : null}
+            <button
+            type="button"
+            class="btn btn-warning"
+            onClick={this.handleToggle}
+            ref={btnReview => {
+              this.btnReview = btnReview;
+            }}
+            >
+            Start Exam
+            </button>
+        </Vid>   
       </div>
     );
   }

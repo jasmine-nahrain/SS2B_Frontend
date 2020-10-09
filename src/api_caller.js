@@ -104,16 +104,19 @@ Status codes: 200 OK, 400 BAD REQUEST, 500 INTERNAL SERVER ERROR
 */
 export const deskcheck = async(image) => {
     try {
+        // Needs to be updated so it gets token as per other branch and throws error if not found
+
         const url = proxy + "examinee/deskcheck";
 
         // Creates form data object and adds image <-- not sure how to do this part
         var formdata = new FormData();
-        //formdata.append("image", fileInput.files[0], "/C:/Users/Justin/Desktop/image1.jpg");
-        // Delete this dummy line
         formdata.append("image", image);
 
         var requestOptions = {
             method: 'POST',
+            headers: {
+                "Authorization": token
+            },
             body: formdata,
             redirect: 'follow'
         };

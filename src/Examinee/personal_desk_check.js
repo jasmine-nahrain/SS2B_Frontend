@@ -138,28 +138,21 @@ class PersonalDeskCheck extends Component {
 
   capture = async() => {
     let imageSrc = this.webcam.current.getScreenshot();
-    let blob = this.dataURItoBlob(imageSrc);
-    let response = await deskcheck(blob);
-    
     this.setState({
-      detections: response.objects
-    });
-    if (response.objects.length == 1) {
-      this.setState({
-        valid: response.objects[0].label == 'person'
-      });
-    }
-    else {
-      this.setState({
-        valid: false
-      });
-    }
-
-    await this.setState({
       imageData: imageSrc
     });
+    let blob = this.dataURItoBlob(imageSrc);
+    let response = await deskcheck(blob);
+    if (response !== null) {
+      this.setState({
+        detections: response.objects
+      });
+      this.setState({
+        valid: response.objects.length == 1 && response.objects[0].label == 'person'
+      });
+      this.draw();
+    }
 
-    this.draw();
   }
 
   onSubmit = async (e) => {
@@ -231,7 +224,9 @@ class PersonalDeskCheck extends Component {
               </div>
             </WebcamContainer>
             <div className="detection-info">
-              <h3 style={{visibility: (this.state.valid || this.state.detections.length < 2 ? 'hidden' : 'visible'), color: 'var(--danger)'}}>Too many prohibited items detected</h3>
+              <h3 style={{visibility: (this.state.valid || this.state.detections.length < 2 ? 'hidden' : 'visible'), color: 'var(--danger)'}}>
+                Potentially prohibited items detected <br/> Ensure you are the only person in the room and remove prohibited items
+                </h3>
               <ul className="deskcheck-detection-list">
                 {this.state.coloredDetections.map(function(item, idx){
                   return (<li style={{color: item.color}} key={idx}><span>{item.label}</span></li>)

@@ -164,6 +164,35 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
     margin-left: auto;
 }
 
-/* .search-label {
-  float: right;
-} */
+.deskcheck-video-container video {
+  height: 450px;
+  width: 800px;
+}
+
+.deskcheck-detection-container {
+  height: 450px;
+  width: 800px;
+  position: absolute;
+  z-index: 100;
+}
+.detection-info {
+  width: 800px;
+}
+.deskcheck-detection-list {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-height: 8rem;
+  min-height: 8rem;
+  text-align: left;
+  padding-left: 3rem;
+  margin-bottom: 0;
+}
+.deskcheck-detection-list span {
+  font-size: 1.5rem;
+  color: var(--dark);
+}
+.deskcheck-button-container button {
+  margin: .75rem 1rem;
+  width: 200px
+}

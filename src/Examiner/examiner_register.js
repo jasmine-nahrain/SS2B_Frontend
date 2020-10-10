@@ -97,7 +97,7 @@ class ExaminerRegister extends Component {
     const newUser = {
       // need to add admin registration
       user_id: this.state.userID,
-      is_examiner: 0,
+      is_examiner: 1,
       first_name: this.state.fname,
       last_name: this.state.lname,
       password: this.state.password,

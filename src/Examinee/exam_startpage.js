@@ -70,18 +70,23 @@ class ExamStartPage extends Component {
     console.log("er:", exams_in_progress_data);
     if (exams_in_progress_data !== null && exams_in_progress_data["exam_recordings"].length) {
       let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
-
+      
       var offset = - (new Date()).getTimezoneOffset();
       let time_started = (new Date(exam_in_progress["time_started"]));
       time_started.setMinutes(time_started.getMinutes() + offset);
-
+      var duration = new Date("1970-01-01 " + exam_in_progress["duration"]);
+      var latest_end_time = new Date(time_started);
+      latest_end_time.setHours(latest_end_time.getHours() + duration.getHours())
+      latest_end_time.setMinutes(latest_end_time.getMinutes() + duration.getMinutes());
       this.setState({
         exam_in_progress: {
           "exam_id": exam_in_progress["exam_id"],
           "exam_name": exam_in_progress["exam_name"],
           "exam_recording_id": exam_in_progress["exam_recording_id"],
           "subject_id": exam_in_progress["subject_id"],
-          "time_started": time_started,
+          "time_started": time_started.toLocaleString(),
+          "duration":exam_in_progress["duration"],
+          "latest_end_time": latest_end_time.toLocaleString(),
           "user_id": exam_in_progress["user_id"]
         }
       });
@@ -175,10 +180,12 @@ class ExamStartPage extends Component {
             }
             {this.state.exam_in_progress !== null &&
               <div class="text-center">
-                <h3>You have an exam in progress</h3>
+                <h3>You have an exam in progress:</h3>
                 <h1 class="title-text"><strong>{this.state.exam_in_progress["exam_name"]}</strong></h1>
                 <h3>for Subject ID {this.state.exam_in_progress["subject_id"]}</h3>
                 <Text class="title-text">You started at {this.state.exam_in_progress["time_started"]}.</Text>
+                <br/>
+                <Text class="title-text">Your exam will automatically finish at {this.state.exam_in_progress["latest_end_time"]}.</Text>
                 <br />
                 <div class="exam-rules mt-5">
                   <Button variant="outline-dark" className="button" style={{ width: '100%' }} onClick={this.startExam}>

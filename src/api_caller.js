@@ -284,9 +284,15 @@ export const healthCheck = async () => {
 API GET EXAM RECORDING to return list of exams
 Status codes: 200 OK
 */
-export const getExamRecording = async () => {
+export const getExamRecording = async (parameters=null) => {
     try {
-        const url = proxy + "examinee/exam_recording";
+        let params = '?'
+        if (parameters !== null) {
+            for (var k in parameters) {
+                params += "&" + k + "=" + parameters[k];
+            }
+        }
+        const url = proxy + "examinee/exam_recording" + params;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -308,7 +314,7 @@ export const getExamRecording = async () => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return [[]];
+    return null;
 }
 
 /*

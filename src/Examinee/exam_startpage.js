@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button } from 'react-bootstrap';
 import styled from 'styled-components';
-import { getExams } from '../api_caller.js';
+import { getExams, getExamRecording } from '../api_caller.js';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 
@@ -31,6 +31,9 @@ class ExamStartPage extends Component {
 
   constructor(props) {
     super(props);
+    this.getExamByLoginCode = this.getExamByLoginCode.bind(this);
+    this.getExamsInProgress = this.getExamsInProgress.bind(this);
+
     this.state = {
       document_link: null,
       duration: null,
@@ -40,8 +43,13 @@ class ExamStartPage extends Component {
       login_code: null,
       start_date: null,
       subject_id: -1,
-      not_found: false
+      not_found: false,
+      exam_in_progress: null
     }
+  }
+
+  async componentDidMount() {
+    await this.getExamsInProgress();
   }
 
   onSubmit = async (e) => {
@@ -53,6 +61,32 @@ class ExamStartPage extends Component {
     this.setState({
       login_code: e.target.value
     });
+  }
+
+  getExamsInProgress = async () => {
+    const user_id = localStorage.getItem("user_id");
+    if (user_id === null) return;
+    let exams_in_progress_data = await getExamRecording({ "user_id": user_id, "in_progress": 1 });
+    console.log("er:", exams_in_progress_data);
+    if (exams_in_progress_data !== null && exams_in_progress_data["exam_recordings"].length) {
+      let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
+
+      var offset = - (new Date()).getTimezoneOffset();
+      let time_started = (new Date(exam_in_progress["time_started"]));
+      time_started.setMinutes(time_started.getMinutes() + offset);
+
+      this.setState({
+        exam_in_progress: {
+          "exam_id": exam_in_progress["exam_id"],
+          "exam_name": exam_in_progress["exam_name"],
+          "exam_recording_id": exam_in_progress["exam_recording_id"],
+          "subject_id": exam_in_progress["subject_id"],
+          "time_started": time_started,
+          "user_id": exam_in_progress["user_id"]
+        }
+      });
+
+    }
   }
 
   getExamByLoginCode = async () => {
@@ -99,38 +133,56 @@ class ExamStartPage extends Component {
               <br></br>
 
             </Title>
-            {this.state.exam_id === -1 &&
-              <div class="text-center">
-                <Text class="title-text">Find your Exam by Login Code</Text>
-                <br></br>
-                <div class="exam-rules">
-                  <Form.Control type="text" placeholder="Exam Login Code" value={this.state.login_code} onChange={this.onChangeLoginCode} />
-                  <Button variant="outline-dark" className="button" style={{ width: '100%' }} onClick={this.getExamByLoginCode}>
-                    Find Exam
+            {this.state.exam_in_progress === null &&
+              <div>
+                {this.state.exam_id === -1 &&
+                  <div class="text-center">
+                    <Text class="title-text">Find your Exam by Login Code</Text>
+                    <br></br>
+                    <div class="exam-rules">
+                      <Form.Control type="text" placeholder="Exam Login Code" value={this.state.login_code} onChange={this.onChangeLoginCode} />
+                      <Button variant="outline-dark" className="button" style={{ width: '100%' }} onClick={this.getExamByLoginCode}>
+                        Find Exam
                   </Button>
-                </div>
-                {this.state.not_found &&
-                    <div class="my-3">
-                      <Text style={{ color: 'var(--danger)' }}>
-                        An exam with the login code provided could not be found. <br/>Please try again.
-                      </Text>
                     </div>
-                  }
+                    {this.state.not_found &&
+                      <div class="my-3">
+                        <Text style={{ color: 'var(--danger)' }}>
+                          An exam with the login code provided could not be found. <br />Please try again.
+                      </Text>
+                      </div>
+                    }
+                  </div>
+                }
+                {this.state.exam_id !== -1 &&
+                  <div class="text-center">
+                    <h3>You are about to start</h3>
+                    <h1 class="title-text"><strong>{this.state.exam_name}</strong></h1>
+                    <h3>for Subject ID {this.state.subject_id}</h3>
+                    <br />
+                    <Text class="title-text">The exam is available from {this.state.start_date} to {this.state.end_date}.</Text>
+                    <br />
+                    <Text class="title-text">You have {this.state.duration} to complete it.</Text>
+                    <br />
+                    <div class="exam-rules mt-5">
+                      <Button variant="outline-dark" className="button" style={{ width: '100%' }} onClick={this.startExam}>
+                        Start Exam
+                  </Button>
+                    </div>
+                  </div>
+                }
               </div>
             }
-            {this.state.exam_id !== -1 &&
+            {this.state.exam_in_progress !== null &&
               <div class="text-center">
-                <h3>You are about to start</h3>
-                <h1 class="title-text"><strong>{this.state.exam_name}</strong></h1>
-                <h3>for Subject ID {this.state.subject_id}</h3>
-                <br />
-                <Text class="title-text">The exam is available from {this.state.start_date} to {this.state.end_date}.</Text>
-                <br />
-                <Text class="title-text">You have {this.state.duration} to complete it.</Text>
+                <h3>You have an exam in progress</h3>
+                <h1 class="title-text"><strong>{this.state.exam_in_progress["exam_name"]}</strong></h1>
+                <h3>for Subject ID {this.state.exam_in_progress["subject_id"]}</h3>
+                <Text class="title-text">You started at {this.state.exam_in_progress["time_started"]}.</Text>
                 <br />
                 <div class="exam-rules mt-5">
                   <Button variant="outline-dark" className="button" style={{ width: '100%' }} onClick={this.startExam}>
-                    Start Exam
+                    Continue Exam
                   </Button>
                 </div>
               </div>

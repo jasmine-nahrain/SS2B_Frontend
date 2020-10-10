@@ -4,10 +4,16 @@ const token = localStorage.getItem('token');
 API GET EXAMS to return list of exams
 Status codes: 200 OK
 */
-export const getExams = async () => {
+export const getExams = async (parameters=null) => {
     try {
-        const url = proxy + "examiner/exam";
-
+        let params = '?'
+        if (parameters !== null) {
+            for (var k in parameters) {
+                params += "&" + k + "=" + parameters[k];
+            }
+        }
+        const url = proxy + "examiner/exam" + params;
+        
         const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -28,7 +34,7 @@ export const getExams = async () => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return [[]];
+    return null;
 }
 
 /*

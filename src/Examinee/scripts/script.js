@@ -16,7 +16,7 @@ document.createElement("footer");
 var config = {
   openSocket: function (config) {
     console.log("1");
-    var SIGNALING_SERVER = 'http://localhost:3000'; //"https://socketio-over-nodejs2.herokuapp.com:443/";
+    var SIGNALING_SERVER = "https://socketio-over-nodejs2.herokuapp.com:443/";
 
     config.channel = config.channel || localStorage.getItem("exam_id"); //examId signifies exam being taken/exam being viewed
     console.log(config.channel);

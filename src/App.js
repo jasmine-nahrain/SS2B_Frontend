@@ -8,7 +8,8 @@ import ManageExam from './Examiner/manage_exam.js';
 import CreateExam from './Examiner/create_exam.js';
 import EditExam from './Examiner/edit_exam.js';
 import ExamRules from './Examinee/exam_rules.js';
-import PersonalDeskCheck from './Examinee/personal_desk_check.js'
+import PersonalDeskCheck from './Examinee/personal_desk_check.js';
+import ExamStartPage from './Examinee/exam_startpage.js';
 import ExamPage from './Examinee/exam_page.js';
 import ExaminerPortal from './Examiner/examiner_portal.js';
 import ExamineeEndPage from './Examinee/exam_endpage.js';
@@ -64,6 +65,11 @@ class App extends Component {
             <div className="App">
               <PersonalDeskCheck/>
             </div>
+          )}/>
+          <Route exact={true} path='/examinee/start' render={() => (
+            <div className="App">
+              <ExamStartPage />
+            </div> 
           )}/>
           <Route exact={true} path='/examinee/exam' render={() => (
             <div className="App">

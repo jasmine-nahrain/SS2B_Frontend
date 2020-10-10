@@ -1,0 +1,144 @@
+import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Form, Button } from 'react-bootstrap';
+import styled from 'styled-components';
+import { getExams } from '../api_caller.js';
+import { BrowserRouter } from "react-router-dom";
+import logo from '../images/logo.png';
+
+const Body = styled.body`
+  background-color: white;
+  background-blend-mode: multiply;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: black;
+`;
+
+const Title = styled.div`
+    padding:14px 5px 14px 0px;
+  `;
+
+const Text = styled.span`
+  vertical-align: text-top;
+  `;
+
+class ExamStartPage extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      document_link: null,
+      duration: null,
+      end_date: null,
+      exam_id: -1,
+      exam_name: null,
+      login_code: null,
+      start_date: null,
+      subject_id: -1,
+      not_found: false
+    }
+  }
+
+  onSubmit = async (e) => {
+    e.preventDefault();
+  }
+
+  onChangeLoginCode = (e) => {
+    e.preventDefault()
+    this.setState({
+      login_code: e.target.value
+    });
+  }
+
+  getExamByLoginCode = async () => {
+    let exam_data = await getExams({ "login_code": this.state.login_code });
+
+    if (exam_data !== null && exam_data['exams'].length) {
+      let exam = exam_data['exams'][0];
+      // Converts start_date and end_date to local time
+      var offset = - (new Date()).getTimezoneOffset();
+      let start_date = (new Date(exam['start_date']));
+      start_date.setMinutes(start_date.getMinutes() + offset)
+      let end_date = (new Date(exam['end_date']));
+      end_date.setMinutes(end_date.getMinutes() + offset)
+
+      this.setState({
+        document_link: exam['document_link'],
+        duration: exam['duration'],
+        end_date: end_date.toLocaleString(),
+        exam_id: exam['exam_id'],
+        exam_name: exam['exam_name'],
+        start_date: start_date.toLocaleString(),
+        subject_id: exam['subject_id'],
+        not_found: false
+      });
+    } else {
+      this.setState({
+        not_found: true
+      });
+    }
+  }
+
+  startExam = async () => {
+    // start exam recording here
+    // redirect to exam_page
+  }
+
+  render() {
+    return (
+      <BrowserRouter>
+        <div className="App">
+          <Body>
+            <Title style={{ textAlign: "center" }}>
+              <img src={logo} class="Uts-logo" alt="logo" />
+              <br></br>
+
+            </Title>
+            {this.state.exam_id === -1 &&
+              <div class="text-center">
+                <Text class="title-text">Find your Exam by Login Code</Text>
+                <br></br>
+                <div class="exam-rules">
+                  <Form.Control type="text" placeholder="Exam Login Code" value={this.state.login_code} onChange={this.onChangeLoginCode} />
+                  <Button variant="outline-dark" className="button" style={{ width: '100%' }} onClick={this.getExamByLoginCode}>
+                    Find Exam
+                  </Button>
+                </div>
+                {this.state.not_found &&
+                    <div class="my-3">
+                      <Text style={{ color: 'var(--danger)' }}>
+                        An exam with the login code provided could not be found. <br/>Please try again.
+                      </Text>
+                    </div>
+                  }
+              </div>
+            }
+            {this.state.exam_id !== -1 &&
+              <div class="text-center">
+                <h3>You are about to start</h3>
+                <h1 class="title-text"><strong>{this.state.exam_name}</strong></h1>
+                <h3>for Subject ID {this.state.subject_id}</h3>
+                <br />
+                <Text class="title-text">The exam is available from {this.state.start_date} to {this.state.end_date}.</Text>
+                <br />
+                <Text class="title-text">You have {this.state.duration} to complete it.</Text>
+                <br />
+                <div class="exam-rules mt-5">
+                  <Button variant="outline-dark" className="button" style={{ width: '100%' }} onClick={this.startExam}>
+                    Start Exam
+                  </Button>
+                </div>
+              </div>
+            }
+
+          </Body>
+        </div>
+      </BrowserRouter>
+    );
+  }
+} export default withRouter(ExamStartPage);

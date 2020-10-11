@@ -9,6 +9,8 @@ import CreateExam from './Examiner/create_exam.js';
 import EditExam from './Examiner/edit_exam.js';
 import ExamRules from './Examinee/exam_rules.js';
 import PersonalDeskCheck from './Examinee/personal_desk_check.js'
+import FaceUpload from './Examinee/user_image_upload.js'
+import FaceAuth from './Examinee/user_image_auth.js'
 import ExamPage from './Examinee/exam_page.js';
 import ExaminerPortal from './Examiner/examiner_portal.js';
 import ExamineeEndPage from './Examinee/exam_endpage.js';
@@ -62,6 +64,16 @@ class App extends Component {
           <Route exact={true} path='/examinee/deskcheck' render={() => (
             <div className="App">
               <PersonalDeskCheck/>
+            </div>
+          )}/>
+          <Route exact={true} path='/examinee/faceupload' render={() => (
+            <div className="App">
+              <FaceUpload/>
+            </div>
+          )}/>
+          <Route exact={true} path='/examinee/faceauth' render={() => (
+            <div className="App">
+              <FaceAuth/>
             </div>
           )}/>
           <Route exact={true} path='/examinee/exam' render={() => (

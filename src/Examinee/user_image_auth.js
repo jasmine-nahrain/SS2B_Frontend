@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {  Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import Webcam from "react-webcam";
-import {uploadFaceImage} from '../api_caller.js';
+import { uploadFaceImage } from '../api_caller.js';
 
 const videoConstraints = {
   width: 1280,
@@ -22,6 +22,9 @@ const WebcamCapture = React.forwardRef((props, ref) => (
       screenshotFormat="image/jpeg"
       width={1280}
       videoConstraints={videoConstraints}
+      onUserMediaError={() => {
+        alert("Please enable your camera to authenticate your identity.");
+      }}
     />
   </>
 ));
@@ -62,45 +65,41 @@ class FaceAuth extends Component {
       imageData: '',
       valid: false,
       user_id: localStorage.getItem('user_id'),
-      failed: false
+      failed: false,
+      camera_error: false
     }
   }
 
   dataURItoBlob = (dataURI) => {
     var byteString;
     if (dataURI.split(',')[0].indexOf('base64') >= 0)
-        byteString = atob(dataURI.split(',')[1]);
+      byteString = atob(dataURI.split(',')[1]);
     else
-        byteString = unescape(dataURI.split(',')[1]);
-  
+      byteString = unescape(dataURI.split(',')[1]);
+
     var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-  
+
     var ia = new Uint8Array(byteString.length);
     for (var i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
+      ia[i] = byteString.charCodeAt(i);
     }
-    return new Blob([ia], {type:mimeString});
+    return new Blob([ia], { type: mimeString });
   }
 
-  capture = async() => {
+  capture = async () => {
     let imageSrc = this.webcam.current.getScreenshot();
     this.setState({
-      imageData: imageSrc
+      imageData: imageSrc,
+      camera_error: imageSrc === null
     });
+    if (imageSrc === null) return;
     let blob = this.dataURItoBlob(imageSrc);
-    let response = await uploadFaceImage(this.state.user_id, blob, true);
-    this.container.current.classList.add('camera-flash')
-    if (response) {
-      this.setState({
-        valid: true,
-        failed: false
-      });
-    }
-    else {
-      this.setState({
-        failed: true
-      });
-    }
+    let success = await uploadFaceImage(this.state.user_id, blob, true);
+    this.container.current.classList.add('camera-flash');
+    this.setState({
+      valid: success,
+      failed: !success
+    });
     this.draw();
   }
 
@@ -114,11 +113,11 @@ class FaceAuth extends Component {
     ctx.clearRect(0, 0, this.canvasRef.current.width, this.canvasRef.current.height);
     // draw image
     var myImage = new Image();
-    myImage.onload = function() {
+    myImage.onload = function () {
       ctx.drawImage(myImage, 0, 0);
     };
     myImage.src = this.state.imageData;
-    
+
   }
 
   clear = () => {
@@ -136,28 +135,40 @@ class FaceAuth extends Component {
       <BrowserRouter>
         <div className="App">
           <Content>
-            <Title style={{textAlign:"center"}}>
-              <Text>Authenticate Face</Text>
+            <Title style={{ textAlign: "center" }}>
+              <h1>Authenticate Face</h1>
             </Title>
             <WebcamContainer ref={this.container}>
               <div className="deskcheck-video-container">
                 <WebcamCapture ref={this.webcam}></WebcamCapture>
               </div>
               <div className="deskcheck-detection-container">
-                
+
                 <canvas height="450" width="800" ref={this.canvasRef} ></canvas>
               </div>
             </WebcamContainer>
             <div className="detection-info">
-              <h3 className="fail-text" style={{opacity: (this.state.failed ? '1' : '0'), color: 'var(--danger)'}}>
-                Authentication Failed
-              </h3>
+              {this.state.camera_error &&
+                <h3 className="fail-text" style={{ color: 'var(--danger)' }}>
+                  Something went wrong with trying to use your camera. 
+                  <br/> Please try reloading the page and allowing camera permissions.
+                </h3>
+              }
+              {this.state.valid &&
+                <Text>You have been successfully authenticated.</Text>
+              }
+              {this.state.failed &&
+                <h3 className="fail-text" style={{ color: 'var(--danger)' }}>
+                  Authentication failed. Please try again.
+                </h3>
+              }
             </div>
             <div className="deskcheck-button-container">
-              <Button onClick={this.capture} style={{display: this.state.valid ? 'none' : 'initial'}} >Capture photo</Button>
-              <Button onClick={this.clear} disabled={!this.state.failed} style={{display: this.state.valid ? 'none' : 'initial'}}>Clear capture</Button>
-              <Button onClick={this.continue} style={{display: this.state.valid ? 'initial' : 'none'}}>Continue</Button>
+              <Button onClick={this.capture} style={{ display: this.state.valid ? 'none' : 'initial' }} >Capture photo</Button>
+              <Button onClick={this.clear} disabled={!this.state.failed} style={{ display: this.state.valid ? 'none' : 'initial' }}>Clear capture</Button>
+              <Button onClick={this.continue} style={{ display: this.state.valid ? 'initial' : 'none' }}>Continue</Button>
             </div>
+
           </Content>
         </div>
       </BrowserRouter>

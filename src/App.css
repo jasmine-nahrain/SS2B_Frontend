@@ -196,3 +196,23 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   margin: .75rem 1rem;
   width: 200px
 }
+
+.camera-flash {
+  opacity: 1;
+  -webkit-animation: flash 1s;
+  animation: flash 1s;
+ }
+
+@-webkit-keyframes flash {
+  0% { opacity: .3; }
+  100% { opacity: 1; }
+}
+@keyframes flash {
+  0% { opacity: .3; }
+  100% { opacity: 1; }
+}
+
+.fail-text {
+  font-size: 1.25rem;
+  transition: opacity .5s;
+}

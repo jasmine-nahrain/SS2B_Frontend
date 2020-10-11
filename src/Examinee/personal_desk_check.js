@@ -112,11 +112,13 @@ class PersonalDeskCheck extends Component {
     super(props);
     this.webcam = React.createRef();
     this.canvasRef = React.createRef();
+    this.container = React.createRef();
     this.state = {
       detections: [],
       coloredDetections : [],
       imageData: '',
       valid: false,
+      captured: false
     }
   }
 
@@ -143,6 +145,7 @@ class PersonalDeskCheck extends Component {
     });
     let blob = this.dataURItoBlob(imageSrc);
     let response = await deskcheck(blob);
+    this.container.current.classList.add('camera-flash')
     if (response !== null) {
       this.setState({
         detections: response.objects
@@ -151,6 +154,9 @@ class PersonalDeskCheck extends Component {
         valid: response.objects.length == 1 && response.objects[0].label == 'person'
       });
       this.draw();
+      this.setState({
+        captured: true
+      });
     }
 
   }
@@ -196,10 +202,13 @@ class PersonalDeskCheck extends Component {
   }
 
   clear = () => {
+    this.container.current.classList.remove('camera-flash')
     var ctx = this.canvasRef.current.getContext("2d");
     ctx.clearRect(0, 0, this.canvasRef.current.width, this.canvasRef.current.height);
     this.setState({
-      coloredDetections: [{'-1': ''}]
+      coloredDetections: [{'-1': ''}],
+      valid: false,
+      captured: false
     });
     this.setState({
       coloredDetections: []
@@ -214,7 +223,7 @@ class PersonalDeskCheck extends Component {
             <Title style={{textAlign:"center"}}>
               <Text>Personal Desk Check</Text>
             </Title>
-            <WebcamContainer>
+            <WebcamContainer ref={this.container}>
               <div className="deskcheck-video-container">
                 <WebcamCapture ref={this.webcam}></WebcamCapture>
               </div>
@@ -224,9 +233,13 @@ class PersonalDeskCheck extends Component {
               </div>
             </WebcamContainer>
             <div className="detection-info">
-              <h3 style={{visibility: (this.state.valid || this.state.detections.length < 2 ? 'hidden' : 'visible'), color: 'var(--danger)'}}>
+              <h3 className="fail-text" style={{opacity: this.state.captured && (!this.state.valid) ? '1' : '0', visibility: this.state.valid ? 'hidden' : 'visible', color: 'var(--danger)'}}>
+                One person must be in the room
+              </h3>
+              <h3 className="fail-text" style={{opacity: this.state.captured ? '1' : '0', visibility: (this.state.valid || this.state.detections.length < 2 ? 'hidden' : 'visible'), color: 'var(--danger)'}}>
                 Potentially prohibited items detected <br/> Ensure you are the only person in the room and remove prohibited items
-                </h3>
+              </h3>
+                
               <ul className="deskcheck-detection-list">
                 {this.state.coloredDetections.map(function(item, idx){
                   return (<li style={{color: item.color}} key={idx}><span>{item.label}</span></li>)
@@ -234,13 +247,12 @@ class PersonalDeskCheck extends Component {
               </ul>
             </div>
             <div className="deskcheck-button-container">
-              <Button onClick={this.capture}>Capture photo</Button>
+              <Button onClick={this.capture} style={{display: this.state.captured ? 'none' : 'initial'}} >Capture photo</Button>
+              <Button onClick={this.clear} style={{display: this.state.captured ? 'initial' : 'none'}} >Clear capture</Button>
               <Button onClick={this.continue} disabled={!this.state.valid}>Continue</Button>
-              
             </div>
             <div className="deskcheck-button-container">
               <Button>Contact examiner</Button>
-              <Button onClick={this.clear}>Clear capture</Button>
             </div>
           </Content>
         </div>

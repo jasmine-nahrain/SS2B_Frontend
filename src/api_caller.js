@@ -158,11 +158,14 @@ export const uploadFaceImage = async(user_id, image, authenticate=true) => {
 
         // Creates form data object and adds image & user id <-- not sure how to do get an image here
         var formdata = new FormData();
-        //formdata.append("image", fileInput.files[0], "/C:/Users/Justin/Desktop/image1.jpg");
         formdata.append("user_id", user_id);
+        formdata.append("image", image);
 
         var requestOptions = {
             method: 'POST',
+            headers: {
+                "Authorization": token
+            },
             body: formdata,
             redirect: 'follow'
         };

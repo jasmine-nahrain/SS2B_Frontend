@@ -15,20 +15,18 @@ document.createElement("footer");
 
 var config = {
   openSocket: function (config) {
-    console.log("1");
+    //console.log("1");
     var SIGNALING_SERVER = "https://socketio-over-nodejs2.herokuapp.com:443/";
 
     config.channel = config.channel || localStorage.getItem("exam_id"); //examId signifies exam being taken/exam being viewed
-    console.log(config.channel);
+    //console.log(config.channel);
 
     // document.getElementById('user_id').value = localStorage.getItem('user_id').toString();
 
     //show different ui based on examiner/examinee.
 
-    if (localStorage.getItem("is_examiner") === 1)
-      document.getElementById("createBroadcast").style.display = "none";
-    if (localStorage.getItem("is_examiner") === 0)
-      document.getElementById("listStudents").style.display = "none";
+    //if (localStorage.getItem("is_examiner") === 1) document.getElementById("createBroadcast").style.display = "none";
+    //else document.getElementById("listStudents").style.display = "none";
     var sender = Math.round(Math.random() * 999999999) + 999999999;
 
     io.connect(SIGNALING_SERVER).emit("new-channel", {
@@ -96,7 +94,7 @@ var config = {
   },
 };
 
-export function setupNewBroadcastButtonClickHandler() {
+function setupNewBroadcastButtonClickHandler() {
   const studentId = localStorage.getItem("user_id");
   console.log(studentId.toString());
   // document.getElementById("setup-new-broadcast").disabled = true;
@@ -191,8 +189,8 @@ var roomsList = document.getElementById("rooms-list");
 
 var broadcastingOption = document.getElementById("broadcasting-option");
 
-// if (setupNewBroadcast)
-//   setupNewBroadcast.onclick = setupNewBroadcastButtonClickHandler();
+if (setupNewBroadcast)
+  setupNewBroadcast.onclick = setupNewBroadcastButtonClickHandler();
 
 function hideUnnecessaryStuff() {
   var visibleElements = document.getElementsByClassName("visible"),

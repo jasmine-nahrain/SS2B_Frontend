@@ -3,7 +3,7 @@
     <head>
         <title>WebRTC Video Broadcasting</title>
 
-        
+
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="utf-8">
@@ -83,10 +83,10 @@
                 <h1>
                     WebRTC Video Broadcasting
                 </h1>
-                
+
             </header>
 
-           
+
 
             <!-- copy this <section> and next <script> -->
             <section class="experiment">
@@ -107,26 +107,26 @@
             </section>
 
             <script>
-                
+
                 const queryString = window.location.search;
-                const urlParams = new URLSearchParams(queryString); 
+                const urlParams = new URLSearchParams(queryString);
                 //currently variables being used are passed using urlparams, this will need to be queried via the api. variable names examId, studentId and boolean examiner)
-            
+
                 var config = {
                     openSocket: function(config) {
                         var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
 
-                        
-                        config.channel = config.channel || urlParams.get('examId'); //examId signifies exam being taken/exam being viewed
+
+                        config.channel = config.channel || localStorage.getItem('exam_id'); //examId signifies exam being taken/exam being viewed
                         console.log(config.channel);
 
                         document.getElementById('student-id').disabled = true;
-                        document.getElementById('student-id').value = urlParams.get('studentId').toString();
+                        document.getElementById('student-id').value = localStorage.getItem('user_id');
 
                         //show different ui based on examiner/examinee.
 
-                        if(urlParams.get('examiner').toString() == "true") document.getElementById('createBroadcast').style.display = "none";
-                        if(urlParams.get('examiner').toString() == "false") document.getElementById('listStudents').style.display = "none";
+                        if(localStorage.getItem('is_examiner') === 1) document.getElementById('createBroadcast').style.display = "none";
+                        if(localStorage.getItem('is_examiner') === 0) document.getElementById('listStudents').style.display = "none";
                         var sender = Math.round(Math.random() * 999999999) + 999999999;
 
                         io.connect(SIGNALING_SERVER).emit('new-channel', {
@@ -188,13 +188,13 @@
                 };
 
                 function setupNewBroadcastButtonClickHandler() {
-                    const studentId = urlParams.get('studentId');
-                    console.log(studentId.toString());
+                    const studentId = localStorage.getItem('user_id');
+                    console.log(studentId);
                     document.getElementById('setup-new-broadcast').disabled = true;
 
                     DetectRTC.load(function() {
                         captureUserMedia(function() {
-                            var shared = 'video';                            
+                            var shared = 'video';
                             broadcastUI.createRoom({
                                 roomName: (document.getElementById('student-id') || { }).value || 'Anonymous',
                                 isAudio: shared === 'audio'
@@ -231,9 +231,9 @@
                         video: htmlElement,
                         onsuccess: function(stream) {
                             config.attachStream = stream;
-                            
+
                             videosContainer.appendChild(htmlElement);
-                            
+
                             callback && callback();
                         },
                         onerror: function() {

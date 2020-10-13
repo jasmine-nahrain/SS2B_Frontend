@@ -137,7 +137,7 @@ Status codes: 200 OK, 400 BAD REQUEST, 500 INTERNAL SERVER ERROR
 export const deskcheck = async(image) => {
     try {
         // Needs to be updated so it gets token as per other branch and throws error if not found
-
+        let token = getToken();
         const url = proxy + "examinee/deskcheck";
 
         // Creates form data object and adds image <-- not sure how to do this part
@@ -184,6 +184,9 @@ Status codes: 200 OK, 400 BAD REQUEST
 export const uploadFaceImage = async(user_id, image, authenticate=true) => {
     try {
         // Can either choose to upload image to authenticate or upload new image
+        let token = 'null';
+        if (authenticate) token = getToken();
+
         let url = proxy;
         if (authenticate) url += "examinee/face_authentication";
         else url += "examinee/upload_face";

@@ -98,3 +98,35 @@ export const convertToParamString = (parameters) => {
   }
   return params;
 }
+
+export const formatDateToLocal = (dateString) => {
+  if (dateString) {
+    var offset = - (new Date()).getTimezoneOffset();
+    let date = (new Date(dateString));
+    date.setMinutes(date.getMinutes() + offset)
+    return date.toLocaleString();
+  }
+  return '-';
+}
+
+export const getLatestEndTime = (timeStartedString, durationString) => {
+  var offset = -(new Date()).getTimezoneOffset();
+  var duration = new Date("1970-01-01 " + durationString);
+  var latest_end_time = new Date(timeStartedString);
+  latest_end_time.setMinutes(latest_end_time.getMinutes() + offset);
+  latest_end_time.setHours(latest_end_time.getHours() + duration.getHours())
+  latest_end_time.setMinutes(latest_end_time.getMinutes() + duration.getMinutes());
+  return latest_end_time;
+}
+
+export const getTimeRemaining = (timeStartedString, durationString) => {
+  let latest_end_time = getLatestEndTime(timeStartedString, durationString)
+  let current = new Date();
+
+  let seconds_to_end = (latest_end_time-current)/1000;
+  let remaining_hours = parseInt(seconds_to_end/3600);
+  let remaining_minutes = parseInt((seconds_to_end/60)%60);
+  let remaining_seconds = Math.ceil(seconds_to_end%60);
+  console.log([remaining_hours, remaining_minutes, remaining_seconds])
+  return [remaining_hours, remaining_minutes, remaining_seconds];
+}

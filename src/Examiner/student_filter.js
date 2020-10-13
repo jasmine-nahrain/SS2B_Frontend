@@ -10,11 +10,10 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
-import ToolkitProvider, { Search, CSVExport  } from 'react-bootstrap-table2-toolkit';
-import {Tab, Tabs} from 'react-bootstrap';
-
-const { SearchBar } = Search;
-const { ExportCSVButton } = CSVExport;
+import ToolkitProvider from 'react-bootstrap-table2-toolkit';
+import { Form, Col, Tab, Tabs } from 'react-bootstrap';
+import { RightCaretIcon, LeftCaretIcon } from '../Examinee/scripts/Icons';
+import { formatDateToLocal, getTimeRemaining } from '../functions.js';
 
 const Header = styled.header`
 background-color: #2196f3;
@@ -23,10 +22,14 @@ padding: 1%;
 margin-bottom: 3%;
 `;
 
-const time = new Date();
+const searchBar = {
+  color: 'black',
+  borderBottomColor: 'rgba(0,0,0,0)',
+  backgroundColor: 'rgba(220,220,240,.5)',
+  borderRadius: '1vh'
+}
 
 const Button = styled.button`
-  visibility: ${props => (new Date(props.start_time) >= time && new Date(props.end_time) <= time) ? 'visible' : 'hidden'};
   color: #fff;
   background-color: #007bff;
   border-color: #007bff;
@@ -45,89 +48,197 @@ const Button = styled.button`
 `;
 
 
-var table_columns = [{
+var columns = [{
+  dataField: 'exam_recording_id',
+  text: 'Exam Recording ID',
+  hidden: true
+}, {
+  dataField: 'exam_id',
+  text: 'Exam ID',
+  hidden: true
+}, {
+  dataField: 'exam_name',
+  text: 'Exam',
+  //sort: true
+},
+{
   dataField: 'user_id',
   text: 'Student ID',
-  sort: true
+  //sort: true
 }, {
   dataField: 'first_name',
-  text: 'Student First Name',
-  sort: true
+  text: 'First Name',
+  //sort: true
 }, {
   dataField: 'last_name',
-  text: 'Student Last Name',
-  sort: true,
+  text: 'Last Name',
+  //sort: true,
+}, {
+  dataField: 'time_started',
+  text: 'Time Started',
+  formatter: cell => formatDateToLocal(cell)
+}, {
+  dataField: 'time_ended',
+  text: 'Time Ended',
+  formatter: cell => formatDateToLocal(cell)
 }, {
   dataField: 'view',
   text: 'View',
   events: {
     onClick: (e, column, columnIndex, row) => {
+      /*
       window.location.href = '/' + row.video_link;
       console.log(row.time_started);
+      */
     },
   },
   formatter: (cellContent, row) => (
-    <Button class="btn btn-primary" start_time={row.time_started} end_time={row.time_ended}>View</Button>
+    <Button class="btn btn-primary btn-lg" >View</Button>
   ),
 }]
 
-var upcoming = [{
-  dataField: 'user_id',
-  text: 'Student ID',
-  sort: true
-}, {
-  dataField: 'first_name',
-  text: 'Student First Name',
-  sort: true
-}, {
-  dataField: 'last_name',
-  text: 'Student Last Name',
-  sort: true,
-}, {
-  dataField: 'time_started',
-  text: 'Start Date',
-}]
-
-var past = [{
-  dataField: 'user_id',
-  text: 'Student ID',
-  sort: true
-}, {
-  dataField: 'first_name',
-  text: 'Student First Name',
-  sort: true
-}, {
-  dataField: 'last_name',
-  text: 'Student Last Name',
-  sort: true,
-}, {
-  dataField: 'time_started',
-  text: 'Start Date',
-}, {
-  dataField: 'time_ended',
-  text: 'End Date',
-}]
-
-// Gets the length of the payload data to determine roof of pagination.
-const customTotal = (from, to, size) => (
-  <span className="react-bootstrap-table-pagination-total">
-  Showing { from } to { to } of { size } Results
-  </span>
-);
-
-var tablePaginationOptions, tablePaginationOptionsUpcoming, tablePaginationOptionsPast;
 
 class StudentFilter extends Component {
 
   constructor(props) {
     super(props);
-    this.getExaminees = this.getExaminees.bind(this);
+    this.getFilteredExamRecordings = this.getFilteredExamRecordings.bind(this);
+    this.onChangeFirstName = this.onChangeFirstName.bind(this);
+    this.onChangeLastName = this.onChangeLastName.bind(this);
+    this.onChangeID = this.onChangeID.bind(this);
+    this.onChangeExamName = this.onChangeExamName.bind(this);
+    this.handleTabSelect = this.handleTabSelect.bind(this);
 
     this.state = {
       table_data: [],
-      upcoming: [],
-      past: [],
+      student_id: "",
+      first_name: "",
+      last_name: "",
+      exam_name: "",
+      next_page_exists: false,
+      prev_page_exists: false,
+      in_progress: 1,
+      order_by: 'start_time',
+      order: 'desc',
+      page_number: 1,
+      results_length: 10
     };
+  }
+
+  SearchFields = () => (
+    <div class="mt-4">
+      <Form>
+        <Form.Row>
+          <Col>
+            <Form.Control style={searchBar} type="text" name="exam_name" placeholder="Exam"
+              value={this.state.exam_name} onChange={this.onChangeExamName} />
+          </Col>
+          <Col>
+            <Form.Control style={searchBar} type="number" name="student_id" placeholder="Student ID"
+              value={this.state.student_id} onChange={this.onChangeID} />
+          </Col>
+          <Col>
+            <Form.Control style={searchBar} type="text" name="first_name" placeholder="First Name"
+              value={this.state.first_name} onChange={this.onChangeFirstName} />
+          </Col>
+          <Col>
+            <Form.Control style={searchBar} type="text" name="last_name" placeholder="Last Name"
+              value={this.state.last_name} onChange={this.onChangeLastName} />
+          </Col>
+            <Button type="submit" onClick={this.getFilteredExamRecordings} class="btn btn-primary mt-2">Search</Button>
+        </Form.Row>
+      </Form>
+
+      
+    </div>
+  )
+
+  TableFooter = () => (
+    <div class="container mb-2">
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-primary" type="submit" disabled={!this.state.prev_page_exists} onClick={this.prevPage}>
+            <LeftCaretIcon />
+            Prev Page
+          </button>
+        </div>
+        <div class="col-7">
+          <p>
+            Results {(this.state.page_number - 1) * this.state.results_length + (this.state.table_data.length > 0)} - {(this.state.page_number - 1) * this.state.results_length + this.state.table_data.length}
+          </p>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" type="submit" disabled={!this.state.next_page_exists} onClick={this.nextPage}>
+            Next Page
+            <RightCaretIcon />
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+
+  CustomTable = (empty_message) => {
+    return (
+    <ToolkitProvider
+      keyField="student_id"
+      data={this.state.table_data}
+      columns={columns}
+      search
+    >
+      {
+        props => (
+          <div>
+            <div class="containerAdmin admin-table">
+              <this.SearchFields />
+              <br />
+              {this.state.table_data.length == 0 ? <p>{empty_message}</p> :
+                <div>
+
+                  <BootstrapTable
+                    bootstrap4
+                    {...props.baseProps}
+                    bodyClasses="tbodyContainer"
+                    keyField='student_id'
+                    data={this.state.table_data}
+                    columns={columns}
+                    filter={filterFactory()} />
+
+                  <this.TableFooter />
+                </div>
+              }
+            </div>
+          </div>
+        )}
+    </ToolkitProvider>
+    )
+  }
+
+  handleTabSelect = async (key) => {
+    await this.getFilteredExamRecordings(key, 1);
+  }
+
+  onChangeExamName(e) {
+    this.setState({
+      exam_name: e.target.value
+    });
+  }
+
+  onChangeFirstName(e) {
+    this.setState({
+      first_name: e.target.value
+    });
+  }
+
+  onChangeLastName(e) {
+    this.setState({
+      last_name: e.target.value
+    });
+  }
+
+  onChangeID(e) {
+    this.setState({
+      student_id: e.target.value
+    });
   }
 
   async componentDidMount() {
@@ -135,216 +246,66 @@ class StudentFilter extends Component {
     const is_examiner = parseInt(localStorage.getItem('is_examiner'));
     if (!is_examiner) window.location.href = '/examinee/redirect';
     else {
-      // const data = await getExaminees();
-      const data = await getExamRecording();
-      this.getExaminees(data);
-
-      // Needs to be defined at this point because only now do we have a length for table_data
-      tablePaginationOptions = {
-        paginationSize: 4,
-        pageStartIndex: 0,
-        firstPageText: 'First',
-        prePageText: 'Back',
-        nextPageText: 'Next',
-        lastPageText: 'Last',
-        nextPageTitle: 'First page',
-        prePageTitle: 'Pre page',
-        firstPageTitle: 'Next page',
-        lastPageTitle: 'Last page',
-        showTotal: true,
-        paginationTotalRenderer: customTotal,
-        disablePageTitle: true,
-        sizePerPageList: [{
-          text: '5', value: 5
-        }, {
-          text: '10', value: 10
-        }, {
-          text: 'All', value: this.state.table_data.length
-        }]
-      };
-
-      tablePaginationOptionsUpcoming = {
-        paginationSize: 4,
-        pageStartIndex: 0,
-        firstPageText: 'First',
-        prePageText: 'Back',
-        nextPageText: 'Next',
-        lastPageText: 'Last',
-        nextPageTitle: 'First page',
-        prePageTitle: 'Pre page',
-        firstPageTitle: 'Next page',
-        lastPageTitle: 'Last page',
-        showTotal: true,
-        paginationTotalRenderer: customTotal,
-        disablePageTitle: true,
-        sizePerPageList: [{
-          text: '5', value: 5
-        }, {
-          text: '10', value: 10
-        }, {
-          text: 'All', value: this.state.upcoming.length
-        }]
-      };
-
-      tablePaginationOptionsPast = {
-        paginationSize: 4,
-        pageStartIndex: 0,
-        firstPageText: 'First',
-        prePageText: 'Back',
-        nextPageText: 'Next',
-        lastPageText: 'Last',
-        nextPageTitle: 'First page',
-        prePageTitle: 'Pre page',
-        firstPageTitle: 'Next page',
-        lastPageTitle: 'Last page',
-        showTotal: true,
-        paginationTotalRenderer: customTotal,
-        disablePageTitle: true,
-        sizePerPageList: [{
-          text: '5', value: 5
-        }, {
-          text: '10', value: 10
-        }, {
-          text: 'All', value: this.state.past.length
-        }]
-      };
+      await this.getFilteredExamRecordings(1, 1);
     }
   }
 
-  getExaminees(data) {
-    var in_progress = [], upcoming = [], past = [];
-      for(var i = 0; i < data.exam_recordings.length; i++) {
-        if(data.exam_recordings[i].video_link !== null)
-          in_progress.push(data.exam_recordings[i]);
-        else if(new Date(data.exam_recordings[i].time_started) >= time) {
-          upcoming.push(data.exam_recordings[i]);
-        } else {
-          past.push(data.exam_recordings[i]);
-        }
-      }
-    console.log(in_progress)
-    console.log(upcoming)
-
+  getFilteredExamRecordings = async (in_progress=this.state.in_progress, page_number=this.state.page_number) => {
+    let parameters = {
+      'user_id': this.state.student_id,
+      'first_name': this.state.first_name,
+      'last_name': this.state.last_name,
+      'exam_name': this.state.exam_name,
+      'in_progress': in_progress,
+      'is_examiner': 0,
+      'page_number': page_number,
+      'results_length': this.state.results_length,
+      'order_by': 'time_started',
+      'order': 'desc'
+    };
+    let data = await getExamRecording(parameters);
     this.setState({
-      table_data: in_progress,
-      upcoming: upcoming,
-      past: past
-    });
-
+      table_data: data.exam_recordings,
+      in_progress: in_progress,
+      page_number: page_number,
+      next_page_exists: data.next_page_exists,
+      prev_page_exists: page_number>1,
+    }); 
   }
+
+  nextPage = async () => {
+    await this.getFilteredExamRecordings(this.state.in_progress, this.state.page_number + 1)
+  }
+
+  prevPage = async () => {
+    await this.getFilteredExamRecordings(this.state.in_progress, this.state.page_number - 1)
+  };
 
   render() {
-    const searchBar = {
-      width: '100vh',
-      color: 'black',
-      borderBottomColor: 'rgba(0,0,0,0)',
-      backgroundColor: 'rgba(255,255,255,.5)',
-      borderRadius: '1vh'
-    }
 
     const is_examiner = parseInt(localStorage.getItem('is_examiner'));
-    if (is_examiner == 1) {
-    return (
-      <BrowserRouter>
-      <div className="App">
-      <Header >
-        <h1>Student List</h1>
-      </Header>
-      <Tabs defaultActiveKey="upcoming" id="manage" style={{width: '90%', marginLeft: 'auto', marginRight: 'auto'}}>
-        <Tab eventKey="in_progress" title="In Progress" style={{backgroundColor: 'white'}} >
-          <ToolkitProvider
-          keyField="student_id"
-          data={ this.state.table_data }
-          columns={ table_columns }
-          search
-          >
-          {
-            props => (
-              <div>
-              <div class="containerAdmin admin-table">
-              <SearchBar { ...props.searchProps } style={searchBar} />
-              <br/>
-              {this.state.table_data.length == 0 ? <p>No Exams In Progress</p> :
-              <BootstrapTable
-              bootstrap4
-              { ...props.baseProps }
-              bodyClasses="tbodyContainer"
-              keyField='student_id'
-              data={this.state.table_data }
-              columns={ table_columns }
-              pagination={ paginationFactory(tablePaginationOptions) }
-              filter={ filterFactory() }  />
-            }
-              </div>
-              </div>
-            )}
-          </ToolkitProvider>
-        </Tab>
-
-        <Tab eventKey="upcoming" title="Upcoming" style={{backgroundColor: 'white'}} >
-          <ToolkitProvider
-          keyField="student_id"
-          data={ this.state.upcoming }
-          columns={ upcoming }
-          search
-          >
-          {
-            props => (
-              <div>
-                <div class="containerAdmin admin-table">
-                <SearchBar { ...props.searchProps } style={searchBar} />
-                <br/>
-                {this.state.upcoming.length == 0 ? <p>No Upcoming Exams</p> :
-                <BootstrapTable
-                bootstrap4
-                { ...props.baseProps }
-                bodyClasses="tbodyContainer"
-                keyField='student_id'
-                data={this.state.upcoming }
-                columns={ upcoming }
-                pagination={ paginationFactory(tablePaginationOptionsUpcoming) }
-                filter={ filterFactory() }/>
-              }
-              </div>
-            </div>
-          )}
-        </ToolkitProvider>
-        </Tab>
-        <Tab eventKey="past" title="Past" style={{backgroundColor: 'white'}} >
-          <ToolkitProvider
-          keyField="student_id"
-          data={ this.state.past }
-          columns={ past }
-          search
-          >
-          {
-            props => (
-              <div>
-                <div class="containerAdmin admin-table">
-                <SearchBar { ...props.searchProps } style={searchBar} />
-                <br/>
-                {this.state.past.length == 0 ? <p>No Past Exams</p> :
-                <BootstrapTable
-                bootstrap4
-                { ...props.baseProps }
-                bodyClasses="tbodyContainer"
-                keyField='student_id'
-                data={this.state.past }
-                columns={ past }
-                pagination={ paginationFactory(tablePaginationOptionsPast) }
-                filter={ filterFactory() }/>
-              }
-              </div>
-            </div>
-          )}
-        </ToolkitProvider>
-        </Tab>
-      </Tabs>
-    </div>
-  </BrowserRouter>
-    );
+    if (is_examiner) {
+      return (
+        <BrowserRouter>
+          <div className="App">
+            <Header >
+              <h1>Student List</h1>
+            </Header>
+            <Tabs defaultActiveKey={1} id="manage" style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}
+              onSelect={this.handleTabSelect}>
+              <Tab eventKey={1} title="In Progress" style={{ backgroundColor: 'white' }} >
+                {this.CustomTable('No Exam Attempts In Progress')}
+              </Tab>
+              <Tab eventKey={0} title="Finished" style={{ backgroundColor: 'white' }} >
+                {this.CustomTable('No Past Exam Attempts')}
+              </Tab>
+            </Tabs>
+          </div>
+        </BrowserRouter>
+      );
     } else {
       window.location.href = '/examinee/redirect';
     }
-  }
-} export default withRouter(StudentFilter);
+  };
+}
+export default withRouter(StudentFilter);

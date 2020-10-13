@@ -10,12 +10,10 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
-import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
+import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import { Form, Col, Tab, Tabs } from 'react-bootstrap';
 import { RightCaretIcon, LeftCaretIcon } from '../Examinee/scripts/Icons';
-
-const { SearchBar } = Search;
-const { ExportCSVButton } = CSVExport;
+import { formatDateToLocal, getTimeRemaining } from '../functions.js';
 
 const Header = styled.header`
 background-color: #2196f3;
@@ -27,14 +25,11 @@ margin-bottom: 3%;
 const searchBar = {
   color: 'black',
   borderBottomColor: 'rgba(0,0,0,0)',
-  backgroundColor: 'rgba(255,255,255,.5)',
+  backgroundColor: 'rgba(220,220,240,.5)',
   borderRadius: '1vh'
 }
 
-const time = new Date();
-
 const Button = styled.button`
-  visibility: ${props => (new Date(props.start_time) >= time && new Date(props.end_time) <= time) ? 'visible' : 'hidden'};
   color: #fff;
   background-color: #007bff;
   border-color: #007bff;
@@ -52,37 +47,6 @@ const Button = styled.button`
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 `;
 
-
-var table_columns = [{
-  dataField: 'exam_name',
-  text: 'Exam Name',
-  sort: true
-},
-{
-  dataField: 'user_id',
-  text: 'Student ID',
-  //sort: true
-}, {
-  dataField: 'first_name',
-  text: 'First Name',
-  //sort: true,
-}, {
-  dataField: 'last_name',
-  text: 'Last Name',
-  //sort: true,
-}, {
-  dataField: 'view',
-  text: 'View',
-  events: {
-    onClick: (e, column, columnIndex, row) => {
-      window.location.href = '/' + row.video_link;
-      console.log(row.time_started);
-    },
-  },
-  formatter: (cellContent, row) => (
-    <Button class="btn btn-primary" start_time={row.time_started} end_time={row.time_ended}>View</Button>
-  ),
-}]
 
 var columns = [{
   dataField: 'exam_recording_id',
@@ -103,29 +67,41 @@ var columns = [{
   //sort: true
 }, {
   dataField: 'first_name',
-  text: 'Student First Name',
+  text: 'First Name',
   //sort: true
 }, {
   dataField: 'last_name',
-  text: 'Student Last Name',
+  text: 'Last Name',
   //sort: true,
 }, {
   dataField: 'time_started',
   text: 'Time Started',
+  formatter: cell => formatDateToLocal(cell)
 }, {
   dataField: 'time_ended',
   text: 'Time Ended',
-  formatter: cell => (!cell ? "-" : cell)
+  formatter: cell => formatDateToLocal(cell)
+}, {
+  dataField: 'view',
+  text: 'View',
+  events: {
+    onClick: (e, column, columnIndex, row) => {
+      /*
+      window.location.href = '/' + row.video_link;
+      console.log(row.time_started);
+      */
+    },
+  },
+  formatter: (cellContent, row) => (
+    <Button class="btn btn-primary btn-lg" >View</Button>
+  ),
 }]
 
-
-var tablePaginationOptions, tablePaginationOptionsUpcoming, tablePaginationOptionsPast;
 
 class StudentFilter extends Component {
 
   constructor(props) {
     super(props);
-    this.processExamRecordings = this.processExamRecordings.bind(this);
     this.getFilteredExamRecordings = this.getFilteredExamRecordings.bind(this);
     this.onChangeFirstName = this.onChangeFirstName.bind(this);
     this.onChangeLastName = this.onChangeLastName.bind(this);
@@ -142,13 +118,15 @@ class StudentFilter extends Component {
       next_page_exists: false,
       prev_page_exists: false,
       in_progress: 1,
+      order_by: 'start_time',
+      order: 'desc',
       page_number: 1,
       results_length: 10
     };
   }
 
   SearchFields = () => (
-    <div>
+    <div class="mt-4">
       <Form>
         <Form.Row>
           <Col>
@@ -167,10 +145,11 @@ class StudentFilter extends Component {
             <Form.Control style={searchBar} type="text" name="last_name" placeholder="Last Name"
               value={this.state.last_name} onChange={this.onChangeLastName} />
           </Col>
+            <Button type="submit" onClick={this.getFilteredExamRecordings} class="btn btn-primary mt-2">Search</Button>
         </Form.Row>
       </Form>
 
-      <button type="submit" onClick={this.getFilteredExamRecordings} class="btn btn-primary mt-2">Search</button>
+      
     </div>
   )
 
@@ -184,9 +163,9 @@ class StudentFilter extends Component {
           </button>
         </div>
         <div class="col-7">
-          <text>
+          <p>
             Results {(this.state.page_number - 1) * this.state.results_length + (this.state.table_data.length > 0)} - {(this.state.page_number - 1) * this.state.results_length + this.state.table_data.length}
-          </text>
+          </p>
         </div>
         <div class="col">
           <button class="btn btn-primary" type="submit" disabled={!this.state.next_page_exists} onClick={this.nextPage}>
@@ -235,11 +214,7 @@ class StudentFilter extends Component {
   }
 
   handleTabSelect = async (key) => {
-    console.log("key", key);
-    await this.getFilteredExamRecordings(key);
-    this.setState({
-      in_progress: key
-    });
+    await this.getFilteredExamRecordings(key, 1);
   }
 
   onChangeExamName(e) {
@@ -271,19 +246,11 @@ class StudentFilter extends Component {
     const is_examiner = parseInt(localStorage.getItem('is_examiner'));
     if (!is_examiner) window.location.href = '/examinee/redirect';
     else {
-      await this.getFilteredExamRecordings(1);
+      await this.getFilteredExamRecordings(1, 1);
     }
   }
 
-  processExamRecordings = async (data) => {
-    this.setState({
-      table_data: data.exam_recordings,
-      next_page_exists: data.next_page_exists
-    });
-
-  }
-
-  getFilteredExamRecordings = async (in_progress) => {
+  getFilteredExamRecordings = async (in_progress=this.state.in_progress, page_number=this.state.page_number) => {
     let parameters = {
       'user_id': this.state.student_id,
       'first_name': this.state.first_name,
@@ -291,32 +258,28 @@ class StudentFilter extends Component {
       'exam_name': this.state.exam_name,
       'in_progress': in_progress,
       'is_examiner': 0,
-      'page_number': this.state.page_number,
+      'page_number': page_number,
       'results_length': this.state.results_length,
       'order_by': 'time_started',
       'order': 'desc'
     };
     let data = await getExamRecording(parameters);
-    await this.processExamRecordings(data);
-    return data;
+    this.setState({
+      table_data: data.exam_recordings,
+      in_progress: in_progress,
+      page_number: page_number,
+      next_page_exists: data.next_page_exists,
+      prev_page_exists: page_number>1,
+    });
+    getTimeRemaining(data.exam_recordings[0].time_started, "03:00:00");
   }
 
   nextPage = async () => {
-    let new_page_number = this.state.page_number + 1;
-    await this.getFilteredExamRecordings(new_page_number)
-    this.setState({
-      page_number: new_page_number,
-      prev_page_exists: true
-    });
+    await this.getFilteredExamRecordings(this.state.in_progress, this.state.page_number + 1)
   }
 
   prevPage = async () => {
-    let new_page_number = this.state.page_number - 1;
-    await this.getFilteredExamRecordings(new_page_number)
-    this.setState({
-      page_number: new_page_number,
-      prev_page_exists: new_page_number > 1
-    });
+    await this.getFilteredExamRecordings(this.state.in_progress, this.state.page_number - 1)
   };
 
   render() {

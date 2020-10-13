@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button } from 'react-bootstrap';
 import styled from 'styled-components';
-import { getExams, getExamRecording } from '../api_caller.js';
+import { getExams, getExamRecording, createExamRecording } from '../api_caller.js';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 
@@ -67,7 +67,7 @@ class ExamStartPage extends Component {
     const user_id = localStorage.getItem("user_id");
     if (user_id === null) return;
     let exams_in_progress_data = await getExamRecording({ "user_id": user_id, "in_progress": 1 });
-    console.log("er:", exams_in_progress_data);
+
     if (exams_in_progress_data !== null && exams_in_progress_data["exam_recordings"].length) {
       let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
       
@@ -83,6 +83,7 @@ class ExamStartPage extends Component {
           "exam_id": exam_in_progress["exam_id"],
           "exam_name": exam_in_progress["exam_name"],
           "exam_recording_id": exam_in_progress["exam_recording_id"],
+          "exam_login_code":exam_in_progress["login_code"],
           "subject_id": exam_in_progress["subject_id"],
           "time_started": time_started.toLocaleString(),
           "duration":exam_in_progress["duration"],
@@ -124,8 +125,41 @@ class ExamStartPage extends Component {
   }
 
   startExam = async () => {
-    // start exam recording here
-    // redirect to exam_page
+    if (this.state.exam_in_progress) {
+      // this.state.exam_in_progress has all the fields like exam_id, exam_Recording_id and whatnot - refer to getExamsInProgress()
+      /* e.g.
+      this.setState({
+        exam_in_progress: {
+          "exam_id": exam_in_progress["exam_id"],
+          "exam_name": exam_in_progress["exam_name"],
+          "exam_recording_id": exam_in_progress["exam_recording_id"],
+          "exam_login_code":exam_in_progress["login_code"],
+          "subject_id": exam_in_progress["subject_id"],
+          "time_started": time_started.toLocaleString(),
+          "duration":exam_in_progress["duration"],
+          "latest_end_time": latest_end_time.toLocaleString(),
+          "user_id": exam_in_progress["user_id"]
+        }
+      });
+      */
+    } else {
+      let user_id = localStorage.getItem("user_id");
+      let exam_id = this.state.exam_id;
+      if (user_id === null || exam_id === -1) return;
+      let new_exam_recording = createExamRecording(user_id, exam_id);
+      // this has all the stuff we need - we've stored all the exam info in the state as well when we use getExamByLoginCode()
+      /* e.g.
+        {
+            "exam_id": 1231,
+            "exam_recording_id": 13124,
+            "time_ended": null,
+            "time_started": "2020-09-08 11:42:10",
+            "user_id": 1224234,
+            "video_link": null
+        }
+      */
+    }
+    
   }
 
   render() {

@@ -1,34 +1,17 @@
+import { convertToParamString, getToken } from './functions.js';
+
 const proxy = 'http://127.0.0.1:8000/api/';
-//const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE5MTY0ODAsImlhdCI6MTYwMTkxNDY4MCwic3ViIjo4OTI3Mzk4fQ.O5hY-UK41Ztphxcq6gEA-5d-1JGLT5TXzOStzuxReNE";
+
 /*
 API GET EXAMS to return list of exams
 Status codes: 200 OK
 */
 
-class MissingTokenError extends Error {
-    constructor() {
-        super("Authentication token is missing.")
-        this.name = "MissingTokenError"
-    }
-}
-
-const getToken = () => {
-    let token = localStorage.getItem('token');
-    if (token === null) throw new MissingTokenError();
-    return token;
-}
-
 export const getExams = async (parameters=null) => {
     try {
-        let token = localStorage.getItem('token');
-        if (token === null) throw new MissingTokenError();
+        let token = getToken();
 
-        let params = '?'
-        if (parameters !== null) {
-            for (var k in parameters) {
-                params += "&" + k + "=" + parameters[k];
-            }
-        }
+        let params = convertToParamString(parameters);
         const url = proxy + "examiner/exam" + params;
 
         const response = await fetch(url, {
@@ -61,18 +44,9 @@ Status codes: 200 OK
 export const getExaminees = async (parameters=null) => {
     try {
 
-        let token = localStorage.getItem('token');
-        if (token === null) throw new MissingTokenError();
+        let token = getToken();
 
-        let params = '?';
-        if (parameters !== null) {
-            
-            for (var k in parameters) {
-                if (parameters.hasOwnProperty(k)) {
-                   params += "&"+k+"="+parameters[k];
-                }
-            }
-        }
+        let params = convertToParamString(parameters);
         const url = proxy + "examiner/examinee" + params;
 
         const response = await fetch(url, {
@@ -95,7 +69,7 @@ export const getExaminees = async (parameters=null) => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return {'users':[], 'next_page_exists':false};;
+    return null;
 }
 
 /*
@@ -169,14 +143,6 @@ export const deskcheck = async(image) => {
             let parsedData = await response.json();
             return parsedData
         }
-        // fetch(url, requestOptions).then(function(response) {
-        // // The response is a Response instance.
-        // // You parse the data into a useable format using `.json()`
-        //     return response.json();
-        // }).then(function(data) {
-        // // `data` is the parsed version of the JSON returned from the above endpoint.
-        //     console.log(data);  // { "userId": 1, "id": 1, "title": "...", "body": "..." }
-        // });
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
@@ -331,12 +297,7 @@ Status codes: 200 OK
 export const getExamRecording = async (parameters=null) => {
     try {
         let token = getToken();
-        let params = '?'
-        if (parameters !== null) {
-            for (var k in parameters) {
-                params += "&" + k + "=" + parameters[k];
-            }
-        }
+        let params = convertToParamString(parameters);
         const url = proxy + "examinee/exam_recording" + params;
 
         const response = await fetch(url, {

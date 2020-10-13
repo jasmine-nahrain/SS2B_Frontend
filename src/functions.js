@@ -75,3 +75,26 @@ export const getTime = (hours, minutes) => {
   let now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes).toLocaleTimeString('it-IT');
 }
+
+class MissingTokenError extends Error {
+  constructor() {
+      super("Authentication token is missing.")
+      this.name = "MissingTokenError"
+  }
+}
+
+export const getToken = () => {
+  let token = localStorage.getItem('token');
+  if (token === null) throw new MissingTokenError();
+  return token;
+}
+
+export const convertToParamString = (parameters) => {
+  let params = '?'
+  if (parameters !== null) {
+      for (var k in parameters) {
+          params += "&" + k + "=" + parameters[k];
+      }
+  }
+  return params;
+}

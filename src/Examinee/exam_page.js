@@ -43,6 +43,7 @@ class ExamPage extends React.Component {
       exam_id: "",
       is_examiner: Boolean,
       video: "",
+      duration: ''
     };
   }
   videoCall = new VideoCall();
@@ -78,10 +79,12 @@ class ExamPage extends React.Component {
     const is_examiner = localStorage.getItem("is_examiner");
     const user_id = localStorage.getItem("user_id");
     const exam_id = localStorage.getItem("exam_id");
+    const duration = localStorage.getItem("exam_duration");
     this.setState({
       is_examiner: is_examiner,
       user_id: user_id,
       exam_id: exam_id,
+      duration: duration
     });
     console.log(user_id);
   }
@@ -214,7 +217,7 @@ class ExamPage extends React.Component {
                   id="user_id"
                   disabled
                 >User ID: {this.state.user_id}</h6>
-                {this.state.isActive ? <CountDownTimer /> : null}
+                {this.state.isActive ? <CountDownTimer/> : null}
                 { !this.state.isActive ? <Button
                   type="button"
                   id="setup-new-broadcast"

@@ -327,10 +327,10 @@ export const getExamRecording = async (parameters=null) => {
 API Create Exam Recording to save new exam recording to db
 Status codes: 200 OK
 */
-export const createExamRecording = async (exam_id, user_id, time_started) => {
+export const createExamRecording = async (exam_id, user_id) => {
     try {
         let token = getToken();
-
+        const time_started = new Date().toLocaleTimeString('it-IT');
         const url = proxy + "examinee/exam_recording/create";
         const data = JSON.stringify({
             "exam_id": exam_id,
@@ -349,9 +349,9 @@ export const createExamRecording = async (exam_id, user_id, time_started) => {
 
         const status = response.status;
         let parsedData = await response.json();
-        // console.log(data);
-        // console.log(status);
-        // console.log(response);
+        console.log(data);
+        console.log(status);
+        console.log(response);
         if (status === 201 || status == 200) return parsedData;
 
     } catch (error) {

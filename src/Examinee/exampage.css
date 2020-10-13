@@ -60,3 +60,7 @@
   border-bottom: 2px solid #fff;
   margin-right: 1%;
 }
+
+.enter-room-container input::-webkit-input-placeholder{
+  color: white;
+}

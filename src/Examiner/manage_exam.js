@@ -139,6 +139,7 @@ class ManageExam extends Component {
   async componentDidMount() {
     // Gets data before the render
     const data = await getExams();
+    console.log(data)
     this.seperateExamLists(data);
 
     const is_examiner = parseInt(localStorage.getItem('is_examiner'));

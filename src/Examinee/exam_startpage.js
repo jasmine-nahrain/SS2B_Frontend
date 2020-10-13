@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import { getExams, getExamRecording, createExamRecording } from '../api_caller.js';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
+import './exampage.css';
+import shortId from "shortid";
 
 const Body = styled.body`
   background-color: white;
@@ -21,6 +23,7 @@ const Body = styled.body`
 
 const Title = styled.div`
     padding:14px 5px 14px 0px;
+    color: white;
   `;
 
 const Text = styled.span`
@@ -67,10 +70,10 @@ class ExamStartPage extends Component {
     const user_id = localStorage.getItem("user_id");
     if (user_id === null) return;
     let exams_in_progress_data = await getExamRecording({ "user_id": user_id, "in_progress": 1 });
-
+      console.log(exams_in_progress_data);
     if (exams_in_progress_data !== null && exams_in_progress_data["exam_recordings"].length) {
       let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
-      
+
       var offset = - (new Date()).getTimezoneOffset();
       let time_started = (new Date(exam_in_progress["time_started"]));
       time_started.setMinutes(time_started.getMinutes() + offset);
@@ -91,13 +94,12 @@ class ExamStartPage extends Component {
           "user_id": exam_in_progress["user_id"]
         }
       });
-
     }
   }
 
   getExamByLoginCode = async () => {
     let exam_data = await getExams({ "login_code": this.state.login_code });
-
+    console.log(exam_data)
     if (exam_data !== null && exam_data['exams'].length) {
       let exam = exam_data['exams'][0];
       // Converts start_date and end_date to local time
@@ -126,6 +128,11 @@ class ExamStartPage extends Component {
 
   startExam = async () => {
     if (this.state.exam_in_progress) {
+      this.getExamsInProgress();
+      const exam_recording_id = localStorage.getItem('exam_recording_id');
+      localStorage.setItem('exam_duration', this.state.exam_in_progress.duration);
+      console.log(this.state)
+      window.location.href = `/examinee/exam/${exam_recording_id}`
       // this.state.exam_in_progress has all the fields like exam_id, exam_Recording_id and whatnot - refer to getExamsInProgress()
       /* e.g.
       this.setState({
@@ -146,7 +153,13 @@ class ExamStartPage extends Component {
       let user_id = localStorage.getItem("user_id");
       let exam_id = this.state.exam_id;
       if (user_id === null || exam_id === -1) return;
-      let new_exam_recording = createExamRecording(user_id, exam_id);
+      const exam_recording_id = shortId.generate();
+      console.log(this.state)
+      localStorage.setItem('exam_recording_id', exam_recording_id);
+      let new_exam_recording = await createExamRecording(exam_id, user_id);
+      if(new_exam_recording !== null) localStorage.setItem('exam_duration', new_exam_recording.duration);
+       console.log(new_exam_recording);
+      window.location.href = `/examinee/exam/${exam_recording_id}`
       // this has all the stuff we need - we've stored all the exam info in the state as well when we use getExamByLoginCode()
       /* e.g.
         {
@@ -159,31 +172,32 @@ class ExamStartPage extends Component {
         }
       */
     }
-    
+
   }
 
   render() {
     return (
       <BrowserRouter>
-        <div className="App">
-          <Body>
-            <Title style={{ textAlign: "center" }}>
-              <img src={logo} class="Uts-logo" alt="logo" />
-              <br></br>
-
-            </Title>
+        <body className="room">
+          <div className="enter-room-container">
             {this.state.exam_in_progress === null &&
-              <div>
+              <div style={{width: '100%'}}>
                 {this.state.exam_id === -1 &&
-                  <div class="text-center">
-                    <Text class="title-text">Find your Exam by Login Code</Text>
-                    <br></br>
-                    <div class="exam-rules">
-                      <Form.Control type="text" placeholder="Exam Login Code" value={this.state.login_code} onChange={this.onChangeLoginCode} />
-                      <Button variant="outline-dark" className="button" style={{ width: '100%' }} onClick={this.getExamByLoginCode}>
-                        Find Exam
-                  </Button>
-                    </div>
+                  <div>
+                    <Form>
+                      <input
+                        type="text"
+                        placeholder="Exam Login Code"
+                        value={this.state.login_code}
+                        onChange={this.onChangeLoginCode}
+                      />
+                      <Button
+                        variant="outline-light"
+                        onClick={this.getExamByLoginCode}
+                      >
+                        Enter Room
+                      </Button>
+                    </Form>
                     {this.state.not_found &&
                       <div class="my-3">
                         <Text style={{ color: 'var(--danger)' }}>
@@ -194,7 +208,7 @@ class ExamStartPage extends Component {
                   </div>
                 }
                 {this.state.exam_id !== -1 &&
-                  <div class="text-center">
+                  <div class="text-center" style={{color: 'white'}}>
                     <h3>You are about to start</h3>
                     <h1 class="title-text"><strong>{this.state.exam_name}</strong></h1>
                     <h3>for Subject ID {this.state.subject_id}</h3>
@@ -204,7 +218,7 @@ class ExamStartPage extends Component {
                     <Text class="title-text">You have {this.state.duration} to complete it.</Text>
                     <br />
                     <div class="exam-rules mt-5">
-                      <Button variant="outline-dark" className="button" style={{ width: '100%' }} onClick={this.startExam}>
+                      <Button variant="outline-light" className="button" style={{ width: '100%' }} onClick={this.startExam}>
                         Start Exam
                   </Button>
                     </div>
@@ -213,7 +227,7 @@ class ExamStartPage extends Component {
               </div>
             }
             {this.state.exam_in_progress !== null &&
-              <div class="text-center">
+              <div class="text-center" style={{color: 'white'}}>
                 <h3>You have an exam in progress:</h3>
                 <h1 class="title-text"><strong>{this.state.exam_in_progress["exam_name"]}</strong></h1>
                 <h3>for Subject ID {this.state.exam_in_progress["subject_id"]}</h3>
@@ -222,15 +236,15 @@ class ExamStartPage extends Component {
                 <Text class="title-text">Your exam will automatically finish at {this.state.exam_in_progress["latest_end_time"]}.</Text>
                 <br />
                 <div class="exam-rules mt-5">
-                  <Button variant="outline-dark" className="button" style={{ width: '100%' }} onClick={this.startExam}>
+                  <Button variant="outline-light" className="button" style={{ width: '100%' }} onClick={this.startExam}>
                     Continue Exam
                   </Button>
                 </div>
               </div>
             }
 
-          </Body>
-        </div>
+          </div>
+        </body>
       </BrowserRouter>
     );
   }

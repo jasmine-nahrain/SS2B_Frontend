@@ -52,8 +52,8 @@ class ExamPage extends React.Component {
     const socket = io(process.env.REACT_APP_SIGNALING_SERVER);
     const component = this;
     this.setState({ socket });
-    const { roomId } = this.props.match.params.roomId;
-    console.log(this.props.match.params.roomId)
+    const { roomId } = this.props.match.params;
+    console.log(this.props.match.params)
     this.getUserMedia().then(() => {
       socket.emit("join", { roomId: roomId });
     });
@@ -87,6 +87,7 @@ class ExamPage extends React.Component {
       duration: duration
     });
     console.log(user_id);
+    console.log(socket)
   }
 
   setAudioLocal(){
@@ -186,6 +187,8 @@ class ExamPage extends React.Component {
     this.setState({
       isActive: !this.state.isActive,
     });
+    console.log(this.state);
+
     // this.btnReview.setAttribute("disabled", "disabled");
     this.btnReview.setAttribute("visibility", "hidden");
   };

@@ -10,7 +10,6 @@ import EditExam from './Examiner/edit_exam.js';
 import ExamRules from './Examinee/exam_rules.js';
 import PersonalDeskCheck from './Examinee/personal_desk_check.js';
 import ExamStartPage from './Examinee/exam_startpage.js';
-import GoToRoom from './Examinee/goToRoomInput.js';
 import FaceUpload from './Examinee/user_image_upload.js';
 import FaceAuth from './Examinee/user_image_auth.js';
 import ExamPage from './Examinee/exam_page.js';
@@ -72,11 +71,6 @@ class App extends Component {
           <Route exact={true} path='/examinee/start' render={() => (
             <div className="App">
               <ExamStartPage />
-            </div>
-          )} />
-          <Route exact={true} path='/examinee/enter' render={() => (
-            <div className="App">
-              <GoToRoom />
             </div>
           )} />
           <Route exact={true} path='/examinee/exam/:roomId' render={() => (

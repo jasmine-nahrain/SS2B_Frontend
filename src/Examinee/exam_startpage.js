@@ -128,49 +128,22 @@ class ExamStartPage extends Component {
 
   startExam = async () => {
     if (this.state.exam_in_progress) {
-      this.getExamsInProgress();
-      const exam_recording_id = localStorage.getItem('exam_recording_id');
       localStorage.setItem('exam_duration', this.state.exam_in_progress.duration);
+      localStorage.setItem('exam_recording_id', this.state.exam_in_progress.exam_recording_id);
       console.log(this.state)
-      window.location.href = `/examinee/exam/${exam_recording_id}`
-      // this.state.exam_in_progress has all the fields like exam_id, exam_Recording_id and whatnot - refer to getExamsInProgress()
-      /* e.g.
-      this.setState({
-        exam_in_progress: {
-          "exam_id": exam_in_progress["exam_id"],
-          "exam_name": exam_in_progress["exam_name"],
-          "exam_recording_id": exam_in_progress["exam_recording_id"],
-          "exam_login_code":exam_in_progress["login_code"],
-          "subject_id": exam_in_progress["subject_id"],
-          "time_started": time_started.toLocaleString(),
-          "duration":exam_in_progress["duration"],
-          "latest_end_time": latest_end_time.toLocaleString(),
-          "user_id": exam_in_progress["user_id"]
-        }
-      });
-      */
+      window.location.href = `/examinee/exam/${this.state.exam_in_progress.exam_recording_id}`
     } else {
       let user_id = localStorage.getItem("user_id");
       let exam_id = this.state.exam_id;
       if (user_id === null || exam_id === -1) return;
-      const exam_recording_id = shortId.generate();
       console.log(this.state)
-      localStorage.setItem('exam_recording_id', exam_recording_id);
       let new_exam_recording = await createExamRecording(exam_id, user_id);
-      if(new_exam_recording !== null) localStorage.setItem('exam_duration', new_exam_recording.duration);
+      if(new_exam_recording !== null) {
+        localStorage.setItem('exam_duration', new_exam_recording.duration);
+        localStorage.setItem('exam_recording_id', new_exam_recording.exam_recording_id);
+      }
        console.log(new_exam_recording);
-      window.location.href = `/examinee/exam/${exam_recording_id}`
-      // this has all the stuff we need - we've stored all the exam info in the state as well when we use getExamByLoginCode()
-      /* e.g.
-        {
-            "exam_id": 1231,
-            "exam_recording_id": 13124,
-            "time_ended": null,
-            "time_started": "2020-09-08 11:42:10",
-            "user_id": 1224234,
-            "video_link": null
-        }
-      */
+      window.location.href = `/examinee/exam/${new_exam_recording.exam_recording_id}`
     }
 
   }

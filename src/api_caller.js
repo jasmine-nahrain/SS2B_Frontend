@@ -1,11 +1,28 @@
 const proxy = 'http://127.0.0.1:8000/api/';
-const token = localStorage.getItem('token');
+//const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE5MTY0ODAsImlhdCI6MTYwMTkxNDY4MCwic3ViIjo4OTI3Mzk4fQ.O5hY-UK41Ztphxcq6gEA-5d-1JGLT5TXzOStzuxReNE";
 /*
 API GET EXAMS to return list of exams
 Status codes: 200 OK
 */
+
+class MissingTokenError extends Error {
+    constructor() {
+        super("Authentication token is missing.")
+        this.name = "MissingTokenError"
+    }
+}
+
+const getToken = () => {
+    let token = localStorage.getItem('token');
+    if (token === null) throw new MissingTokenError();
+    return token;
+}
+
 export const getExams = async (parameters=null) => {
     try {
+        let token = localStorage.getItem('token');
+        if (token === null) throw new MissingTokenError();
+
         let params = '?'
         if (parameters !== null) {
             for (var k in parameters) {
@@ -13,7 +30,7 @@ export const getExams = async (parameters=null) => {
             }
         }
         const url = proxy + "examiner/exam" + params;
-        
+
         const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -23,11 +40,11 @@ export const getExams = async (parameters=null) => {
         });
 
         let parsedData = await response.json();
-        const status = await response.status;
+        const status = response.status;
 
-        console.log('parsedData:', parsedData);
-        console.log('status:', status);
-        console.log('response: ', response)
+        // console.log('parsedData:', parsedData);
+        // console.log('status:', status);
+        // console.log('response: ', response)
         if (status === 200) return parsedData;
 
     } catch (error) {
@@ -41,9 +58,22 @@ export const getExams = async (parameters=null) => {
 API GET EXAMINEES to return list of exams
 Status codes: 200 OK
 */
-export const getExaminees = async () => {
+export const getExaminees = async (parameters=null) => {
     try {
-        const url = proxy + "examiner/examinee";
+
+        let token = localStorage.getItem('token');
+        if (token === null) throw new MissingTokenError();
+
+        let params = '?';
+        if (parameters !== null) {
+            
+            for (var k in parameters) {
+                if (parameters.hasOwnProperty(k)) {
+                   params += "&"+k+"="+parameters[k];
+                }
+            }
+        }
+        const url = proxy + "examiner/examinee" + params;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -52,19 +82,20 @@ export const getExaminees = async () => {
                 "Authorization": token
             },
         });
-
+        // console.log(parameters);
         let parsedData = await response.json();
-        const status = await response.status;
+        const status = response.status;
 
-        console.log('parsedData:', parsedData);
-        console.log('status:', status);
+        // console.log('parsedData:', parsedData);
+        // console.log('status:', status);
         if (status === 200) return parsedData;
 
     } catch (error) {
+        console.error(error.stack || error);
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return [[]];
+    return {'users':[], 'next_page_exists':false};;
 }
 
 /*
@@ -72,36 +103,38 @@ API Create Exam to save new exam to db
 Status codes: 200 OK
 */
 export const createExam = async (exam_name, subject_id, start_date, end_date, duration) => {
-  try{
-    const url = proxy + "examiner/exam/create";
-    const data = JSON.stringify({
-        "exam_name": exam_name,
-        "subject_id": subject_id,
-        "start_date": start_date,
-        "end_date": end_date,
-        "duration": duration,
-    });
+    try {
+        let token = getToken();
 
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token
-        },
-        body: data
-    });
+        const url = proxy + "examiner/exam/create";
+        const data = JSON.stringify({
+            "exam_name": exam_name,
+            "subject_id": subject_id,
+            "start_date": start_date,
+            "end_date": end_date,
+            "duration": duration,
+        });
 
-    const status = await response.status;
-    let parsedData = await response.json();
-    console.log(data);
-    console.log(status);
-    console.log(response);
-    if(status === 201 || status == 200) return parsedData;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: data
+        });
 
-  } catch (error) {
-      console.log(error);
-      alert(`An error occured: "${error}"`);
-  }
+        const status = response.status;
+        let parsedData = await response.json();
+        // console.log(data);
+        // console.log(status);
+        // console.log(response);
+        if (status === 201 || status == 200) return parsedData;
+
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
 }
 
 /*
@@ -111,7 +144,7 @@ Status codes: 200 OK, 400 BAD REQUEST, 500 INTERNAL SERVER ERROR
 export const deskcheck = async(image) => {
     try {
         // Needs to be updated so it gets token as per other branch and throws error if not found
-
+        let token = getToken();
         const url = proxy + "examinee/deskcheck";
 
         // Creates form data object and adds image <-- not sure how to do this part
@@ -158,17 +191,23 @@ Status codes: 200 OK, 400 BAD REQUEST
 export const uploadFaceImage = async(user_id, image, authenticate=true) => {
     try {
         // Can either choose to upload image to authenticate or upload new image
+        let token = 'null';
+        if (authenticate) token = getToken();
+
         let url = proxy;
         if (authenticate) url += "examinee/face_authentication";
         else url += "examinee/upload_face";
 
         // Creates form data object and adds image & user id <-- not sure how to do get an image here
         var formdata = new FormData();
-        //formdata.append("image", fileInput.files[0], "/C:/Users/Justin/Desktop/image1.jpg");
         formdata.append("user_id", user_id);
+        formdata.append("image", image);
 
         var requestOptions = {
             method: 'POST',
+            headers: {
+                "Authorization": token
+            },
             body: formdata,
             redirect: 'follow'
         };
@@ -197,36 +236,39 @@ API Edit Exam to save new exam to db
 Status codes: 200 OK
 */
 export const editExam = async (exam_id, exam_name, subject_id, start_date, end_date, duration) => {
-  try{
-    const url = proxy + "examiner/exam/update";
-    const data = JSON.stringify({
-        "exam_id": exam_id,
-        "exam_name": exam_name,
-        "subject_id": subject_id,
-        "start_date": start_date,
-        "end_date": end_date,
-        "duration": duration,
-    });
+    try {
+        let token = getToken();
 
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token
-        },
-        body: data
-    });
+        const url = proxy + "examiner/exam/update";
+        const data = JSON.stringify({
+            "exam_id": exam_id,
+            "exam_name": exam_name,
+            "subject_id": subject_id,
+            "start_date": start_date,
+            "end_date": end_date,
+            "duration": duration,
+        });
 
-    const status = await response.status;
-    let parsedData = await response;
-    console.log(parsedData);
-    console.log(status);
-    return status === 201 || status == 200
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: data
+        });
 
-  } catch (error) {
-      console.log(error);
-      alert(`An error occured: "${error}"`);
-  }
+        const status = response.status;
+        let parsedData = await response.json();
+        // console.log(parsedData);
+        // console.log(status);
+        return status === 201 || status == 200
+
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
+    return null;
 }
 
 /*
@@ -235,6 +277,8 @@ Status codes: 200 OK, 400 Bad Request, 500 Internal Server Error
 */
 export const deleteExam = async (exam_id) => {
     try {
+        let token = getToken();
+
         const url = proxy + "examiner/exam/delete/" + exam_id;
 
         //console.log('data:', data);
@@ -246,7 +290,7 @@ export const deleteExam = async (exam_id) => {
             }
         });
 
-        const status = await response.status;
+        const status = response.status;
         //console.log('status:', status);
         return status === 200;
     } catch (error) {
@@ -268,9 +312,9 @@ export const healthCheck = async () => {
             method: 'GET'
         });
 
-        const status = await response.status;
-        console.log('health response:', response);
-        console.log('health status:', status);
+        const status = response.status;
+        // console.log('health response:', response);
+        // console.log('health status:', status);
         return status === 200;
     } catch (error) {
         console.log(error);
@@ -286,6 +330,7 @@ Status codes: 200 OK
 */
 export const getExamRecording = async (parameters=null) => {
     try {
+        let token = getToken();
         let params = '?'
         if (parameters !== null) {
             for (var k in parameters) {
@@ -303,11 +348,11 @@ export const getExamRecording = async (parameters=null) => {
         });
 
         let parsedData = await response.json();
-        const status = await response.status;
+        const status = response.status;
 
-        console.log('parsedData:', parsedData);
-        console.log('status:', status);
-        console.log('response: ', response)
+        // console.log('parsedData:', parsedData);
+        // console.log('status:', status);
+        // console.log('response: ', response)
         if (status === 200) return parsedData;
 
     } catch (error) {
@@ -322,34 +367,37 @@ API Create Exam Recording to save new exam recording to db
 Status codes: 200 OK
 */
 export const createExamRecording = async (exam_id, user_id, time_started) => {
-  try{
-    const url = proxy + "examinee/exam_recording/create";
-    const data = JSON.stringify({
-        "exam_id": exam_id,
-        "user_id": user_id,
-        "time_started": time_started,
-    });
+    try {
+        let token = getToken();
 
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token
-        },
-        body: data
-    });
+        const url = proxy + "examinee/exam_recording/create";
+        const data = JSON.stringify({
+            "exam_id": exam_id,
+            "user_id": user_id,
+            "time_started": time_started,
+        });
 
-    const status = await response.status;
-    let parsedData = await response.json();
-    console.log(data);
-    console.log(status);
-    console.log(response);
-    if(status === 201 || status == 200) return parsedData;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: data
+        });
 
-  } catch (error) {
-      console.log(error);
-      alert(`An error occured: "${error}"`);
-  }
+        const status = response.status;
+        let parsedData = await response.json();
+        // console.log(data);
+        // console.log(status);
+        // console.log(response);
+        if (status === 201 || status == 200) return parsedData;
+
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
+    return null;
 }
 
 
@@ -358,33 +406,36 @@ API Edit Exam Recording to save new exam recording to db
 Status codes: 200 OK
 */
 export const editExamRecording = async (action, exam_recording_id) => {
-  try{
-    const url = proxy + "examinee/exam_recording/update";
-    const data = JSON.stringify({
-        "action": action,
-        "exam_recording_id": exam_recording_id,
-    });
+    try {
+        let token = getToken();
 
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token
-        },
-        body: data
-    });
+        const url = proxy + "examinee/exam_recording/update";
+        const data = JSON.stringify({
+            "action": action,
+            "exam_recording_id": exam_recording_id,
+        });
 
-    const status = await response.status;
-    let parsedData = await response.json();
-    console.log(data);
-    console.log(status);
-    console.log(response);
-    if(status === 201 || status == 200) return parsedData;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: data
+        });
 
-  } catch (error) {
-      console.log(error);
-      alert(`An error occured: "${error}"`);
-  }
+        const status = response.status;
+        let parsedData = await response.json();
+        // console.log(data);
+        // console.log(status);
+        // console.log(response);
+        if (status === 201 || status == 200) return parsedData;
+
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
+    return null;
 }
 
 /*
@@ -393,6 +444,8 @@ export const editExamRecording = async (action, exam_recording_id) => {
 */
 export const deleteExamRecording = async (exam_recording_id, user_id, password) => {
     try {
+        let token = getToken();
+
         const url = proxy + "examiner/exam_recording/" + exam_recording_id;
         const data = JSON.stringify({
             "user_id": user_id,
@@ -409,7 +462,7 @@ export const deleteExamRecording = async (exam_recording_id, user_id, password) 
             body: data
         });
 
-        const status = await response.status;
+        const status = response.status;
         //console.log('status:', status);
         return status === 200;
     } catch (error) {
@@ -425,6 +478,8 @@ Status codes: 200 OK
 */
 export const getExamWarning = async () => {
     try {
+        let token = getToken();
+
         const url = proxy + "examiner/exam_warning";
 
         const response = await fetch(url, {
@@ -436,18 +491,18 @@ export const getExamWarning = async () => {
         });
 
         let parsedData = await response.json();
-        const status = await response.status;
+        const status = response.status;
 
-        console.log('parsedData:', parsedData);
-        console.log('status:', status);
-        console.log('response: ', response)
+        // console.log('parsedData:', parsedData);
+        // console.log('status:', status);
+        // console.log('response: ', response)
         if (status === 200) return parsedData;
 
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return [[]];
+    return {'exam_warnings':[], 'next_page_exists':false};
 }
 
 /*
@@ -455,34 +510,37 @@ API Create Exam warning to save new exam recording to db
 Status codes: 200 OK
 */
 export const createExamWarning = async (exam_recording_id, warning_time, description) => {
-  try{
-    const url = proxy + "examiner/exam_warning/create";
-    const data = JSON.stringify({
-        "exam_recording_id": exam_recording_id,
-        "warning_time": warning_time,
-        "description": description,
-    });
+    try {
+        let token = getToken();
 
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token
-        },
-        body: data
-    });
+        const url = proxy + "examiner/exam_warning/create";
+        const data = JSON.stringify({
+            "exam_recording_id": exam_recording_id,
+            "warning_time": warning_time,
+            "description": description,
+        });
 
-    const status = await response.status;
-    let parsedData = await response.json();
-    console.log(data);
-    console.log(status);
-    console.log(response);
-    if(status === 201 || status == 200) return parsedData;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: data
+        });
 
-  } catch (error) {
-      console.log(error);
-      alert(`An error occured: "${error}"`);
-  }
+        const status = response.status;
+        let parsedData = await response.json();
+        // console.log(data);
+        // console.log(status);
+        // console.log(response);
+        if (status === 201 || status == 200) return parsedData;
+
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
+    return null;
 }
 
 
@@ -491,59 +549,57 @@ API Edit Exam warning to save new exam recording to db
 Status codes: 200 OK
 */
 export const editExamWarning = async (exam_warning_id, warning_time, description) => {
-  try{
-    const url = proxy + "examiner/exam_warning/update";
-    const data = JSON.stringify({
-      "exam_warning_id": exam_warning_id,
-      "warning_time": warning_time,
-      "description": description,
-    });
+    try {
+        let token = getToken();
 
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token
-        },
-        body: data
-    });
+        const url = proxy + "examiner/exam_warning/update";
+        const data = JSON.stringify({
+            "exam_warning_id": exam_warning_id,
+            "warning_time": warning_time,
+            "description": description,
+        });
 
-    const status = await response.status;
-    let parsedData = await response.json();
-    console.log(data);
-    console.log(status);
-    console.log(response);
-    if(status === 201 || status == 200) return parsedData;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: data
+        });
 
-  } catch (error) {
-      console.log(error);
-      alert(`An error occured: "${error}"`);
-  }
+        const status = response.status;
+        let parsedData = await response.json();
+        // console.log(data);
+        // console.log(status);
+        // console.log(response);
+        if (status === 201 || status == 200) return parsedData;
+
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
+    return null;
 }
 
 /*
  * DELETES exam warning
  * Status codes: 200 OK, 400 Bad Request, 500 Internal Server Error
 */
-export const deleteExamWarning = async (exam_warning_id, email, password) => {
+export const deleteExamWarning = async (exam_warning_id) => {
     try {
-        const url = proxy + "examiner/exam_warning/delete/" + exam_warning_id;
-        const data = JSON.stringify({
-            "email": email,
-            "password": password,
-        });
+        let token = getToken();
 
-        //console.log('data:', data);
+        const url = proxy + "examiner/exam_warning/delete/" + exam_warning_id;
+
         const response = await fetch(url, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json',
                 "Authorization": token
-            },
-            body: data
+            }
         });
 
-        const status = await response.status;
+        const status = response.status;
         //console.log('status:', status);
         return status === 200;
     } catch (error) {

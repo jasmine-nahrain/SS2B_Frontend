@@ -90,7 +90,7 @@ class ExamineeLogin extends Component {
               <Text>Exam Login</Text>
             </Title>
             <Form.Group controlId="formBasicEmail">
-              <Form.Control type="text" name="user_id" placeholder="User Id" value={this.state.user_id} onChange={this.onChangeUserId} required/>
+              <Form.Control type="text" name="user_id" placeholder="Student ID" value={this.state.user_id} onChange={this.onChangeUserId} required/>
             </Form.Group>
 
             <Form.Group controlId="formBasicPassword">

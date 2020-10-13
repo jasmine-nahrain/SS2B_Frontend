@@ -5,6 +5,7 @@ import logo from "../images/logo_white.png";
 import CountDownTimer from "./timer.js";
 import styled from "styled-components";
 import VideoCall from "./scripts/video_call.js";
+import { Button } from "react-bootstrap";
 import { getDisplayStream } from "./scripts/MediaAccess";
 import io from "socket.io-client";
 import "./exampage.css";
@@ -182,7 +183,8 @@ class ExamPage extends React.Component {
     this.setState({
       isActive: !this.state.isActive,
     });
-    this.btnReview.setAttribute("disabled", "disabled");
+    // this.btnReview.setAttribute("disabled", "disabled");
+    this.btnReview.setAttribute("visibility", "hidden");
   };
 
   render() {
@@ -207,25 +209,21 @@ class ExamPage extends React.Component {
           {this.state.is_examiner && (
             <div id="createBroadcast">
               <section>
-                <input
+                <h6
                   type="text"
                   id="user_id"
-                  value={this.state.user_id}
                   disabled
-                />
+                >User ID: {this.state.user_id}</h6>
                 {this.state.isActive ? <CountDownTimer /> : null}
-                <button
+                { !this.state.isActive ? <Button
                   type="button"
                   id="setup-new-broadcast"
-                  class="btn btn-warning"
+                  variant="outline-dark"
                   onClick={this.handleToggle}
                   ref={(btnReview) => {
                     this.btnReview = btnReview;
-                  }}
-                  disabled={this.state.isActive}
-                >
-                  Start Exam
-                </button>
+                  }}> Start Exam </Button>
+                  : ""}
 
                 <div className="controls">
                   <button

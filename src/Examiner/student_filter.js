@@ -270,8 +270,7 @@ class StudentFilter extends Component {
       page_number: page_number,
       next_page_exists: data.next_page_exists,
       prev_page_exists: page_number>1,
-    });
-    getTimeRemaining(data.exam_recordings[0].time_started, "03:00:00");
+    }); 
   }
 
   nextPage = async () => {

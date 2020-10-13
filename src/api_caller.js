@@ -34,7 +34,7 @@ export const getExams = async (parameters=null) => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return null;
+    return {"exams":[], "next_page_exists":false};
 }
 
 /*
@@ -69,7 +69,7 @@ export const getExaminees = async (parameters=null) => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return null;
+    return {"users":[], "next_page_exists":false};
 }
 
 /*
@@ -320,7 +320,7 @@ export const getExamRecording = async (parameters=null) => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return null;
+    return {"exams_recordings":[], "next_page_exists":false};
 }
 
 /*

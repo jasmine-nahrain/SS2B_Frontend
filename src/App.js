@@ -10,6 +10,7 @@ import EditExam from './Examiner/edit_exam.js';
 import ExamRules from './Examinee/exam_rules.js';
 import PersonalDeskCheck from './Examinee/personal_desk_check.js';
 import ExamStartPage from './Examinee/exam_startpage.js';
+import GoToRoom from './Examinee/goToRoomInput.js';
 import ExamPage from './Examinee/exam_page.js';
 import ExaminerPortal from './Examiner/examiner_portal.js';
 import ExamineeEndPage from './Examinee/exam_endpage.js';
@@ -69,22 +70,27 @@ class App extends Component {
           <Route exact={true} path='/examinee/start' render={() => (
             <div className="App">
               <ExamStartPage />
-            </div> 
+            </div>
           )}/>
-          <Route exact={true} path='/examinee/exam' render={() => (
+          <Route exact={true} path='/examinee/enter' render={() => (
+            <div className="App">
+              <GoToRoom />
+            </div>
+          )}/>
+          <Route exact={true} path='/examinee/exam/:roomId' render={() => (
             <div className="App">
               <ExamPage />
-            </div> 
+            </div>
           )}/>
            <Route exact={true} path='/examiner/portal' render={() => (
             <div className="App">
               <ExaminerPortal />
-            </div> 
+            </div>
           )}/>
           <Route exact={true} path='/examinee/endpage' render={() => (
             <div className="App">
               <ExamineeEndPage/>
-            </div> 
+            </div>
           )}/>
           <Route exact={true} path='/examinee/redirect' render={() => (
             <div className="App">

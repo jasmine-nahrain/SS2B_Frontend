@@ -25,6 +25,7 @@
     "react-webcam": "^5.2.1",
     "react-webrtc": "^1.0.0",
     "rtcpeerconnection": "^8.4.0",
+    "shortid": "^2.2.15",
     "simple-peer": "^9.7.2",
     "socket.io": "^2.3.0",
     "styled-components": "^5.1.1",

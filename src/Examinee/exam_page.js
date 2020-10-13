@@ -8,6 +8,13 @@ import VideoCall from "./scripts/video_call.js";
 import { getDisplayStream } from "./scripts/MediaAccess";
 import io from "socket.io-client";
 import "./exampage.css";
+import {
+  ShareScreenIcon,
+  MicOnIcon,
+  MicOffIcon,
+  CamOnIcon,
+  CamOffIcon,
+} from "./scripts/Icons";
 
 const Header = styled.header`
   background-color: #2196f3;
@@ -40,19 +47,11 @@ class ExamPage extends React.Component {
   videoCall = new VideoCall();
 
   componentDidMount() {
-    const is_examiner = localStorage.getItem("is_examiner");
-    const user_id = localStorage.getItem("user_id");
-    const exam_id = localStorage.getItem("exam_id");
-    this.setState({
-      is_examiner: is_examiner,
-      user_id: user_id,
-      exam_id: exam_id,
-    });
-    console.log(user_id);
     const socket = io(process.env.REACT_APP_SIGNALING_SERVER);
     const component = this;
     this.setState({ socket });
-    const { roomId } = this.props.match.params;
+    const { roomId } = this.props.match.params.roomId;
+    console.log(this.props.match.params.roomId)
     this.getUserMedia().then(() => {
       socket.emit("join", { roomId: roomId });
     });
@@ -74,6 +73,38 @@ class ExamPage extends React.Component {
     socket.on("full", () => {
       component.setState({ full: true });
     });
+
+    const is_examiner = localStorage.getItem("is_examiner");
+    const user_id = localStorage.getItem("user_id");
+    const exam_id = localStorage.getItem("exam_id");
+    this.setState({
+      is_examiner: is_examiner,
+      user_id: user_id,
+      exam_id: exam_id,
+    });
+    console.log(user_id);
+  }
+
+  setAudioLocal(){
+    if(this.state.localStream.getAudioTracks().length>0){
+      this.state.localStream.getAudioTracks().forEach(track => {
+        track.enabled=!track.enabled;
+      });
+    }
+    this.setState({
+      micState:!this.state.micState
+    })
+  }
+
+  setVideoLocal(){
+    if(this.state.localStream.getVideoTracks().length>0){
+      this.state.localStream.getVideoTracks().forEach(track => {
+        track.enabled=!track.enabled;
+      });
+    }
+    this.setState({
+      camState:!this.state.camState
+    })
   }
 
   getUserMedia(cb) {
@@ -113,6 +144,39 @@ class ExamPage extends React.Component {
       this.state.peer.addStream(stream);
     });
   }
+
+  enter = roomId => {
+    this.setState({ connecting: true });
+    const peer = this.videoCall.init(
+      this.state.localStream,
+      this.state.initiator
+    );
+    this.setState({ peer });
+
+    peer.on('signal', data => {
+      const signal = {
+        room: roomId,
+        desc: data
+      };
+      this.state.socket.emit('signal', signal);
+    });
+    peer.on('stream', stream => {
+      this.remoteVideo.srcObject = stream;
+      this.setState({ connecting: false, waiting: false });
+    });
+    peer.on('error', function(err) {
+      console.log(err);
+    });
+  };
+
+  call = otherId => {
+    this.videoCall.connect(otherId);
+  };
+  renderFull = () => {
+    if (this.state.full) {
+      return 'The room is full';
+    }
+  };
 
   handleToggle = () => {
     this.setState({
@@ -162,6 +226,35 @@ class ExamPage extends React.Component {
                 >
                   Start Exam
                 </button>
+
+                <div className="controls">
+                  <button
+                    className="control-btn"
+                    onClick={() => {
+                      this.getDisplay();
+                    }}
+                  >
+                    <ShareScreenIcon />
+                  </button>
+
+                  <button
+                    className="control-btn"
+                    onClick={() => {
+                      this.setAudioLocal();
+                    }}
+                  >
+                    {this.state.micState ? <MicOnIcon /> : <MicOffIcon />}
+                  </button>
+
+                  <button
+                    className="control-btn"
+                    onClick={() => {
+                      this.setVideoLocal();
+                    }}
+                  >
+                    {this.state.camState ? <CamOnIcon /> : <CamOffIcon />}
+                  </button>
+                </div>
               </section>
             </div>
           )}

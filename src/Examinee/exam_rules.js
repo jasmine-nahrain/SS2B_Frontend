@@ -50,7 +50,7 @@ class ExamRules extends Component {
                 <h1 class="exam-name title-text">{this.state.examName}</h1>
                 <h1 class="exam-name title-text">{this.state.examTime}</h1>
                 <br></br>
-                
+
               </Title>
               <Text class="title-text">Exam Rules</Text>
                 <br></br>
@@ -85,7 +85,7 @@ class ExamRules extends Component {
                   </div>
                 </div>
                 <div class="exam-rules-button">
-                  <Button variant="outline-dark" className="button" style={{width: '100%'}} href='start'>
+                  <Button variant="outline-dark" className="button" style={{width: '100%'}} href='/examinee/enter'>
                       Accept Exam Rules
                   </Button>
                 </div>

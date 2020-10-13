@@ -330,12 +330,12 @@ Status codes: 200 OK
 export const createExamRecording = async (exam_id, user_id) => {
     try {
         let token = getToken();
-        const time_started = new Date().toLocaleTimeString('it-IT');
+        //const time_started = new Date().toLocaleTimeString('it-IT');
         const url = proxy + "examinee/exam_recording/create";
         const data = JSON.stringify({
             "exam_id": exam_id,
-            "user_id": user_id,
-            "time_started": time_started,
+            "user_id": user_id
+            //"time_started": time_started,
         });
 
         const response = await fetch(url, {
@@ -365,33 +365,40 @@ export const createExamRecording = async (exam_id, user_id) => {
 /*
 API Edit Exam Recording to save new exam recording to db
 Status codes: 200 OK
+Possible values for action include "end" and "update_link", "end" by default
 */
-export const editExamRecording = async (action, exam_recording_id) => {
+export const editExamRecording = async (exam_recording_id, action="end", video_link=null) => {
     try {
         let token = getToken();
 
         const url = proxy + "examinee/exam_recording/update";
-        const data = JSON.stringify({
-            "action": action,
-            "exam_recording_id": exam_recording_id,
-        });
+        action = action.toLowerCase();
 
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
-            },
-            body: data
-        });
-
-        const status = response.status;
-        let parsedData = await response.json();
-        // console.log(data);
-        // console.log(status);
-        // console.log(response);
-        if (status === 201 || status == 200) return parsedData;
-
+        if (["end","update_link"].includes(action)) {
+            // Fine for video_link to be null - if action is end, it'll be ignored
+            const data = JSON.stringify({
+                "action": action,
+                "exam_recording_id": exam_recording_id,
+                "video_link": video_link
+            });
+    
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                },
+                body: data
+            });
+    
+            const status = response.status;
+            let parsedData = await response.json();
+            // console.log(data);
+            // console.log(status);
+            // console.log(response);
+            if (status === 201 || status == 200) return parsedData;
+        }
+        
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
@@ -403,15 +410,11 @@ export const editExamRecording = async (action, exam_recording_id) => {
  * DELETES exam recording
  * Status codes: 200 OK, 400 Bad Request, 500 Internal Server Error
 */
-export const deleteExamRecording = async (exam_recording_id, user_id, password) => {
+export const deleteExamRecording = async (exam_recording_id) => {
     try {
         let token = getToken();
 
         const url = proxy + "examiner/exam_recording/" + exam_recording_id;
-        const data = JSON.stringify({
-            "user_id": user_id,
-            "password": password,
-        });
 
         //console.log('data:', data);
         const response = await fetch(url, {
@@ -419,8 +422,7 @@ export const deleteExamRecording = async (exam_recording_id, user_id, password) 
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": token
-            },
-            body: data
+            }
         });
 
         const status = response.status;

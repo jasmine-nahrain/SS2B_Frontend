@@ -439,11 +439,11 @@ export const deleteExamRecording = async (exam_recording_id) => {
 API GET EXAM Warning to return list of exams
 Status codes: 200 OK
 */
-export const getExamWarning = async () => {
+export const getExamWarning = async (parameters=null) => {
     try {
         let token = getToken();
-
-        const url = proxy + "examiner/exam_warning";
+        let params = convertToParamString(parameters);
+        const url = proxy + "examiner/exam_warning" + params;
 
         const response = await fetch(url, {
             method: 'GET',

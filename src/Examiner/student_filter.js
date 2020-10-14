@@ -86,10 +86,14 @@ var columns = [{
   text: 'View',
   events: {
     onClick: (e, column, columnIndex, row) => {
-      /*
-      window.location.href = '/' + row.video_link;
-      console.log(row.time_started);
-      */
+      localStorage.setItem('user_id', row['user_id'])
+      localStorage.setItem('exam_id', row['exam_id'])
+      localStorage.setItem('exam_duration', row['duration'])
+      localStorage.setItem('exam_name', row['exam_name'])
+      localStorage.setItem('time_started', formatDateToLocal(row['time_started']))
+      localStorage.setItem('student_name', row['first_name'] + " " + row['last_name'])
+      window.location.href = `/examinee/exam/${row.exam_recording_id}`
+      console.log(row['user_id']);
     },
   },
   formatter: (cellContent, row) => (
@@ -149,7 +153,7 @@ class StudentFilter extends Component {
         </Form.Row>
       </Form>
 
-      
+
     </div>
   )
 
@@ -270,7 +274,7 @@ class StudentFilter extends Component {
       page_number: page_number,
       next_page_exists: data.next_page_exists,
       prev_page_exists: page_number>1,
-    }); 
+    });
   }
 
   nextPage = async () => {

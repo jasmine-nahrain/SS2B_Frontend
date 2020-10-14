@@ -71,7 +71,7 @@ class ExamStartPage extends Component {
     if (user_id === null) return;
     let exams_in_progress_data = await getExamRecording({ "user_id": user_id, "in_progress": 1 });
       console.log(exams_in_progress_data);
-    if (exams_in_progress_data !== null) {
+    if (exams_in_progress_data !== null && exams_in_progress_data.exam_recordings.length > 0) {
       let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
 
       var offset = - (new Date()).getTimezoneOffset();

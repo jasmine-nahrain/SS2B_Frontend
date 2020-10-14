@@ -41,7 +41,9 @@ class ExamPage extends React.Component {
       isActive: false,
       user_id: "",
       exam_id: "",
+      exam_name: "",
       is_examiner: Boolean,
+      student_name: "",
       video: "",
       duration: '',
       duration_warning: ""
@@ -77,19 +79,22 @@ class ExamPage extends React.Component {
       component.setState({ full: true });
     });
 
-    const is_examiner = localStorage.getItem("is_examiner");
+    const is_examiner = parseInt(localStorage.getItem("is_examiner"));
     const user_id = localStorage.getItem("user_id");
     const exam_id = localStorage.getItem("exam_id");
     const duration = localStorage.getItem("exam_duration");
-    console.log(duration)
+    const exam_name = localStorage.getItem("exam_name");
+    const student_name = localStorage.getItem("student_name");
+    const time_started = localStorage.getItem("time_started");
     this.setState({
       is_examiner: is_examiner,
       user_id: user_id,
       exam_id: exam_id,
-      duration: duration
+      duration: duration,
+      exam_name: exam_name,
+      student_name: student_name,
+      time_started: time_started
     });
-    console.log(user_id);
-    console.log(socket)
   }
 
   setAudioLocal(){
@@ -218,7 +223,7 @@ class ExamPage extends React.Component {
           ref={(video) => (this.localVideo = video)}
         />
         <section class="experiment">
-          {this.state.is_examiner && (
+          {!this.state.is_examiner ? (
             <div id="createBroadcast">
               <section>
                 <h6
@@ -268,10 +273,15 @@ class ExamPage extends React.Component {
                 </div>
               </section>
             </div>
-          )}
-          {!this.state.is_examiner && (
+          ) : (
             <div id="listStudents">
               <table style={{ width: "100%" }} id="rooms-list"></table>
+              <h6><b>Student ID:</b> {this.state.user_id}</h6>
+              <h6><b>Student Name:</b> {this.state.student_name}</h6>
+              <h6><b>Exam Name:</b> {this.state.exam_name}</h6>
+              <h6><b>Exam ID: </b>{this.state.exam_id}</h6>
+              <h6><b>Duration:</b> {this.state.duration}</h6>
+              <h6><b>Time Started:</b> {this.state.time_started}</h6>
             </div>
           )}
         </section>

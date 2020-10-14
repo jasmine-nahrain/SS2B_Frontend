@@ -5,7 +5,7 @@ import logo from "../images/logo_white.png";
 import CountDownTimer from "./timer.js";
 import styled from "styled-components";
 import VideoCall from "./scripts/video_call.js";
-import { Button } from "react-bootstrap";
+import { Button, Alert } from "react-bootstrap";
 import { getDisplayStream } from "./scripts/MediaAccess";
 import io from "socket.io-client";
 import "./exampage.css";
@@ -43,7 +43,8 @@ class ExamPage extends React.Component {
       exam_id: "",
       is_examiner: Boolean,
       video: "",
-      duration: ''
+      duration: '',
+      duration_warning: ""
     };
   }
   videoCall = new VideoCall();
@@ -80,6 +81,7 @@ class ExamPage extends React.Component {
     const user_id = localStorage.getItem("user_id");
     const exam_id = localStorage.getItem("exam_id");
     const duration = localStorage.getItem("exam_duration");
+    console.log(duration)
     this.setState({
       is_examiner: is_examiner,
       user_id: user_id,
@@ -193,6 +195,10 @@ class ExamPage extends React.Component {
     this.btnReview.setAttribute("visibility", "hidden");
   };
 
+  handleDurationWarning = (value) => {
+    this.setState({duration_warning: value});
+  }
+
   render() {
     return (
       <div className="App">
@@ -220,7 +226,8 @@ class ExamPage extends React.Component {
                   id="user_id"
                   disabled
                 >User ID: {this.state.user_id}</h6>
-                {this.state.isActive ? <CountDownTimer/> : null}
+                {this.state.isActive ? <CountDownTimer duration={this.state.duration} duration_warning={this.handleDurationWarning}/> : null}
+                {this.state.duration_warning ? <Alert variant='danger' style={{width: "30%", marginRight: 'auto', marginLeft: 'auto'}}>{this.state.duration_warning}</Alert> : ""}
                 { !this.state.isActive ? <Button
                   type="button"
                   id="setup-new-broadcast"

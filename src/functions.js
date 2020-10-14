@@ -112,7 +112,10 @@ export const formatDateToLocal = (dateString) => {
 export const getLatestEndTime = (timeStartedString, durationString) => {
   var offset = -(new Date()).getTimezoneOffset();
   var duration = new Date("1970-01-01 " + durationString);
-  var latest_end_time = new Date(timeStartedString);
+  var time = timeStartedString.split(', ');
+  var date = time[0].split('/');
+  var dur = time[1].split(':')
+  var latest_end_time = new Date(date[2], date[1]-1, date[0], dur[0], dur[1], dur[2]);
   latest_end_time.setMinutes(latest_end_time.getMinutes() + offset);
   latest_end_time.setHours(latest_end_time.getHours() + duration.getHours())
   latest_end_time.setMinutes(latest_end_time.getMinutes() + duration.getMinutes());
@@ -122,7 +125,6 @@ export const getLatestEndTime = (timeStartedString, durationString) => {
 export const getTimeRemaining = (timeStartedString, durationString) => {
   let latest_end_time = getLatestEndTime(timeStartedString, durationString)
   let current = new Date();
-
   let seconds_to_end = (latest_end_time-current)/1000;
   let remaining_hours = parseInt(seconds_to_end/3600);
   let remaining_minutes = parseInt((seconds_to_end/60)%60);

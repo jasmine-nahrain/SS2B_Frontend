@@ -7,7 +7,7 @@ import { getExams, getExamRecording, createExamRecording } from '../api_caller.j
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 import './exampage.css';
-import shortId from "shortid";
+import {getTimeRemaining} from '../functions.js';
 
 const Body = styled.body`
   background-color: white;
@@ -71,7 +71,7 @@ class ExamStartPage extends Component {
     if (user_id === null) return;
     let exams_in_progress_data = await getExamRecording({ "user_id": user_id, "in_progress": 1 });
       console.log(exams_in_progress_data);
-    if (exams_in_progress_data !== null && exams_in_progress_data["exam_recordings"].length) {
+    if (exams_in_progress_data !== null) {
       let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
 
       var offset = - (new Date()).getTimezoneOffset();
@@ -128,22 +128,27 @@ class ExamStartPage extends Component {
 
   startExam = async () => {
     if (this.state.exam_in_progress) {
-      localStorage.setItem('exam_duration', this.state.exam_in_progress.duration);
+      console.log(this.state.exam_in_progress.time_started)
+      console.log(this.state.exam_in_progress.duration)
+      const time = getTimeRemaining(this.state.exam_in_progress.time_started, this.state.exam_in_progress.duration);
+      console.log(time)
+      localStorage.setItem('exam_duration', time);
       localStorage.setItem('exam_recording_id', this.state.exam_in_progress.exam_recording_id);
-      console.log(this.state)
       window.location.href = `/examinee/exam/${this.state.exam_in_progress.exam_recording_id}`
     } else {
       let user_id = localStorage.getItem("user_id");
       let exam_id = this.state.exam_id;
       if (user_id === null || exam_id === -1) return;
-      console.log(this.state)
       let new_exam_recording = await createExamRecording(exam_id, user_id);
       if(new_exam_recording !== null) {
-        localStorage.setItem('exam_duration', new_exam_recording.duration);
+        localStorage.setItem('exam_duration', this.state.duration);
         localStorage.setItem('exam_recording_id', new_exam_recording.exam_recording_id);
+        console.log(new_exam_recording);
+        window.location.href = `/examinee/exam/${new_exam_recording.exam_recording_id}`
+      } else {
+        alert("Unable to start exam.");
+        window.location.href = '/examinee/start';
       }
-       console.log(new_exam_recording);
-      window.location.href = `/examinee/exam/${new_exam_recording.exam_recording_id}`
     }
 
   }

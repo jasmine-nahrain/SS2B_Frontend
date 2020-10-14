@@ -5,7 +5,8 @@ import { withRouter } from "react-router-dom";
 class CountDownTimer extends React.Component {
   constructor(props) {
     super(props);
-    const duration = localStorage.getItem("exam_duration").split(":");
+    const duration = localStorage.getItem("exam_duration").split(",");
+    console.log(duration)
     this.state = {
       hours: parseInt(duration[0]),
       minutes: parseInt(duration[1]),

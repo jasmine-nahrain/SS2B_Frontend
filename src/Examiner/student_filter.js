@@ -122,7 +122,7 @@ class StudentFilter extends Component {
       next_page_exists: false,
       prev_page_exists: false,
       in_progress: 1,
-      order_by: 'start_time',
+      order_by: 'time_started',
       order: 'desc',
       page_number: 1,
       results_length: 10
@@ -264,8 +264,8 @@ class StudentFilter extends Component {
       'is_examiner': 0,
       'page_number': page_number,
       'results_length': this.state.results_length,
-      'order_by': 'time_started',
-      'order': 'desc'
+      'order_by': this.state.order_by,
+      'order': this.state.order
     };
     let data = await getExamRecording(parameters);
     this.setState({

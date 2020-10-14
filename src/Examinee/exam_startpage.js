@@ -7,7 +7,9 @@ import { getExams, getExamRecording, createExamRecording } from '../api_caller.j
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 import './exampage.css';
-import {getTimeRemaining} from '../functions.js';
+import {getTimeRemaining, datetimeformat} from '../functions.js';
+import ExamWarnings from './exam_warnings'
+import moment from 'moment';
 
 const Body = styled.body`
   background-color: white;
@@ -70,7 +72,7 @@ class ExamStartPage extends Component {
     const user_id = localStorage.getItem("user_id");
     if (user_id === null) return;
     let exams_in_progress_data = await getExamRecording({ "user_id": user_id, "in_progress": 1 });
-      console.log(exams_in_progress_data);
+      //console.log(exams_in_progress_data);
     if (exams_in_progress_data !== null && exams_in_progress_data.exam_recordings.length > 0) {
       let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
 
@@ -128,10 +130,9 @@ class ExamStartPage extends Component {
 
   startExam = async () => {
     if (this.state.exam_in_progress) {
-      console.log(this.state.exam_in_progress.time_started)
-      console.log(this.state.exam_in_progress.duration)
-      const time = getTimeRemaining(this.state.exam_in_progress.time_started, this.state.exam_in_progress.duration);
-      console.log(time)
+      let time_started_f = moment(this.state.exam_in_progress.time_started).utc().format(datetimeformat);
+      const time = getTimeRemaining(time_started_f, this.state.exam_in_progress.duration);
+      localStorage.setItem('time_started', time_started_f);
       localStorage.setItem('exam_duration', time);
       localStorage.setItem('exam_recording_id', this.state.exam_in_progress.exam_recording_id);
       window.location.href = `/examinee/exam/${this.state.exam_in_progress.exam_recording_id}`

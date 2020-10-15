@@ -41,7 +41,7 @@ class EditExam extends Component {
     this.onChangeSubjectID = this.onChangeSubjectID.bind(this);
     this.onChangeDurationHours = this.onChangeDurationHours.bind(this);
     this.onChangeDurationMinutes = this.onChangeDurationMinutes.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
+    this.onUpdate = this.onUpdate.bind(this);
     this.onDelete = this.onDelete.bind(this);
 
     this.state = {
@@ -132,14 +132,17 @@ onChangeDurationMinutes(e) {
   });
 }
 
-  onSubmit = async (e) => {
+  onUpdate = async (e) => {
     e.preventDefault();
-
     let start_date = getDate(this.state.start_date, this.state.start_time);
     const duration = getTime(this.state.duration_hours, this.state.duration_minutes);
     let end_date = getDate(this.state.end_date, this.state.end_time);
 
-    editExam(this.state.exam_id, this.state.name, this.state.subjectID, start_date, end_date, duration);
+    let success = await editExam(this.state.exam_id, this.state.name, this.state.subjectID, start_date, end_date, duration);
+    if (success) window.location.href = '/examiner/manage';
+    else {
+      alert('Something went wrong!');
+    }
   }
 
   onDelete = async (e) => {
@@ -161,15 +164,17 @@ onChangeDurationMinutes(e) {
           <Body>
             <Form className="create-exam-background" onSubmit={this.onSubmit}>
               <Title style={{ textAlign: "center" }}>
-                <Text>Edit Exam #{this.state.exam_id}</Text>
+                <Text>Edit Exam</Text>
               </Title>
 
               <Col>
-                <Form.Group controlId="formName">
+                <Form.Group controlId="formName" style={{fontSize: '16px', marginRight: '10px'}}>
+                  <Form.Label>Exam Name</Form.Label>
                   <Form.Control type="text" name="name" placeholder="Exam Name" value={this.state.name} onChange={this.onChangeName} required />
                 </Form.Group>
 
-                <Form.Group controlId="formName">
+                <Form.Group controlId="formName" style={{fontSize: '16px', marginRight: '10px'}}>
+                  <Form.Label>Subject ID</Form.Label>
                   <Form.Control type="number" name="name" placeholder="Subject ID" value={this.state.subjectID} onChange={this.onChangeSubjectID} required />
                 </Form.Group>
 
@@ -184,12 +189,12 @@ onChangeDurationMinutes(e) {
                       onChange={this.onChangeStartDate}
                       required />
                   </Form.Group>
-                  <Form.Group controlId="formStartDate" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
+                  <Form.Group controlId="formStartTime" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
                     <Form.Label>Start Time</Form.Label>
                     <Form.Control
                       type="time"
-                      name="start_date"
-                      placeholder="Start Date"
+                      name="start_time"
+                      placeholder="Start Time"
                       dateFormat="hh:mm"
                       value={this.state.start_time}
                       locale="aest"
@@ -198,7 +203,7 @@ onChangeDurationMinutes(e) {
                       required />
                   </Form.Group>
 
-                  <Form.Group controlId="formStudentID" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
+                  <Form.Group controlId="formEndDate" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
                    <Form.Label>End Date</Form.Label>
                    <Form.Control
                      type="date"
@@ -210,19 +215,19 @@ onChangeDurationMinutes(e) {
                      onChange={this.onChangeEndDate}
                      required />
                  </Form.Group>
-                 <Form.Group controlId="formStartDate" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
+                 <Form.Group controlId="formEndTime" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
                    <Form.Label>End Time</Form.Label>
                    <Form.Control
                      type="time"
-                     name="start_date"
-                     placeholder="Start Date"
+                     name="end_time"
+                     placeholder="End Time"
                      dateFormat="hh:mm"
                      value={this.state.end_time}
                      onChange={this.onChangeEndTime}
                      required />
                  </Form.Group>
                 <h6>Duration</h6>
-                  <Form.Group controlId="formStartDate" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
+                  <Form.Group controlId="formDurationH" style={{fontSize: '16px', marginRight: '10px', width: '49%', float: 'left'}}>
                     <Form.Control
                       type="number"
                       name="duration_hours"
@@ -231,7 +236,7 @@ onChangeDurationMinutes(e) {
                       onChange={this.onChangeDurationHours}
                       required />
                   </Form.Group>
-                  <Form.Group controlId="formStartDate" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
+                  <Form.Group controlId="formDurationM" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
                     <Form.Control
                       type="number"
                       name="duration_minutes"
@@ -242,8 +247,9 @@ onChangeDurationMinutes(e) {
                   </Form.Group>
               </Col>
 
-              <Button variant="outline-dark" type="submit" className="button" style={{width: '100%', marginBottom: '1%'}}>Update</Button>
-              <Button variant="outline-danger" onClick={this.onDelete} className="button" style={{width: '100%'}}>Delete</Button>
+              <Button variant="outline-dark" onClick={this.onUpdate}  className="button" style={{width: '100%', marginBottom: '1%'}}>Update</Button>
+              <Button variant="outline-danger" onClick={this.onDelete} className="button" style={{width: '100%', marginBottom: '1%'}}>Delete</Button>
+              <Button variant="outline-secondary" href='/examiner/manage' className="button" style={{width: '100%'}}>Cancel</Button>
             </Form>
           </Body>
         </div>

@@ -110,7 +110,7 @@ class ManageExam extends Component {
       subject_id: "",
       next_page_exists: false,
       prev_page_exists: false,
-      current_datetime: moment.utc().add(2, 'hour').format(datetimeformat),
+      current_datetime: moment.utc().format(datetimeformat),
       in_progress: 1,
       order_by: 'start_time',
       order: 'desc',
@@ -153,8 +153,8 @@ class ManageExam extends Component {
 
     if (parseInt(in_progress) === 2) parameters['period_start'] = this.state.current_datetime
     else parameters['in_progress'] = in_progress;
-    console.log("params", parameters);
-    let data = await getExams();
+    //console.log("params", parameters);
+    let data = await getExams(parameters);
     //console.log("ez:", data);
     this.setState({
       table_data: data.exams,
@@ -186,7 +186,7 @@ class ManageExam extends Component {
               value={this.state.exam_name} onChange={this.onChangeExamName} />
           </Col>
 
-          <Button type="submit" onClick={this.getFilteredExams} class="btn btn-primary mt-2">Search</Button>
+          <Button onClick={this.getFilteredExams} class="btn btn-primary mt-2">Search</Button>
         </Form.Row>
       </Form>
     </div>
@@ -230,7 +230,7 @@ class ManageExam extends Component {
               <div class="containerAdmin admin-table">
                 <this.SearchFields />
                 {upcoming &&
-                  <a href='/examiner/create'><button class="btn btn-primary" style={{ float: 'left' }}>Create New Exam</button></a>
+                  <a href='/examiner/create'><button class="btn btn-primary btn-block my-3" style={{ float: 'left' }}>Create New Exam</button></a>
                 }
                 <br />
                 {this.state.table_data.length == 0 ? <p>{empty_message}</p> :

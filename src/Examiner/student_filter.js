@@ -149,7 +149,7 @@ class StudentFilter extends Component {
             <Form.Control style={searchBar} type="text" name="last_name" placeholder="Last Name"
               value={this.state.last_name} onChange={this.onChangeLastName} />
           </Col>
-            <Button type="submit" onClick={this.getFilteredExamRecordings} class="btn btn-primary mt-2">Search</Button>
+            <Button onClick={this.getFilteredExamRecordings} class="btn btn-primary mt-2">Search</Button>
         </Form.Row>
       </Form>
 

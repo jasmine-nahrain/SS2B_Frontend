@@ -29,7 +29,7 @@ const Header = styled.header`
 background-color: #2196f3;
 color: white;
 padding: 1%;
-margin-bottom: 3%;
+margin-bottom: 1%;
 `;
 
 const Dot = styled.span`
@@ -57,7 +57,7 @@ var columns = (upcoming) => {
     headerStyle: { background: '#007bff', color: 'white' }
   }, {
     dataField: 'exam_name',
-    text: 'Exam Name',
+    text: 'Exam',
     //sort: true,
     headerStyle: { background: '#007bff', color: 'white' }
   }, {
@@ -70,14 +70,19 @@ var columns = (upcoming) => {
     headerStyle: { background: '#007bff', color: 'white' }
   }, {
     dataField: 'start_date',
-    text: 'Start Date',
+    text: 'Starts',
     headerStyle: { background: '#007bff', color: 'white' },
     formatter: cell => formatDateToLocal(cell)
   }, {
     dataField: 'end_date',
-    text: 'End Date',
+    text: 'Ends',
     headerStyle: { background: '#007bff', color: 'white' },
     formatter: cell => formatDateToLocal(cell)
+  }, {
+    dataField: 'exam_recordings',
+    text: 'Attempts',
+    hidden: upcoming,
+    headerStyle: { background: '#007bff', color: 'white' }
   }, {
     dataField: 'edit',
     hidden: !upcoming,
@@ -261,8 +266,8 @@ class ManageExam extends Component {
           <div className="App">
             <Header >
               <h1><b>Exam List</b></h1>
-              <hr style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }} />
             </Header>
+            <a href="/examiner" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-1 btn-block" style={{width:'90%', marginLeft:'auto', marginRight: 'auto'}}>View Exam Attempts</button></a>
             <br />
             <Tabs onSelect={this.handleTabSelect} defaultActiveKey={2} id="manage" style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}>
               <Tab eventKey={2} title="Upcoming" style={{ backgroundColor: 'white' }} >

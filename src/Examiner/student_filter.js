@@ -19,7 +19,7 @@ const Header = styled.header`
 background-color: #2196f3;
 color: white;
 padding: 1%;
-margin-bottom: 3%;
+margin-bottom: 1%;
 `;
 
 const searchBar = {
@@ -75,12 +75,15 @@ var columns = [{
   //sort: true,
 }, {
   dataField: 'time_started',
-  text: 'Time Started',
+  text: 'Started',
   formatter: cell => formatDateToLocal(cell)
 }, {
   dataField: 'time_ended',
-  text: 'Time Ended',
+  text: 'Ended',
   formatter: cell => formatDateToLocal(cell)
+}, {
+  dataField: 'warning_count',
+  text: 'Warnings',
 }, {
   dataField: 'view',
   text: 'View',
@@ -134,7 +137,7 @@ class StudentFilter extends Component {
       <Form>
         <Form.Row>
           <Col>
-            <Form.Control style={searchBar} type="text" name="exam_name" placeholder="Exam"
+            <Form.Control style={searchBar} type="text" name="exam_name" placeholder="Exam Name"
               value={this.state.exam_name} onChange={this.onChangeExamName} />
           </Col>
           <Col>
@@ -295,6 +298,7 @@ class StudentFilter extends Component {
             <Header >
               <h1>Student List</h1>
             </Header>
+            <a href="/examiner/manage" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-4 btn-block" style={{width:'90%', marginLeft:'auto', marginRight: 'auto'}}>View Exams</button></a>
             <Tabs defaultActiveKey={1} id="manage" style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}
               onSelect={this.handleTabSelect}>
               <Tab eventKey={1} title="In Progress" style={{ backgroundColor: 'white' }} >

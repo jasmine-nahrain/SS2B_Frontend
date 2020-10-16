@@ -9,6 +9,7 @@ import { Button, Alert } from "react-bootstrap";
 import { getDisplayStream } from "./scripts/MediaAccess";
 import io from "socket.io-client";
 import "./exampage.css";
+
 import {
   ShareScreenIcon,
   MicOnIcon,
@@ -46,17 +47,19 @@ class ExamPage extends React.Component {
       student_name: "",
       video: "",
       duration: '',
-      duration_warning: ""
+      duration_warning: "",
+      stream_visible: true
     };
   }
   videoCall = new VideoCall();
 
   componentDidMount() {
-    const socket = io(process.env.REACT_APP_SIGNALING_SERVER);
+    const socket = io('http://localhost:8080');
     const component = this;
     this.setState({ socket });
     const { roomId } = this.props.match.params;
     console.log(this.props.match.params)
+
     this.getUserMedia().then(() => {
       socket.emit("join", { roomId: roomId });
     });
@@ -163,6 +166,8 @@ class ExamPage extends React.Component {
       this.state.localStream,
       this.state.initiator
     );
+
+    console.log("hfytuhj")
     this.setState({ peer });
 
     peer.on('signal', data => {
@@ -172,13 +177,19 @@ class ExamPage extends React.Component {
       };
       this.state.socket.emit('signal', signal);
     });
-    peer.on('stream', stream => {
-      this.remoteVideo.srcObject = stream;
-      this.setState({ connecting: false, waiting: false });
-    });
+      peer.on('stream', stream => {
+        if(this.state.is_examiner) {
+          this.remoteVideo.srcObject = stream;
+          this.localVideo.setAttribute("display", "none");
+        }
+        this.setState({ connecting: false, waiting: false });
+      });
     peer.on('error', function(err) {
       console.log(err);
     });
+    if(this.state.is_examiner && this.remoteVideo.srcObject === null) {
+      this.setState({stream_visible: false});
+    }
   };
 
   call = otherId => {
@@ -220,8 +231,10 @@ class ExamPage extends React.Component {
           autoPlay
           id="localVideo"
           muted
+          style={{display: this.state.is_examiner ? 'none' : 'inline'}}
           ref={(video) => (this.localVideo = video)}
         />
+        <h6 style={{visibility: this.state.stream_visible && this.state.is_examiner ? 'visible' : 'hidden'}}>Video stream has not started</h6>
         <section class="experiment">
           {!this.state.is_examiner ? (
             <div id="createBroadcast">
@@ -275,6 +288,12 @@ class ExamPage extends React.Component {
             </div>
           ) : (
             <div id="listStudents">
+            <video
+                autoPlay
+                id='remoteVideo'
+                muted
+                ref={video => (this.remoteVideo = video)}
+              />
               <table style={{ width: "100%" }} id="rooms-list"></table>
               <h6><b>Student ID:</b> {this.state.user_id}</h6>
               <h6><b>Student Name:</b> {this.state.student_name}</h6>

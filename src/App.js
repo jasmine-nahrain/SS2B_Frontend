@@ -22,7 +22,7 @@ class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <div>
+        <React.Fragment>
           <Route exact={true} path='/examiner/register' render={() => (
             <div className="App">
               <ExaminerRegister />
@@ -108,7 +108,7 @@ class App extends Component {
               <VideoStreaming />
             </div>
           )} />
-        </div>
+        </React.Fragment>
       </BrowserRouter>
     );
   }

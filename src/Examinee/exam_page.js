@@ -9,6 +9,7 @@ import { Button, Alert } from "react-bootstrap";
 import { getDisplayStream } from "./scripts/MediaAccess";
 import io from "socket.io-client";
 import "./exampage.css";
+import ExamWarnings from './exam_warnings.js';
 
 import {
   ShareScreenIcon,
@@ -301,6 +302,7 @@ class ExamPage extends React.Component {
               <h6><b>Exam ID: </b>{this.state.exam_id}</h6>
               <h6><b>Duration:</b> {this.state.duration}</h6>
               <h6><b>Time Started:</b> {this.state.time_started}</h6>
+              <ExamWarnings data={this.state}/>
             </div>
           )}
         </section>

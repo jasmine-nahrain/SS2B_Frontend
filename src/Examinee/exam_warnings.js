@@ -35,17 +35,17 @@ export default class ExamWarnings extends Component {
         this.onChangeNewDescription = this.onChangeNewDescription.bind(this);
         this.onChangeNewWarningTime = this.onChangeNewWarningTime.bind(this);
         this.setExamWarnings = this.setExamWarnings.bind(this);
-        
+
         let time_started_string = this.props.data.time_started;
         let time_started = moment.utc(time_started_string, datetimeformat).toDate()
         let duration = this.props.data.duration;
         let latest_time_ended = this.props.data.time_ended;
         if (latest_time_ended === null || !latest_time_ended) latest_time_ended = getLatestEndTime(time_started_string, duration);
-        
+
         this.state = {
             exam_recording_id: props.data.exam_recording_id,
             exam_warnings: [],
-            is_examiner: props.data.is_examiner === true || props.data.is_examiner === 1,
+            is_examiner: props.data.is_examiner,
             time_started: time_started,
             latest_time_ended: latest_time_ended,
             create_new: false,
@@ -96,12 +96,12 @@ export default class ExamWarnings extends Component {
             alert("The warning time is required to be between exam time started and exam time ended (or current time).");
             return;
         }
-        
+
         if (this.state.new_warning_time === null || this.state.new_description === '' || this.state.new_description === null) {
             alert("Please enter a valid warning time and warning description.");
             return;
         }
-        
+
         var warning_time = moment.utc(this.state.new_warning_time).format(datetimeformat);
         var new_warning = createExamWarning(this.state.exam_recording_id, warning_time, this.state.new_description)
         if (new_warning === null) alert('Something went wrong!');
@@ -144,7 +144,7 @@ export default class ExamWarnings extends Component {
 
     render() {
         return (
-            <div>
+            <div style={{width: '30%', marginLeft: 'auto', marginRight: 'auto'}}>
                 {this.state.is_examiner &&
                     <div class="my-3">
                         <button type="button" hidden={this.state.create_new} onClick={this.toggleCreate} class="btn btn-lg btn-block btn-danger">Give Warning</button>

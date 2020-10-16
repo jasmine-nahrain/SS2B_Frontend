@@ -1,28 +1,18 @@
+import { convertToParamString, getToken } from './functions.js';
+
 const proxy = 'http://127.0.0.1:8000/api/';
-//const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDE5MTY0ODAsImlhdCI6MTYwMTkxNDY4MCwic3ViIjo4OTI3Mzk4fQ.O5hY-UK41Ztphxcq6gEA-5d-1JGLT5TXzOStzuxReNE";
+
 /*
 API GET EXAMS to return list of exams
 Status codes: 200 OK
 */
 
-class MissingTokenError extends Error {
-    constructor() {
-        super("Authentication token is missing.")
-        this.name = "MissingTokenError"
-    }
-}
-
-const getToken = () => {
-    let token = localStorage.getItem('token');
-    if (token === null) throw new MissingTokenError();
-    return token;
-}
-
-export const getExams = async () => {
+export const getExams = async (parameters=null) => {
     try {
-        let token = localStorage.getItem('token');
-        if (token === null) throw new MissingTokenError();
-        const url = proxy + "examiner/exam";
+        let token = getToken();
+
+        let params = convertToParamString(parameters);
+        const url = proxy + "examiner/exam" + params;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -44,7 +34,7 @@ export const getExams = async () => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return {'exams':[], 'next_page_exists':false};
+    return {"exams":[], "next_page_exists":false};
 }
 
 /*
@@ -54,18 +44,9 @@ Status codes: 200 OK
 export const getExaminees = async (parameters=null) => {
     try {
 
-        let token = localStorage.getItem('token');
-        if (token === null) throw new MissingTokenError();
+        let token = getToken();
 
-        let params = '?';
-        if (parameters !== null) {
-            
-            for (var k in parameters) {
-                if (parameters.hasOwnProperty(k)) {
-                   params += "&"+k+"="+parameters[k];
-                }
-            }
-        }
+        let params = convertToParamString(parameters);
         const url = proxy + "examiner/examinee" + params;
 
         const response = await fetch(url, {
@@ -88,7 +69,7 @@ export const getExaminees = async (parameters=null) => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return {'users':[], 'next_page_exists':false};;
+    return {"users":[], "next_page_exists":false};
 }
 
 /*
@@ -162,14 +143,6 @@ export const deskcheck = async(image) => {
             let parsedData = await response.json();
             return parsedData
         }
-        // fetch(url, requestOptions).then(function(response) {
-        // // The response is a Response instance.
-        // // You parse the data into a useable format using `.json()`
-        //     return response.json();
-        // }).then(function(data) {
-        // // `data` is the parsed version of the JSON returned from the above endpoint.
-        //     console.log(data);  // { "userId": 1, "id": 1, "title": "...", "body": "..." }
-        // });
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
@@ -321,11 +294,11 @@ export const healthCheck = async () => {
 API GET EXAM RECORDING to return list of exams
 Status codes: 200 OK
 */
-export const getExamRecording = async () => {
+export const getExamRecording = async (parameters=null) => {
     try {
         let token = getToken();
-
-        const url = proxy + "examinee/exam_recording";
+        let params = convertToParamString(parameters);
+        const url = proxy + "examinee/exam_recording" + params;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -347,22 +320,22 @@ export const getExamRecording = async () => {
         console.log(error);
         alert(`An error occured: "${error}"`);
     }
-    return {'exam_recordings':[], 'next_page_exists':false};
+    return {"exams_recordings":[], "next_page_exists":false};
 }
 
 /*
 API Create Exam Recording to save new exam recording to db
 Status codes: 200 OK
 */
-export const createExamRecording = async (exam_id, user_id, time_started) => {
+export const createExamRecording = async (exam_id, user_id) => {
     try {
         let token = getToken();
-
+        //const time_started = new Date().toLocaleTimeString('it-IT');
         const url = proxy + "examinee/exam_recording/create";
         const data = JSON.stringify({
             "exam_id": exam_id,
-            "user_id": user_id,
-            "time_started": time_started,
+            "user_id": user_id
+            //"time_started": time_started,
         });
 
         const response = await fetch(url, {
@@ -376,9 +349,9 @@ export const createExamRecording = async (exam_id, user_id, time_started) => {
 
         const status = response.status;
         let parsedData = await response.json();
-        // console.log(data);
-        // console.log(status);
-        // console.log(response);
+        console.log(data);
+        console.log(status);
+        console.log(response);
         if (status === 201 || status == 200) return parsedData;
 
     } catch (error) {
@@ -392,33 +365,40 @@ export const createExamRecording = async (exam_id, user_id, time_started) => {
 /*
 API Edit Exam Recording to save new exam recording to db
 Status codes: 200 OK
+Possible values for action include "end" and "update_link", "end" by default
 */
-export const editExamRecording = async (action, exam_recording_id) => {
+export const editExamRecording = async (exam_recording_id, action="end", video_link=null) => {
     try {
         let token = getToken();
 
         const url = proxy + "examinee/exam_recording/update";
-        const data = JSON.stringify({
-            "action": action,
-            "exam_recording_id": exam_recording_id,
-        });
+        action = action.toLowerCase();
 
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
-            },
-            body: data
-        });
-
-        const status = response.status;
-        let parsedData = await response.json();
-        // console.log(data);
-        // console.log(status);
-        // console.log(response);
-        if (status === 201 || status == 200) return parsedData;
-
+        if (["end","update_link"].includes(action)) {
+            // Fine for video_link to be null - if action is end, it'll be ignored
+            const data = JSON.stringify({
+                "action": action,
+                "exam_recording_id": exam_recording_id,
+                "video_link": video_link
+            });
+    
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                },
+                body: data
+            });
+    
+            const status = response.status;
+            let parsedData = await response.json();
+            // console.log(data);
+            // console.log(status);
+            // console.log(response);
+            if (status === 201 || status == 200) return parsedData;
+        }
+        
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
@@ -430,15 +410,11 @@ export const editExamRecording = async (action, exam_recording_id) => {
  * DELETES exam recording
  * Status codes: 200 OK, 400 Bad Request, 500 Internal Server Error
 */
-export const deleteExamRecording = async (exam_recording_id, user_id, password) => {
+export const deleteExamRecording = async (exam_recording_id) => {
     try {
         let token = getToken();
 
         const url = proxy + "examiner/exam_recording/" + exam_recording_id;
-        const data = JSON.stringify({
-            "user_id": user_id,
-            "password": password,
-        });
 
         //console.log('data:', data);
         const response = await fetch(url, {
@@ -446,8 +422,7 @@ export const deleteExamRecording = async (exam_recording_id, user_id, password) 
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": token
-            },
-            body: data
+            }
         });
 
         const status = response.status;
@@ -464,11 +439,11 @@ export const deleteExamRecording = async (exam_recording_id, user_id, password) 
 API GET EXAM Warning to return list of exams
 Status codes: 200 OK
 */
-export const getExamWarning = async () => {
+export const getExamWarning = async (parameters=null) => {
     try {
         let token = getToken();
-
-        const url = proxy + "examiner/exam_warning";
+        let params = convertToParamString(parameters);
+        const url = proxy + "examiner/exam_warning" + params;
 
         const response = await fetch(url, {
             method: 'GET',

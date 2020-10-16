@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const getUserID = (is_student=true) => {
   if (is_student) return parseInt(localStorage.getItem('student_id'));
   else return parseInt(localStorage.getItem('admin_id'));
@@ -75,3 +77,62 @@ export const getTime = (hours, minutes) => {
   let now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes).toLocaleTimeString('it-IT');
 }
+
+class MissingTokenError extends Error {
+  constructor() {
+      super("Authentication token is missing.")
+      this.name = "MissingTokenError"
+  }
+}
+
+export const getToken = () => {
+  let token = localStorage.getItem('token');
+  if (token === null) throw new MissingTokenError();
+  return token;
+}
+
+export const convertToParamString = (parameters) => {
+  let params = '?'
+  if (parameters !== null) {
+      for (var k in parameters) {
+          params += "&" + k + "=" + parameters[k];
+      }
+  }
+  return params;
+}
+
+export const formatDateToLocal = (dateString) => {
+  if (dateString) {
+    var offset = - (new Date()).getTimezoneOffset();
+    let date = (new Date(dateString));
+    date.setMinutes(date.getMinutes() + offset)
+    return date.toLocaleString();
+  }
+  return '-';
+}
+
+export const getLatestEndTime = (timeStartedString, durationString) => {
+  var offset = -(new Date()).getTimezoneOffset();
+  var duration = new Date("1970-01-01 " + durationString);
+  var latest_end_time = new Date(timeStartedString);
+  latest_end_time.setMinutes(latest_end_time.getMinutes() + offset);
+  // console.log("start",latest_end_time);
+  latest_end_time.setHours(latest_end_time.getHours() + duration.getHours())
+  latest_end_time.setMinutes(latest_end_time.getMinutes() + duration.getMinutes());
+  // console.log("latest",latest_end_time);
+  // console.log("duration", durationString);
+  return latest_end_time;
+}
+
+export const getTimeRemaining = (timeStartedString, durationString) => {
+  let latest_end_time = getLatestEndTime(timeStartedString, durationString)
+  let current = new Date();
+  let seconds_to_end = (latest_end_time-current)/1000;
+  let remaining_hours = parseInt(seconds_to_end/3600);
+  let remaining_minutes = parseInt((seconds_to_end/60)%60);
+  let remaining_seconds = Math.ceil(seconds_to_end%60);
+  // console.log([remaining_hours, remaining_minutes, remaining_seconds])
+  return remaining_hours+":"+remaining_minutes+":"+remaining_seconds;
+}
+
+export const datetimeformat = 'YYYY-MM-DD HH:mm:ss';

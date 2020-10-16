@@ -50,7 +50,7 @@ class ExamRules extends Component {
                 <h1 class="exam-name title-text">{this.state.examName}</h1>
                 <h1 class="exam-name title-text">{this.state.examTime}</h1>
                 <br></br>
-                
+
               </Title>
               <Text class="title-text">Exam Rules</Text>
                 <br></br>
@@ -65,6 +65,7 @@ class ExamRules extends Component {
                       <li>Reading time is for reading only. You are not permitted to write, highlight, make any marks on any exam material or make calculations during reading time.&nbsp;</li>
                       <li>You can only sit an exam for a subject in which you are currently enrolled. It is your responsibility to ensure your <a href="https://www.uts.edu.au/node/78816/">subject enrolment</a> is correct.</li>
                       <li>If you are late for your examination, you will not be permitted any extra time. You must complete your exam within the exam window, so make sure you leave enough time.</li>
+                      <li>Ensure camera is angled to capture your working environment as best as possible - failure to do so may result in a warning/misconduct.</li>
                     </ul>
                     <p>Items permitted in an online invigilated exam:</p>
 
@@ -84,7 +85,7 @@ class ExamRules extends Component {
                   </div>
                 </div>
                 <div class="exam-rules-button">
-                  <Button variant="outline-dark" className="button" style={{width: '100%'}}>
+                  <Button variant="outline-dark" className="button" style={{width: '100%'}} href='/examinee/start'>
                       Accept Exam Rules
                   </Button>
                 </div>

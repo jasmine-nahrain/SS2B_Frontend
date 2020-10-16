@@ -7,3 +7,60 @@
     display:flex;
     right: 80px;
 }
+
+.controls{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: auto;
+}
+.control-btn{
+  position: relative;
+  /* margin-right: 24px; */
+  margin: 12px;
+  background: transparent;
+  outline: none;
+  border: none;
+  box-shadow: 1px 1px 8px black;
+  border-radius: 50%;
+  background-color: #2196f3;
+  height: 64px;
+  width: 64px;
+}
+
+.room {
+  height: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  background: #2196f3;
+}
+
+.enter-room-container{
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.enter-room-container form{
+  width: 100%;
+}
+.enter-room-container input{
+  height: 48px;
+  background: transparent;
+  color: #fff;
+  font-size: 20px;
+  outline: none;
+  border:none;
+  border-bottom: 2px solid #fff;
+  margin-right: 1%;
+}
+
+.enter-room-container input::-webkit-input-placeholder{
+  color: white;
+}

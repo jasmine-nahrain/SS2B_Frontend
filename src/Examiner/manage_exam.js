@@ -266,8 +266,14 @@ class ManageExam extends Component {
           <div className="App">
             <Header >
               <h1><b>Exam List</b></h1>
+              <div class="logout-btn">
+                  <Button className="button" style={{width: '80px', position: 'right', marginTop: '10px', marginBottom: '20px', fontSize: '15px', backgroundColor: '#82CAFF', color: 'black'}}  href='/'>
+                      Logout
+                  </Button>
+              </div>
             </Header>
-            <a href="/examiner" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-1 btn-block" style={{width:'90%', marginLeft:'auto', marginRight: 'auto'}}>View Exam Attempts</button></a>
+
+            <a href="/examiner" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-4 btn-block" style={{width:'90%', marginLeft:'auto', marginRight: 'auto'}}>View Exams</button></a>
             <br />
             <Tabs onSelect={this.handleTabSelect} defaultActiveKey={2} id="manage" style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}>
               <Tab eventKey={2} title="Upcoming" style={{ backgroundColor: 'white' }} >

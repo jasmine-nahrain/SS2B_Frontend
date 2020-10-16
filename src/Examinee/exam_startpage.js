@@ -172,9 +172,9 @@ class ExamStartPage extends Component {
                     </Form>
                     {this.state.not_found &&
                       <div class="my-3">
-                        <h2 style={{ color: 'var(--light)' }}>
+                        <h5 style={{color: 'var(--light)'}}>
                           <strong>An exam with the login code provided could not be found. <br />Please try again.</strong>
-                        </h2>
+                        </h5>
                       </div>
                     }
                   </div>

@@ -284,6 +284,13 @@ class ExamPage extends React.Component {
                     {this.state.camState ? <CamOnIcon /> : <CamOffIcon />}
                   </button>
                 </div>
+
+                <div class="end-exam-btn">
+                  <Button variant="outline-dark" className="button" style={{width: '150px', marginTop: '20px', marginBottom: '20px', backgroundColor: '#bfbfbf'}}  href='/examinee/endpage'>
+                      End Exam
+                  </Button>
+                </div>
+
               </section>
             </div>
           ) : (

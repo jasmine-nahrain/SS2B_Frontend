@@ -5,7 +5,7 @@ import { withRouter } from "react-router-dom";
 class CountDownTimer extends React.Component {
   constructor(props) {
     super(props);
-    const duration = this.props.duration.split(",");
+    const duration = this.props.duration.split(":");
     console.log(duration)
     this.state = {
       hours: parseInt(duration[0]),

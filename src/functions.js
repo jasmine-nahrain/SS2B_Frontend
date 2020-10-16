@@ -132,7 +132,7 @@ export const getTimeRemaining = (timeStartedString, durationString) => {
   let remaining_minutes = parseInt((seconds_to_end/60)%60);
   let remaining_seconds = Math.ceil(seconds_to_end%60);
   // console.log([remaining_hours, remaining_minutes, remaining_seconds])
-  return [remaining_hours, remaining_minutes, remaining_seconds];
+  return remaining_hours+":"+remaining_minutes+":"+remaining_seconds;
 }
 
 export const datetimeformat = 'YYYY-MM-DD HH:mm:ss';

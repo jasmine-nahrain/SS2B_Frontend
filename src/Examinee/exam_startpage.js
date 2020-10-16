@@ -164,24 +164,17 @@ class ExamStartPage extends Component {
                 {this.state.exam_id === -1 &&
                   <div>
                     <Form>
-                      <input
-                        type="text"
-                        placeholder="Exam Login Code"
-                        value={this.state.login_code}
-                        onChange={this.onChangeLoginCode}
-                      />
-                      <Button
-                        variant="outline-light"
-                        onClick={this.getExamByLoginCode}
-                      >
-                        Enter Room
+                      <input type="text" placeholder="Exam Login Code"
+                        value={this.state.login_code} onChange={this.onChangeLoginCode}  />
+                        <Button variant="outline-light" onClick={this.getExamByLoginCode}>
+                        Find Exam
                       </Button>
                     </Form>
                     {this.state.not_found &&
                       <div class="my-3">
-                        <Text style={{ color: 'var(--danger)' }}>
-                          An exam with the login code provided could not be found. <br />Please try again.
-                      </Text>
+                        <h2 style={{ color: 'var(--light)' }}>
+                          <strong>An exam with the login code provided could not be found. <br />Please try again.</strong>
+                        </h2>
                       </div>
                     }
                   </div>

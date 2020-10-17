@@ -264,10 +264,10 @@ class StudentFilter extends Component {
       'order_by': this.state.order_by,
       'order': this.state.order
     };
-    console.log("params",parameters)
+    //console.log("params",parameters)
 
     let data = await getExamRecording(parameters);
-    console.log(data)
+    //console.log(data)
     this.setState({
       table_data: data.exam_recordings,
       in_progress: in_progress,

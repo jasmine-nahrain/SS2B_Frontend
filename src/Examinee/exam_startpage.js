@@ -7,7 +7,7 @@ import { getExams, getExamRecording, createExamRecording } from '../api_caller.j
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 import './exampage.css';
-import {getTimeRemaining, datetimeformat} from '../functions.js';
+import {getTimeRemaining, datetimeformat, formatDate, formatDateToLocal, formatDateToLocalString, getLatestEndTime} from '../functions.js';
 import ExamWarnings from './exam_warnings'
 import moment from 'moment';
 
@@ -76,13 +76,8 @@ class ExamStartPage extends Component {
     if (exams_in_progress_data !== null && exams_in_progress_data.exam_recordings.length > 0) {
       let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
 
-      var offset = - (new Date()).getTimezoneOffset();
-      let time_started = (new Date(exam_in_progress["time_started"]));
-      time_started.setMinutes(time_started.getMinutes() + offset);
-      var duration = new Date("1970-01-01 " + exam_in_progress["duration"]);
-      var latest_end_time = new Date(time_started);
-      latest_end_time.setHours(latest_end_time.getHours() + duration.getHours())
-      latest_end_time.setMinutes(latest_end_time.getMinutes() + duration.getMinutes());
+      var latest_end_time = getLatestEndTime(exam_in_progress["time_started"], exam_in_progress["duration"])
+
       this.setState({
         exam_in_progress: {
           "exam_id": exam_in_progress["exam_id"],
@@ -90,7 +85,8 @@ class ExamStartPage extends Component {
           "exam_recording_id": exam_in_progress["exam_recording_id"],
           "exam_login_code":exam_in_progress["login_code"],
           "subject_id": exam_in_progress["subject_id"],
-          "time_started": time_started.toLocaleString(),
+          'time_started': exam_in_progress["time_started"],
+          "time_started_fstring": formatDateToLocalString(exam_in_progress["time_started"]),
           "duration":exam_in_progress["duration"],
           "latest_end_time": latest_end_time.toLocaleString(),
           "user_id": exam_in_progress["user_id"]
@@ -101,23 +97,17 @@ class ExamStartPage extends Component {
 
   getExamByLoginCode = async () => {
     let exam_data = await getExams({ "login_code": this.state.login_code });
-    console.log(exam_data)
+    //console.log(exam_data)
     if (exam_data !== null && exam_data['exams'].length) {
       let exam = exam_data['exams'][0];
-      // Converts start_date and end_date to local time
-      var offset = - (new Date()).getTimezoneOffset();
-      let start_date = (new Date(exam['start_date']));
-      start_date.setMinutes(start_date.getMinutes() + offset)
-      let end_date = (new Date(exam['end_date']));
-      end_date.setMinutes(end_date.getMinutes() + offset)
 
       this.setState({
         document_link: exam['document_link'],
         duration: exam['duration'],
-        end_date: end_date.toLocaleString(),
+        end_date: formatDateToLocalString(exam['end_date']),
         exam_id: exam['exam_id'],
         exam_name: exam['exam_name'],
-        start_date: start_date.toLocaleString(),
+        start_date: formatDateToLocalString(exam['start_date']),
         subject_id: exam['subject_id'],
         not_found: false
       });
@@ -130,8 +120,10 @@ class ExamStartPage extends Component {
 
   startExam = async () => {
     if (this.state.exam_in_progress) {
-      let time_started_f = moment(this.state.exam_in_progress.time_started).utc().format(datetimeformat);
-      const time = getTimeRemaining(time_started_f, this.state.exam_in_progress.duration);
+      
+      let time_started_f = formatDateToLocal(this.state.exam_in_progress.time_started)
+      const time = getTimeRemaining(this.state.exam_in_progress.time_started, this.state.exam_in_progress.duration);
+
       localStorage.setItem('time_started', time_started_f);
       localStorage.setItem('exam_duration', time);
       localStorage.setItem('exam_recording_id', this.state.exam_in_progress.exam_recording_id);
@@ -144,10 +136,10 @@ class ExamStartPage extends Component {
       if(new_exam_recording !== null) {
         localStorage.setItem('exam_duration', this.state.duration);
         localStorage.setItem('exam_recording_id', new_exam_recording.exam_recording_id);
-        console.log(new_exam_recording);
+        //console.log(new_exam_recording);
         window.location.href = `/examinee/exam/${new_exam_recording.exam_recording_id}`
       } else {
-        alert("Unable to start exam.");
+        alert("The exam has been previously attempted.");
         window.location.href = '/examinee/start';
       }
     }
@@ -203,7 +195,7 @@ class ExamStartPage extends Component {
                 <h3>You have an exam in progress:</h3>
                 <h1 class="title-text"><strong>{this.state.exam_in_progress["exam_name"]}</strong></h1>
                 <h3>for Subject ID {this.state.exam_in_progress["subject_id"]}</h3>
-                <Text class="title-text">You started at {this.state.exam_in_progress["time_started"]}.</Text>
+                <Text class="title-text">You started at {this.state.exam_in_progress["time_started_fstring"]}.</Text>
                 <br/>
                 <Text class="title-text">Your exam will automatically finish at {this.state.exam_in_progress["latest_end_time"]}.</Text>
                 <br />

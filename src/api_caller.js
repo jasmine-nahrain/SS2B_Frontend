@@ -349,9 +349,9 @@ export const createExamRecording = async (exam_id, user_id) => {
 
         const status = response.status;
         let parsedData = await response.json();
-        console.log(data);
-        console.log(status);
-        console.log(response);
+        // console.log(data);
+        // console.log(status);
+        // console.log(response);
         if (status === 201 || status == 200) return parsedData;
 
     } catch (error) {

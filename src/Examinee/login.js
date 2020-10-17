@@ -68,7 +68,7 @@ class ExamineeLogin extends Component {
     const loggedIn = await login(user.user_id, user.password);
     if(loggedIn) {
         localStorage.setItem('user_id', this.state.user_id);
-        console.log(localStorage.getItem("is_examiner"))
+        //console.log(localStorage.getItem("is_examiner"))
         if (localStorage.getItem('is_examiner') === "1") this.props.history.push('/examiner/');
         else this.props.history.push('/examinee/rules');
     } else {

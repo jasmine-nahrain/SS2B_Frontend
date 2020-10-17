@@ -4,11 +4,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button, Alert, Col } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
-import { getExamWarning, createExamWarning, deleteExamWarning } from '../api_caller';
+import { getExamWarning, createExamWarning, deleteExamWarning, editExam } from '../api_caller';
 import { formatDateToLocal } from '../functions.js';
 import DateTime from 'react-datetime';
 import "react-datetime/css/react-datetime.css";
-import { getLatestEndTime, datetimeformat } from '../functions.js';
+import { getLatestEndTime, datetimeformat, formatDateToUTC, formatDateToLocalString, formatDate } from '../functions.js';
 import moment from 'moment';
 
 const Title = styled.div`
@@ -36,10 +36,9 @@ export default class ExamWarnings extends Component {
         this.onChangeWarningTime = this.onChangeWarningTime.bind(this);
         this.onChangeWarningDate = this.onChangeWarningDate.bind(this);
         this.setExamWarnings = this.setExamWarnings.bind(this);
+        this.endExam = this.endExam.bind(this);
 
-        let m = new Date(this.props.data.time_started);
-        m.setMinutes(m.getMinutes() - (new Date()).getTimezoneOffset());
-        let time_started_string = moment(m).format(datetimeformat).split(' ');
+        let time_started_string = formatDate(this.props.data.time_started).split(' ');
         
         let duration = this.props.data.duration;
         let latest_time_ended = this.props.data.time_ended;
@@ -53,6 +52,7 @@ export default class ExamWarnings extends Component {
             latest_time_ended: latest_time_ended,
             create_new: false,
             new_description: '',
+            user_id: props.data.user_id,
             new_warning_time: time_started_string[1],
             new_warning_date: time_started_string[0]
         }
@@ -71,11 +71,28 @@ export default class ExamWarnings extends Component {
     }
 
     getExamWarnings = async () => {
-        let exam_warning_data = await getExamWarning({ 'exam_recording_id': this.state.exam_recording_id });
-        console.log("all warnings:", exam_warning_data);
+        let params = {'exam_recording_id': this.state.exam_recording_id };
+        if (!this.state.is_examiner) params['user_id'] = this.state.user_id;
+        let exam_warning_data = await getExamWarning(params);
+        //console.log("all warnings:", exam_warning_data);
         if (exam_warning_data !== null && exam_warning_data.exam_warnings.length > 0) {
+            //console.log(exam_warning_data.exam_warnings.length, 'vs', )
+            if (exam_warning_data.exam_warnings.length > this.state.exam_warnings.length && !this.state.is_examiner) {
+                alert('You have been given a warning.');
+            }
             await this.setExamWarnings(exam_warning_data.exam_warnings);
+            if (exam_warning_data.exam_warnings.length > 2 && !this.state.is_examiner) {
+                alert('You have reached the maximum number of warnings. \nYour exam will finish shortly.');
+                setTimeout(async() => this.endExam(), 5000);
+            }
         }
+        
+    }
+
+    endExam = async () => {
+        let response = await editExam(this.state.exam_recording_id);
+        if (response === null) alert('Something went wrong!');
+        else window.location.href = '/examinee/endpage'
     }
 
     setExamWarnings = async (warnings) => {
@@ -192,17 +209,20 @@ export default class ExamWarnings extends Component {
                         }
                     </div>
                 }
+                {!this.state.is_examiner &&
+                    <h2>Warnings: {this.state.exam_warnings.length} of 3</h2>
+                }
                 {
                     this.state.exam_warnings.map((warning) =>
                         <Alert key={warning.exam_warning_id} variant="danger">
                             {!this.state.is_examiner &&
-                                <p>{formatDateToLocal(warning.warning_time)}: {warning.description}</p>
+                                <p>{formatDateToLocalString(warning.warning_time)}: {warning.description}</p>
                             }
                             {this.state.is_examiner &&
                                 <div class="container">
                                     <div class="row">
                                         <div class="col-10">
-                                            <p>{formatDateToLocal(warning.warning_time)}: {warning.description}</p>
+                                            <p>{formatDateToLocalString(warning.warning_time)}: {warning.description}</p>
                                         </div>
                                         <div class="col">
                                             <button type="button" class="btn btn-lg btn-danger" onClick={() => this.deleteSingleExamWarning(warning.exam_warning_id)} >Delete</button>

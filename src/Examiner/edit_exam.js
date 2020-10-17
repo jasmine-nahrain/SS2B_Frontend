@@ -86,7 +86,7 @@ class EditExam extends Component {
       duration_minutes: duration[1],
     });
 
-    console.log(exam);
+    // console.log(exam);
   }
 
   onChangeName(e) {

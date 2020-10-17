@@ -4,7 +4,7 @@ import { BrowserRouter, withRouter } from "react-router-dom";
 import styled from 'styled-components';
 import EditIcon from '../images/edit.svg';
 import { getExams } from '../api_caller.js';
-import { inProgress, getCurrentDate, datetimeformat, formatDateToLocal } from '../functions.js';
+import { inProgress, getCurrentDate, datetimeformat, formatDateToLocalString, formatDateToLocal } from '../functions.js';
 // Main Components
 import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -72,12 +72,12 @@ var columns = (upcoming) => {
     dataField: 'start_date',
     text: 'Starts',
     headerStyle: { background: '#007bff', color: 'white' },
-    formatter: cell => formatDateToLocal(cell)
+    formatter: cell => formatDateToLocalString(cell)
   }, {
     dataField: 'end_date',
     text: 'Ends',
     headerStyle: { background: '#007bff', color: 'white' },
-    formatter: cell => formatDateToLocal(cell)
+    formatter: cell => formatDateToLocalString(cell)
   }, {
     dataField: 'exam_recordings',
     text: 'Attempts',

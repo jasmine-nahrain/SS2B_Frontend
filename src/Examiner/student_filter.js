@@ -293,7 +293,7 @@ class StudentFilter extends Component {
         <BrowserRouter>
           <div className="App">
             <Header >
-              <h1>Student List</h1>
+              <h1>Exam Attempt List</h1>
             </Header>
             <a href="/examiner/manage" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-4 btn-block" style={{width:'90%', marginLeft:'auto', marginRight: 'auto'}}>View Exams</button></a>
             <Tabs defaultActiveKey={1} id="manage" style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}

@@ -296,12 +296,18 @@ class StudentFilter extends Component {
         <BrowserRouter>
           <div className="App">
             <Header >
-              <h1><b> Student List </b></h1>
-              <div class="logout-btn">
-                  <a href="/" ><Button className="button" style={{width: '80px', position: 'right', marginTop: '10px', marginBottom: '20px', fontSize: '15px', backgroundColor: '#82CAFF', outlineColor: 'black', color: 'black'}}>
-                      Logout
-                  </Button></a>
+            <div class="d-flex" style={{marginLeft: "auto", marginRight: "auto", width: "70%"}}>
+              <div class="align-self-center" style={{ marginLeft: "10px"}}>              
+                  <h2><b> Student List </b></h2>
               </div>
+              <div class="ml-auto align-self-center">
+                <div class="logout-btn">
+                    <a href="/" ><Button className="button" style={{width: '80px', position: 'right', marginTop: '10px', marginBottom: '20px', fontSize: '15px', backgroundColor: '#82CAFF', outlineColor: 'black', color: 'black'}}>
+                        Logout
+                    </Button></a>
+                </div>
+              </div>
+            </div>
             </Header>
 
             <a href="/examiner/manage" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-4 btn-block" style={{width:'90%', marginLeft:'auto', marginRight: 'auto'}}>View Exams</button></a>

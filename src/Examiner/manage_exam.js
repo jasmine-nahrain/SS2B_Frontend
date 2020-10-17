@@ -180,20 +180,18 @@ class ManageExam extends Component {
 
   SearchFields = () => (
     <div class="mt-4">
-      <Form>
-        <Form.Row>
-          <Col>
-            <Form.Control style={searchBar} type="number" name="subject_id" placeholder="Subject ID"
-              value={this.state.subject_id} onChange={this.onChangeSubjectId} />
-          </Col>
-          <Col>
-            <Form.Control style={searchBar} type="text" name="exam_name" placeholder="Exam Name"
-              value={this.state.exam_name} onChange={this.onChangeExamName} />
-          </Col>
+      <Form.Row>
+        <Col>
+          <Form.Control style={searchBar} type="number" name="subject_id" placeholder="Subject ID"
+            value={this.state.subject_id} onChange={this.onChangeSubjectId} />
+        </Col>
+        <Col>
+          <Form.Control style={searchBar} type="text" name="exam_name" placeholder="Exam Name"
+            value={this.state.exam_name} onChange={this.onChangeExamName} />
+        </Col>
 
-          <Button onClick={this.getFilteredExams} class="btn btn-primary mt-2">Search</Button>
-        </Form.Row>
-      </Form>
+        <Button onClick={this.getFilteredExams} class="btn btn-primary mt-2">Search</Button>
+      </Form.Row>
     </div>
   )
 
@@ -201,7 +199,7 @@ class ManageExam extends Component {
     <div class="container mb-2">
       <div class="row">
         <div class="col">
-          <button class="btn btn-primary" type="submit" disabled={!this.state.prev_page_exists} onClick={this.prevPage}>
+          <button class="btn btn-primary" disabled={!this.state.prev_page_exists} onClick={this.prevPage}>
             <LeftCaretIcon />
             Prev Page
           </button>
@@ -212,7 +210,7 @@ class ManageExam extends Component {
           </p>
         </div>
         <div class="col">
-          <button class="btn btn-primary" type="submit" disabled={!this.state.next_page_exists} onClick={this.nextPage}>
+          <button class="btn btn-primary" disabled={!this.state.next_page_exists} onClick={this.nextPage}>
             Next Page
             <RightCaretIcon />
           </button>

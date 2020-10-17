@@ -116,7 +116,7 @@ class ManageExam extends Component {
       next_page_exists: false,
       prev_page_exists: false,
       current_datetime: moment.utc().format(datetimeformat),
-      in_progress: 1,
+      in_progress: 2,
       order_by: 'start_time',
       order: 'desc',
       page_number: 1,
@@ -125,7 +125,7 @@ class ManageExam extends Component {
   }
 
   async componentDidMount() {
-    await this.getFilteredExams(2,1);
+    await this.getFilteredExams(null, 2,1);
   }
 
   onChangeExamName(e) {
@@ -143,10 +143,10 @@ class ManageExam extends Component {
   }
 
   handleTabSelect = async (key) => {
-    await this.getFilteredExams(key, 1);
+    await this.getFilteredExams(null, key, 1);
   }
 
-  getFilteredExams = async (in_progress = this.state.in_progress, page_number = this.state.page_number) => {
+  getFilteredExams = async (e, in_progress = this.state.in_progress, page_number = this.state.page_number) => {
     let parameters = {
       'exam_name': this.state.exam_name,
       'subject_id': this.state.subject_id,
@@ -155,9 +155,9 @@ class ManageExam extends Component {
       'order_by': this.state.order_by,
       'order': this.state.order
     };
-
+    //console.log("inpr", in_progress)
     if (parseInt(in_progress) === 2) parameters['period_start'] = this.state.current_datetime
-    else parameters['in_progress'] = in_progress;
+    else parameters['in_progress'] = parseInt(in_progress);
     //console.log("params", parameters);
     let data = await getExams(parameters);
     //console.log("ez:", data);
@@ -171,11 +171,11 @@ class ManageExam extends Component {
   }
 
   nextPage = async () => {
-    await this.getFilteredExams(this.state.in_progress, this.state.page_number + 1)
+    await this.getFilteredExams(null, this.state.in_progress, this.state.page_number + 1)
   }
 
   prevPage = async () => {
-    await this.getFilteredExams(this.state.in_progress, this.state.page_number - 1)
+    await this.getFilteredExams(null, this.state.in_progress, this.state.page_number - 1)
   };
 
   SearchFields = () => (

@@ -1,3 +1,5 @@
+/*create_exam*/
+
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -40,7 +42,6 @@ class CreateExam extends Component {
     this.onChangeSubjectID = this.onChangeSubjectID.bind(this);
     this.onChangeEndDate = this.onChangeEndDate.bind(this);
     this.onChangeEndTime = this.onChangeEndTime.bind(this);
-    this.onChangeExamFile = this.onChangeExamFile.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
@@ -53,7 +54,7 @@ class CreateExam extends Component {
       subjectID: Number,
       duration_hours: Number,
       duration_minutes: Number,
-      exam_file: File,
+      exam_file: null,
     }
     console.log(this.state);
   }
@@ -104,12 +105,10 @@ onChangeEndTime(e) {
   });
 }
 
-onChangeExamFile(e) {
-  console.log(e.target.files)
-  this.setState({
-    exam_file: e.target.files
-  });
-}
+onFileChange = event => { 
+  // Update the state 
+  this.setState({ exam_file: event.target.files[0] }); 
+};
 
   onSubmit = async (e) => {
     e.preventDefault();
@@ -118,6 +117,18 @@ onChangeExamFile(e) {
     const duration = getTime(this.state.duration_hours, this.state.duration_minutes);
     let end_date = getDate(this.state.end_date, this.state.end_time);
     let parsedData = createExam(this.state.name, this.state.subjectID, start_date, end_date, duration);
+
+          // Create an object of formData 
+          const formData = new FormData(); 
+     
+          // Update the formData object 
+          formData.append( 
+            "examFile", 
+            this.state.exam_file, 
+            this.state.exam_file.name 
+          ); 
+         
+    console.log(this.state.exam_file);
     /* Include this.state.exam_file */
 
     if(parsedData) {
@@ -218,14 +229,10 @@ onChangeExamFile(e) {
                   </Form.Group>
 
                   <h6>Upload Exam PDF</h6>
-                  <Form.Group controlId="formName" style={{fontSize: '16px'}}>
-                  <Form.Control 
-                    type="file" 
-                    name="exam_file" 
-                    accept=".pdf" 
-                    placeholder="Document URL e.g. www.uts.edu.au/exam.pdf"  
-                    value={this.state.exam_file} 
-                    onChange={this.onChangeExamFile} required />
+                  <Form.Group>
+                    <div class="form-group" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
+                      <input type="file" class="form-control-file" accept=".pdf" id="exampleFormControlFile1" onChange={this.onFileChange} />
+                    </div>
                   </Form.Group>
               </Col>
 

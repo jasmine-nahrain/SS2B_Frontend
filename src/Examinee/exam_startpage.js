@@ -49,16 +49,16 @@ class ExamStartPage extends Component {
       start_date: null,
       subject_id: -1,
       not_found: false,
-      exam_in_progress: null
+      exam_in_progress: null,
+      desk_clear: localStorage.getItem("desk_clear")==="1"
     }
   }
 
   async componentDidMount() {
+    if (!this.state.desk_clear) {
+      window.location.href = '/examinee/deskcheck'
+    }
     await this.getExamsInProgress();
-  }
-
-  onSubmit = async (e) => {
-    e.preventDefault();
   }
 
   onChangeLoginCode = (e) => {

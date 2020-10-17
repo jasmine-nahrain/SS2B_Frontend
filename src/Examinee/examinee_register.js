@@ -103,18 +103,21 @@ class ExamineeRegister extends Component {
       // create new account
       const registered = await register(newUser);
         if (registered) {
-          alert('Your account was successfully created!');
-          this.props.history.push('/');
+          localStorage.setItem('user_id', this.state.userID);
+          //alert('Your account was successfully created!');
+          //this.props.history.push('/');
+          window.location.href='/examinee/faceupload';
+          //setTimeout(()=>, 5000)
         } else {
           invalid_details = true;
         }
-    } else {
-      this.setState({
-        mismatched_password: mismatched_password,
-        invalid_password: invalid_password,
-        invalid_details: invalid_details
-      });
     }
+    this.setState({
+      mismatched_password: mismatched_password,
+      invalid_password: invalid_password,
+      invalid_details: invalid_details
+    });
+    
   }
 
   render() {
@@ -127,16 +130,18 @@ class ExamineeRegister extends Component {
                 <img src={logo} class="Uts-logo" alt="logo" />
                 <Text>Register as a Examinee</Text>
               </Title>
+
+              
+              <Form.Group controlId="formUserID">
+                <Form.Control type="number" name="userID" min="10000" max="9999999999" placeholder="Student ID" value={this.state.userID} onChange={this.onChangeUserID} required />
+              </Form.Group>
+
               <Form.Group controlId="formFName">
                 <Form.Control type="text" name="fname" placeholder="First Name" value={this.state.fname} onChange={this.onChangeFirstName} required />
               </Form.Group>
 
               <Form.Group controlId="formLName">
                 <Form.Control type="text" name="lname" placeholder="Last Name" value={this.state.lname} onChange={this.onChangeLastName} required />
-              </Form.Group>
-
-              <Form.Group controlId="formUserID">
-                <Form.Control type="number" name="userID" min="10000" max="9999999999" placeholder="Student ID" value={this.state.userID} onChange={this.onChangeUserID} required />
               </Form.Group>
 
               <Form.Group controlId="formPassword">
@@ -149,14 +154,15 @@ class ExamineeRegister extends Component {
               <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>
                 Register
               </Button>
-              <a style={this.state.invalid_details ? { textAlign: 'center', color: 'red', fontSize: '12px' } : { visibility: 'hidden' }} >
-                <p>
+              
+            </Form>
+            <a style={this.state.invalid_details ? { textAlign: 'center', color: 'red'} : { visibility: 'hidden' }} >
+                <p class="mt-3">
                   {this.state.invalid_password ? ("Password needs to be at least 8 characters long with at least 1 number.")
                     : this.state.mismatched_password ? ("Password does not match.")
-                      : ("An account with this student ID/email exists.")}
+                      : ("An account with this student ID exists.")}
                 </p>
               </a>
-            </Form>
             <div style={{padding:"0.5%"}}>
               <hr />
               <a href="/examiner/register" role="button"><h6 class="register-text">Register as Examiner.</h6></a>

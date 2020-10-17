@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {  Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import Webcam from "react-webcam";
-import {deskcheck} from '../api_caller.js';
+import { deskcheck } from '../api_caller.js';
 
 const videoConstraints = {
   width: 1280,
@@ -13,59 +13,66 @@ const videoConstraints = {
   facingMode: "user"
 };
 
+const Header = styled.header`
+  background-color: #2196f3;
+  color: white;
+  padding: 1%;
+  margin-bottom: 3%;
+`;
+
 const Colors = {};
 Colors.names = {
-    aqua: "#00ffff",
-    azure: "#f0ffff",
-    beige: "#f5f5dc",
-    black: "#000000",
-    blue: "#0000ff",
-    brown: "#a52a2a",
-    cyan: "#00ffff",
-    darkblue: "#00008b",
-    darkcyan: "#008b8b",
-    darkgrey: "#a9a9a9",
-    darkgreen: "#006400",
-    darkkhaki: "#bdb76b",
-    darkmagenta: "#8b008b",
-    darkolivegreen: "#556b2f",
-    darkorange: "#ff8c00",
-    darkorchid: "#9932cc",
-    darkred: "#8b0000",
-    darksalmon: "#e9967a",
-    darkviolet: "#9400d3",
-    fuchsia: "#ff00ff",
-    gold: "#ffd700",
-    green: "#008000",
-    indigo: "#4b0082",
-    khaki: "#f0e68c",
-    lightblue: "#add8e6",
-    lightcyan: "#e0ffff",
-    lightgreen: "#90ee90",
-    lightgrey: "#d3d3d3",
-    lightpink: "#ffb6c1",
-    lightyellow: "#ffffe0",
-    lime: "#00ff00",
-    magenta: "#ff00ff",
-    maroon: "#800000",
-    navy: "#000080",
-    olive: "#808000",
-    orange: "#ffa500",
-    pink: "#ffc0cb",
-    purple: "#800080",
-    violet: "#800080",
-    red: "#ff0000",
-    silver: "#c0c0c0",
-    white: "#ffffff",
-    yellow: "#ffff00"
+  aqua: "#00ffff",
+  azure: "#f0ffff",
+  beige: "#f5f5dc",
+  black: "#000000",
+  blue: "#0000ff",
+  brown: "#a52a2a",
+  cyan: "#00ffff",
+  darkblue: "#00008b",
+  darkcyan: "#008b8b",
+  darkgrey: "#a9a9a9",
+  darkgreen: "#006400",
+  darkkhaki: "#bdb76b",
+  darkmagenta: "#8b008b",
+  darkolivegreen: "#556b2f",
+  darkorange: "#ff8c00",
+  darkorchid: "#9932cc",
+  darkred: "#8b0000",
+  darksalmon: "#e9967a",
+  darkviolet: "#9400d3",
+  fuchsia: "#ff00ff",
+  gold: "#ffd700",
+  green: "#008000",
+  indigo: "#4b0082",
+  khaki: "#f0e68c",
+  lightblue: "#add8e6",
+  lightcyan: "#e0ffff",
+  lightgreen: "#90ee90",
+  lightgrey: "#d3d3d3",
+  lightpink: "#ffb6c1",
+  lightyellow: "#ffffe0",
+  lime: "#00ff00",
+  magenta: "#ff00ff",
+  maroon: "#800000",
+  navy: "#000080",
+  olive: "#808000",
+  orange: "#ffa500",
+  pink: "#ffc0cb",
+  purple: "#800080",
+  violet: "#800080",
+  red: "#ff0000",
+  silver: "#c0c0c0",
+  white: "#ffffff",
+  yellow: "#ffff00"
 };
 
-Colors.random = function() {
+Colors.random = function () {
   var result;
   var count = 0;
   for (var prop in this.names)
-      if (Math.random() < 1/++count)
-         result = prop;
+    if (Math.random() < 1 / ++count)
+      result = prop;
   return result;
 };
 
@@ -85,7 +92,6 @@ const WebcamCapture = React.forwardRef((props, ref) => (
 const Content = styled.div`
   background-color: white;
   background-blend-mode: multiply;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -115,7 +121,7 @@ class PersonalDeskCheck extends Component {
     this.container = React.createRef();
     this.state = {
       detections: [],
-      coloredDetections : [],
+      coloredDetections: [],
       imageData: '',
       valid: false,
       captured: false
@@ -125,20 +131,20 @@ class PersonalDeskCheck extends Component {
   dataURItoBlob = (dataURI) => {
     var byteString;
     if (dataURI.split(',')[0].indexOf('base64') >= 0)
-        byteString = atob(dataURI.split(',')[1]);
+      byteString = atob(dataURI.split(',')[1]);
     else
-        byteString = unescape(dataURI.split(',')[1]);
-  
+      byteString = unescape(dataURI.split(',')[1]);
+
     var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-  
+
     var ia = new Uint8Array(byteString.length);
     for (var i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
+      ia[i] = byteString.charCodeAt(i);
     }
-    return new Blob([ia], {type:mimeString});
+    return new Blob([ia], { type: mimeString });
   }
 
-  capture = async() => {
+  capture = async () => {
     let imageSrc = this.webcam.current.getScreenshot();
     this.setState({
       imageData: imageSrc
@@ -161,25 +167,26 @@ class PersonalDeskCheck extends Component {
 
   }
 
-  onSubmit = async (e) => {
-    e.preventDefault();
+  continue = () => {
+    localStorage.setItem("desk_clear", 1);
+    window.location.href = '/examinee/start';
   }
 
   draw = () => {
-    
+
     var ctx = this.canvasRef.current.getContext("2d");
     // clear cavnas
     ctx.clearRect(0, 0, this.canvasRef.current.width, this.canvasRef.current.height);
     // draw image
     var myImage = new Image();
     let self = this;
-    myImage.onload = function() {
+    myImage.onload = function () {
       ctx.drawImage(myImage, 0, 0);
       // draw boxes AFTER the image has been added
       self.drawBoxes();
     };
     myImage.src = this.state.imageData;
-    
+
   }
 
   drawBoxes = () => {
@@ -187,14 +194,14 @@ class PersonalDeskCheck extends Component {
     for (var key in this.state.detections) {
       let coords = this.state.detections[key];
       ctx.beginPath();
-      ctx.rect(coords.x*1.77777778, coords.y*0.5625, coords.w*1.77777778, coords.h*0.5625);
+      ctx.rect(coords.x * 1.77777778, coords.y * 0.5625, coords.w * 1.77777778, coords.h * 0.5625);
       let color = Colors.random();
       this.state.detections[key].color = color;
       ctx.strokeStyle = color;
       ctx.stroke();
     }
     this.setState({
-      coloredDetections: [{'-1': ''}] //forcing a refresh by using a key that won't exist
+      coloredDetections: [{ '-1': '' }] //forcing a refresh by using a key that won't exist
     });
     this.setState({
       coloredDetections: this.state.detections
@@ -206,7 +213,7 @@ class PersonalDeskCheck extends Component {
     var ctx = this.canvasRef.current.getContext("2d");
     ctx.clearRect(0, 0, this.canvasRef.current.width, this.canvasRef.current.height);
     this.setState({
-      coloredDetections: [{'-1': ''}],
+      coloredDetections: [{ '-1': '' }],
       valid: false,
       captured: false
     });
@@ -219,36 +226,39 @@ class PersonalDeskCheck extends Component {
     return (
       <BrowserRouter>
         <div className="App">
+          <Header>
+            <h1>Personal Desk Check</h1>
+          </Header>
           <Content>
-            <Title style={{textAlign:"center"}}>
-              <Text>Personal Desk Check</Text>
-            </Title>
             <WebcamContainer ref={this.container}>
               <div className="deskcheck-video-container">
                 <WebcamCapture ref={this.webcam}></WebcamCapture>
               </div>
               <div className="deskcheck-detection-container">
-                
+
                 <canvas height="450" width="800" ref={this.canvasRef} ></canvas>
               </div>
             </WebcamContainer>
             <div className="detection-info">
-              <h3 className="fail-text" style={{opacity: this.state.captured && (!this.state.valid) ? '1' : '0', visibility: this.state.valid ? 'hidden' : 'visible', color: 'var(--danger)'}}>
-                One person must be in the room
-              </h3>
-              <h3 className="fail-text" style={{opacity: this.state.captured ? '1' : '0', visibility: (this.state.valid || this.state.detections.length < 2 ? 'hidden' : 'visible'), color: 'var(--danger)'}}>
-                Potentially prohibited items detected <br/> Ensure you are the only person in the room and remove prohibited items
-              </h3>
-                
+              {this.state.captured && (!this.state.valid || this.state.detections.length > 1) &&
+                <h3 className="fail-text" style={{ color: 'var(--danger)' }}>
+                  Potentially prohibited items detected. <br /> Ensure you are the only person in the room and remove any prohibited items.
+                </h3>
+              }
+              {this.state.valid && this.state.captured && this.state.detections.length < 2 &&
+                <h3 style={{ color: 'var(--success)' }}>
+                  Successfully checked - press Continue.
+                </h3>
+              }
               <ul className="deskcheck-detection-list">
-                {this.state.coloredDetections.map(function(item, idx){
-                  return (<li style={{color: item.color}} key={idx}><span>{item.label}</span></li>)
+                {this.state.coloredDetections.map(function (item, idx) {
+                  return (<li style={{ color: item.color }} key={idx}><span>{item.label}</span></li>)
                 })}
               </ul>
             </div>
             <div className="deskcheck-button-container">
-              <Button onClick={this.capture} style={{display: this.state.captured ? 'none' : 'initial'}} >Capture photo</Button>
-              <Button onClick={this.clear} style={{display: this.state.captured ? 'initial' : 'none'}} >Clear capture</Button>
+              <Button onClick={this.capture} style={{ display: this.state.captured ? 'none' : 'initial' }} >Capture photo</Button>
+              <Button onClick={this.clear} style={{ display: this.state.captured ? 'initial' : 'none' }} >Clear capture</Button>
               <Button onClick={this.continue} disabled={!this.state.valid}>Continue</Button>
             </div>
             <div className="deskcheck-button-container">

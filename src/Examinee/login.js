@@ -70,7 +70,7 @@ class ExamineeLogin extends Component {
         localStorage.setItem('user_id', this.state.user_id);
         //console.log(localStorage.getItem("is_examiner"))
         if (localStorage.getItem('is_examiner') === "1") this.props.history.push('/examiner/');
-        else this.props.history.push('/examinee/rules');
+        else this.props.history.push('/examinee/faceauth');
     } else {
         this.setState({
           invalid_details: true

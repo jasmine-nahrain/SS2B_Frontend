@@ -253,7 +253,7 @@ class ExamPage extends React.Component {
               />
               <h6 style={{visibility: this.state.stream_visible && this.state.is_examiner ? 'visible' : 'hidden'}}>Video stream has not started</h6>
             
-              <div className="controls" style={{marginTop: "-20px", marginBottom: "20px"}}>
+              <div className="controls" style={{marginTop: "-10px", marginBottom: "20px"}}>
                   <button
                     className="control-btn"
                     onClick={() => {

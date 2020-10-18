@@ -9,6 +9,8 @@ import { Button, Alert } from "react-bootstrap";
 import { getDisplayStream } from "./scripts/MediaAccess";
 import io from "socket.io-client";
 import "./exampage.css";
+import ExamWarnings from './exam_warnings.js';
+import { getExamRecording } from '../api_caller.js'
 
 import {
   ShareScreenIcon,
@@ -28,6 +30,16 @@ const Header = styled.header`
 class ExamPage extends React.Component {
   constructor() {
     super();
+
+    const is_examiner = parseInt(localStorage.getItem("is_examiner"));
+    const user_id = localStorage.getItem("user_id");
+    const exam_id = localStorage.getItem("exam_id");
+    const duration = localStorage.getItem("exam_duration");
+    const exam_name = localStorage.getItem("exam_name");
+    const student_name = localStorage.getItem("student_name");
+    const time_started = localStorage.getItem("time_started");
+    const exam_recording_id = localStorage.getItem("exam_recording_id");
+
     this.state = {
       localStream: {},
       remoteStreamUrl: "",
@@ -40,20 +52,24 @@ class ExamPage extends React.Component {
       micState: true,
       camState: true,
       isActive: false,
-      user_id: "",
-      exam_id: "",
-      exam_name: "",
-      is_examiner: Boolean,
-      student_name: "",
+      user_id: user_id,
+      exam_id: exam_id,
+      exam_name: exam_name,
+      time_started: time_started,
+      exam_recording_id: exam_recording_id,
+      is_examiner: Boolean(is_examiner),
+      student_name: student_name,
       video: "",
-      duration: '',
+      duration: duration,
       duration_warning: "",
       stream_visible: true
     };
   }
   videoCall = new VideoCall();
 
-  componentDidMount() {
+  async componentDidMount() {
+    let exams_in_progress_data = await getExamRecording({ "user_id": this.state.user_id, "in_progress": 1 });
+    if (exams_in_progress_data.exam_recordings.length===0 && !this.state.is_examiner) window.location.href = '/examinee/redirect';
     const socket = io('http://localhost:8080');
     const component = this;
     this.setState({ socket });
@@ -80,23 +96,6 @@ class ExamPage extends React.Component {
     });
     socket.on("full", () => {
       component.setState({ full: true });
-    });
-
-    const is_examiner = parseInt(localStorage.getItem("is_examiner"));
-    const user_id = localStorage.getItem("user_id");
-    const exam_id = localStorage.getItem("exam_id");
-    const duration = localStorage.getItem("exam_duration");
-    const exam_name = localStorage.getItem("exam_name");
-    const student_name = localStorage.getItem("student_name");
-    const time_started = localStorage.getItem("time_started");
-    this.setState({
-      is_examiner: is_examiner,
-      user_id: user_id,
-      exam_id: exam_id,
-      duration: duration,
-      exam_name: exam_name,
-      student_name: student_name,
-      time_started: time_started
     });
   }
 
@@ -282,8 +281,10 @@ class ExamPage extends React.Component {
                     }}
                   >
                     {this.state.camState ? <CamOnIcon /> : <CamOffIcon />}
+                    
                   </button>
                 </div>
+                <ExamWarnings data={this.state}/>
               </section>
             </div>
           ) : (
@@ -301,6 +302,7 @@ class ExamPage extends React.Component {
               <h6><b>Exam ID: </b>{this.state.exam_id}</h6>
               <h6><b>Duration:</b> {this.state.duration}</h6>
               <h6><b>Time Started:</b> {this.state.time_started}</h6>
+              <ExamWarnings data={this.state}/>
             </div>
           )}
         </section>

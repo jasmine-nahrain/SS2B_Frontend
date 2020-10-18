@@ -6,12 +6,6 @@ import '../App.css';
 import styled from 'styled-components';
 import logo from '../images/logo.png';
 
-const Text = styled.span`
-font-size: calc(20px + 2vmax);
-font-family: "Times New Roman";
-font-weight: bold;
-`;
-
 const Body = styled.body`
   // background-color: white;
   // background-blend-mode: multiply;
@@ -38,7 +32,7 @@ class ExamineeEndPage extends Component {
         <div className="App">
           <Body>
             <img src={logo} class="Uts-logo"/>
-            <Text>Exam Ended</Text>
+            <h1 class="my-2">Exam Ended</h1>
             <a href="/login" class="nav-link" onClick={this.onLogout}>
               <Button variant="outline-dark" type="submit" style={{width: '100%'}} >
                 Logout

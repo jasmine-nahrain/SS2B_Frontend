@@ -182,8 +182,6 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  max-height: 8rem;
-  min-height: 8rem;
   text-align: left;
   padding-left: 3rem;
   margin-bottom: 0;

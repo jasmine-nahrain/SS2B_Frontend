@@ -15,6 +15,7 @@ import FaceAuth from './Examinee/user_image_auth.js';
 import ExamPage from './Examinee/exam_page.js';
 import ExaminerPortal from './Examiner/examiner_portal.js';
 import ExamineeEndPage from './Examinee/exam_endpage.js';
+import ExamWarning from './Examinee/exam_warnings.js';
 import Redirect from './Examinee/redirect_page.js';
 import VideoStreaming from './Examiner/video_streaming.js';
 
@@ -106,6 +107,11 @@ class App extends Component {
           <Route exact={true} path='/examinee/stream' render={() => (
             <div className="App">
               <VideoStreaming />
+            </div>
+          )} />
+          <Route exact={true} path='/examinee/warning' render={() => (
+            <div className="App">
+              <ExamWarning />
             </div>
           )} />
         </React.Fragment>

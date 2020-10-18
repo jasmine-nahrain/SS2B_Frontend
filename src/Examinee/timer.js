@@ -6,7 +6,7 @@ class CountDownTimer extends React.Component {
   constructor(props) {
     super(props);
     const duration = this.props.duration.split(":");
-    console.log(duration)
+    //console.log(duration)
     this.state = {
       hours: parseInt(duration[0]),
       minutes: parseInt(duration[1]),
@@ -42,15 +42,15 @@ class CountDownTimer extends React.Component {
         }
       }
       if(hours == 0 && minutes == 30 && seconds == 0) {
-          console.log("30 minutes");
+          //console.log("30 minutes");
           this.props.duration_warning("30 Minutes Remaining");
       }
       if(hours == 0 && minutes == 15 && seconds == 0) {
-          console.log("15 minutes");
+          //console.log("15 minutes");
           this.props.duration_warning("15 Minutes Remaining");
       }
       if(hours == 0 && minutes == 5 && seconds == 0) {
-          console.log("5 minutes");
+          //console.log("5 minutes");
           this.props.duration_warning("5 Minutes Remaining");
       }
     }, 1000);

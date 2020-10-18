@@ -13,7 +13,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import { Form, Col, Tab, Tabs } from 'react-bootstrap';
 import { RightCaretIcon, LeftCaretIcon } from '../Examinee/scripts/Icons';
-import { formatDateToLocal, getTimeRemaining } from '../functions.js';
+import { formatDateToLocalString, getTimeRemaining, formatDateToLocal } from '../functions.js';
 
 const Header = styled.header`
 background-color: #2196f3;
@@ -76,11 +76,11 @@ var columns = [{
 }, {
   dataField: 'time_started',
   text: 'Started',
-  formatter: cell => formatDateToLocal(cell)
+  formatter: cell => formatDateToLocalString(cell)
 }, {
   dataField: 'time_ended',
   text: 'Ended',
-  formatter: cell => formatDateToLocal(cell)
+  formatter: cell => formatDateToLocalString(cell)
 }, {
   dataField: 'warning_count',
   text: 'Warnings',
@@ -91,12 +91,13 @@ var columns = [{
     onClick: (e, column, columnIndex, row) => {
       localStorage.setItem('user_id', row['user_id'])
       localStorage.setItem('exam_id', row['exam_id'])
+      localStorage.setItem('exam_recording_id', row['exam_recording_id'])
       localStorage.setItem('exam_duration', row['duration'])
       localStorage.setItem('exam_name', row['exam_name'])
       localStorage.setItem('time_started', formatDateToLocal(row['time_started']))
       localStorage.setItem('student_name', row['first_name'] + " " + row['last_name'])
       window.location.href = `/examinee/exam/${row.exam_recording_id}`
-      console.log(row['user_id']);
+      // console.log(row['user_id']);
     },
   },
   formatter: (cellContent, row) => (
@@ -115,10 +116,12 @@ class StudentFilter extends Component {
     this.onChangeID = this.onChangeID.bind(this);
     this.onChangeExamName = this.onChangeExamName.bind(this);
     this.handleTabSelect = this.handleTabSelect.bind(this);
+    this.nextPage = this.nextPage.bind(this);
+    this.prevPage = this.prevPage.bind(this);
 
     this.state = {
       table_data: [],
-      student_id: "",
+      user_id: "",
       first_name: "",
       last_name: "",
       exam_name: "",
@@ -134,29 +137,25 @@ class StudentFilter extends Component {
 
   SearchFields = () => (
     <div class="mt-4">
-      <Form>
-        <Form.Row>
-          <Col>
-            <Form.Control style={searchBar} type="text" name="exam_name" placeholder="Exam Name"
-              value={this.state.exam_name} onChange={this.onChangeExamName} />
-          </Col>
-          <Col>
-            <Form.Control style={searchBar} type="number" name="student_id" placeholder="Student ID"
-              value={this.state.student_id} onChange={this.onChangeID} />
-          </Col>
-          <Col>
-            <Form.Control style={searchBar} type="text" name="first_name" placeholder="First Name"
-              value={this.state.first_name} onChange={this.onChangeFirstName} />
-          </Col>
-          <Col>
-            <Form.Control style={searchBar} type="text" name="last_name" placeholder="Last Name"
-              value={this.state.last_name} onChange={this.onChangeLastName} />
-          </Col>
-            <Button onClick={this.getFilteredExamRecordings} class="btn btn-primary mt-2">Search</Button>
-        </Form.Row>
-      </Form>
-
-
+      <Form.Row>
+        <Col>
+          <Form.Control style={searchBar} type="text" name="exam_name" placeholder="Exam Name"
+            value={this.state.exam_name} onChange={this.onChangeExamName} />
+        </Col>
+        <Col>
+          <Form.Control style={searchBar} type="number" name="user_id" placeholder="Student ID"
+            value={this.state.user_id} onChange={this.onChangeID} />
+        </Col>
+        <Col>
+          <Form.Control style={searchBar} type="text" name="first_name" placeholder="First Name"
+            value={this.state.first_name} onChange={this.onChangeFirstName} />
+        </Col>
+        <Col>
+          <Form.Control style={searchBar} type="text" name="last_name" placeholder="Last Name"
+            value={this.state.last_name} onChange={this.onChangeLastName} />
+        </Col>
+        <Button onClick={this.getFilteredExamRecordings} class="btn btn-primary mt-2">Search</Button>
+      </Form.Row>
     </div>
   )
 
@@ -164,7 +163,7 @@ class StudentFilter extends Component {
     <div class="container mb-2">
       <div class="row">
         <div class="col">
-          <button class="btn btn-primary" type="submit" disabled={!this.state.prev_page_exists} onClick={this.prevPage}>
+          <button class="btn btn-primary" disabled={!this.state.prev_page_exists} onClick={this.prevPage}>
             <LeftCaretIcon />
             Prev Page
           </button>
@@ -175,7 +174,7 @@ class StudentFilter extends Component {
           </p>
         </div>
         <div class="col">
-          <button class="btn btn-primary" type="submit" disabled={!this.state.next_page_exists} onClick={this.nextPage}>
+          <button class="btn btn-primary" disabled={!this.state.next_page_exists} onClick={this.nextPage}>
             Next Page
             <RightCaretIcon />
           </button>
@@ -187,10 +186,9 @@ class StudentFilter extends Component {
   CustomTable = (empty_message) => {
     return (
     <ToolkitProvider
-      keyField="student_id"
+      keyField="exam_recording_id"
       data={this.state.table_data}
       columns={columns}
-      search
     >
       {
         props => (
@@ -200,15 +198,12 @@ class StudentFilter extends Component {
               <br />
               {this.state.table_data.length == 0 ? <p>{empty_message}</p> :
                 <div>
-
                   <BootstrapTable
                     bootstrap4
                     {...props.baseProps}
                     bodyClasses="tbodyContainer"
-                    keyField='student_id'
                     data={this.state.table_data}
-                    columns={columns}
-                    filter={filterFactory()} />
+                    columns={columns} />
 
                   <this.TableFooter />
                 </div>
@@ -221,45 +216,44 @@ class StudentFilter extends Component {
   }
 
   handleTabSelect = async (key) => {
-    await this.getFilteredExamRecordings(key, 1);
+    await this.getFilteredExamRecordings(null, key, 1);
   }
 
   onChangeExamName(e) {
+    e.preventDefault();
     this.setState({
       exam_name: e.target.value
     });
   }
 
   onChangeFirstName(e) {
+    e.preventDefault();
     this.setState({
       first_name: e.target.value
     });
   }
 
   onChangeLastName(e) {
+    e.preventDefault();
     this.setState({
       last_name: e.target.value
     });
   }
 
   onChangeID(e) {
+    e.preventDefault();
     this.setState({
-      student_id: e.target.value
+      user_id: e.target.value
     });
   }
 
   async componentDidMount() {
-    // Gets data before the render
-    const is_examiner = parseInt(localStorage.getItem('is_examiner'));
-    if (!is_examiner) window.location.href = '/examinee/redirect';
-    else {
-      await this.getFilteredExamRecordings(1, 1);
-    }
+    await this.getFilteredExamRecordings(null, 1, 1);
   }
 
-  getFilteredExamRecordings = async (in_progress=this.state.in_progress, page_number=this.state.page_number) => {
+  getFilteredExamRecordings = async (e=null, in_progress=this.state.in_progress, page_number=this.state.page_number) => {
     let parameters = {
-      'user_id': this.state.student_id,
+      'user_id': this.state.user_id,
       'first_name': this.state.first_name,
       'last_name': this.state.last_name,
       'exam_name': this.state.exam_name,
@@ -270,7 +264,10 @@ class StudentFilter extends Component {
       'order_by': this.state.order_by,
       'order': this.state.order
     };
+    //console.log("params",parameters)
+
     let data = await getExamRecording(parameters);
+    //console.log(data)
     this.setState({
       table_data: data.exam_recordings,
       in_progress: in_progress,
@@ -281,11 +278,11 @@ class StudentFilter extends Component {
   }
 
   nextPage = async () => {
-    await this.getFilteredExamRecordings(this.state.in_progress, this.state.page_number + 1)
+    await this.getFilteredExamRecordings(null, this.state.in_progress, this.state.page_number + 1)
   }
 
   prevPage = async () => {
-    await this.getFilteredExamRecordings(this.state.in_progress, this.state.page_number - 1)
+    await this.getFilteredExamRecordings(null, this.state.in_progress, this.state.page_number - 1)
   };
 
   render() {
@@ -296,7 +293,7 @@ class StudentFilter extends Component {
         <BrowserRouter>
           <div className="App">
             <Header >
-              <h1>Student List</h1>
+              <h1>Exam Attempt List</h1>
             </Header>
             <a href="/examiner/manage" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-4 btn-block" style={{width:'90%', marginLeft:'auto', marginRight: 'auto'}}>View Exams</button></a>
             <Tabs defaultActiveKey={1} id="manage" style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}

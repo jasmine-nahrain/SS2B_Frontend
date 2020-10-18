@@ -85,8 +85,8 @@ class ExamRules extends Component {
                   </div>
                 </div>
                 <div class="exam-rules-button">
-                  <Button variant="outline-dark" className="button" style={{width: '100%'}} href='/examinee/start'>
-                      Accept Exam Rules
+                  <Button variant="outline-dark" className="button" style={{width: '100%'}} href='/examinee/deskcheck'>
+                      Accept Exam Rules and Proceed to Desk Check
                   </Button>
                 </div>
           </Body>

@@ -118,13 +118,13 @@ class ExaminerRegister extends Component {
           invalid_details = true;
           this.setState({invalid_passphrase: localStorage.getItem('error')});
         }
-    } else {
-      this.setState({
-        mismatched_password: mismatched_password,
-        invalid_password: invalid_password,
-        invalid_details: invalid_details,
-      });
     }
+    this.setState({
+      mismatched_password: mismatched_password,
+      invalid_password: invalid_password,
+      invalid_details: invalid_details,
+    });
+    
   }
 
 
@@ -138,16 +138,17 @@ class ExaminerRegister extends Component {
                 <img src={logo} class="Uts-logo" alt="logo" />
                 <Text>Register as a Examiner</Text>
               </Title>
+
+              <Form.Group controlId="formUserID">
+                <Form.Control type="number" name="userID" min="10000" max="9999999999" placeholder="Staff ID" value={this.state.userID} onChange={this.onChangeUserID} required />
+              </Form.Group>
+
               <Form.Group controlId="formFName">
                 <Form.Control type="text" name="fname" placeholder="First Name" value={this.state.fname} onChange={this.onChangeFirstName} required />
               </Form.Group>
 
               <Form.Group controlId="formLName">
                 <Form.Control type="text" name="lname" placeholder="Last Name" value={this.state.lname} onChange={this.onChangeLastName} required />
-              </Form.Group>
-
-              <Form.Group controlId="formUserID">
-                <Form.Control type="number" name="userID" min="10000" max="9999999999" placeholder="User ID" value={this.state.userID} onChange={this.onChangeUserID} required />
               </Form.Group>
 
               <Form.Group controlId="formPassword">
@@ -164,16 +165,17 @@ class ExaminerRegister extends Component {
               <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>
                 Register
               </Button>
-                <p style={this.state.invalid_details ? { textAlign: 'center', color: 'red', fontSize: '12px' } : { visibility: 'hidden', height: '0' }}>
+                
+            </Form>
+            <p class="mt-3" style={this.state.invalid_details ? { textAlign: 'center', color: 'red'} : { visibility: 'hidden', height: '0' }}>
                   {this.state.invalid_password ? ("Password needs to be at least 8 characters long with at least 1 number.")
                     : this.state.mismatched_password ? ("Password does not match.")
                       : ("An account with this student ID/email exists.")}
-                </p>
-                <p style={this.state.invalid_passphrase ? { textAlign: 'center', color: 'red', fontSize: '12px', paddingTop: '10px', visibility: 'visible' } : { visibility: 'hidden', height: '0' }}>
-                  {this.state.invalid_passphrase ? ("Examiner passphrase incorrect") : ""}
-                </p>
-            </Form>
-            <div style={{padding:"0.5%"}}>
+            </p>
+            <p style={this.state.invalid_passphrase ? { textAlign: 'center', color: 'red', paddingTop: '10px', visibility: 'visible' } : { visibility: 'hidden', height: '0' }}>
+              {this.state.invalid_passphrase ? ("Examiner passphrase incorrect") : ""}
+            </p>
+            <div style={{padding:"0.3%"}}>
               <hr />
               <a href="/examinee/register" role="button"><h6 class="register-text">Not a Examiner? Register here.</h6></a>
               <a href="/" role="button"><h6 class="register-text">Already a member? Login here.</h6></a>

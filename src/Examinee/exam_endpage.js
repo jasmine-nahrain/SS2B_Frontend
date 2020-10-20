@@ -5,6 +5,7 @@ import { Button } from 'react-bootstrap';
 import '../App.css';
 import styled from 'styled-components';
 import logo from '../images/logo.png';
+import {logout} from '../functions'
 
 const Body = styled.body`
   // background-color: white;
@@ -22,9 +23,7 @@ class ExamineeEndPage extends Component {
 
     onLogout = (e) => {
       e.preventDefault();
-      localStorage.clear();
-      sessionStorage.clear();
-      window.location.href = '/';
+      logout();
     }
 
     render() {
@@ -32,7 +31,7 @@ class ExamineeEndPage extends Component {
         <div className="App">
           <Body>
             <img src={logo} class="Uts-logo"/>
-            <h2><strong> Your exam is ended.</strong></h2>
+            <h2 class="mt-5">Your exam has ended.</h2>
             <a href="/login" class="nav-link" onClick={this.onLogout}>
               <Button variant="outline-dark" type="submit" style={{width: '100%'}} >
                 Logout

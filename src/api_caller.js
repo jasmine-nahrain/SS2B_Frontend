@@ -138,7 +138,7 @@ export const deskcheck = async(image) => {
         const response = await fetch(url, requestOptions);
 
         const status = response.status;
-        console.log(status);
+        // console.log(status);
 
         if (status === 200) {
             let parsedData = await response.json();
@@ -182,7 +182,7 @@ export const uploadFaceImage = async(user_id, image, authenticate=true) => {
         const response = await fetch(url, requestOptions);
 
         const status = response.status;
-        console.log(status);
+        // console.log(status);
 
         // If an upload of a new image, return True if successful
         if (!authenticate) return status === 200;
@@ -369,11 +369,11 @@ API Edit Exam Recording to save new exam recording to db
 Status codes: 200 OK
 Possible values for action include "end" and "update_link", "end" by default
 */
-export const editExamRecording = async (exam_recording_id, action="end", video_link=null) => {
+export const editExamRecording = async (exam_recording_id, action="end", user_id="", video_link=null) => {
     try {
         let token = getToken();
 
-        const url = proxy + "examinee/exam_recording/update";
+        const url = proxy + "examinee/exam_recording/update?user_id="+user_id;
         action = action.toLowerCase();
 
         if (["end","update_link"].includes(action)) {
@@ -383,7 +383,7 @@ export const editExamRecording = async (exam_recording_id, action="end", video_l
                 "exam_recording_id": exam_recording_id,
                 "video_link": video_link
             });
-    
+            console.log("data", data)
             const response = await fetch(url, {
                 method: "POST",
                 headers: {

@@ -8,7 +8,6 @@ import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 import './exampage.css';
 import {getTimeRemaining, datetimeformat, formatDate, formatDateToLocal, formatDateToLocalString, getLatestEndTime} from '../functions.js';
-import ExamWarnings from './exam_warnings'
 import moment from 'moment';
 
 const Body = styled.body`
@@ -77,7 +76,7 @@ class ExamStartPage extends Component {
       let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
 
       var latest_end_time = getLatestEndTime(exam_in_progress["time_started"], exam_in_progress["duration"])
-
+      // console.log("EX", exam_in_progress);
       this.setState({
         exam_in_progress: {
           "exam_id": exam_in_progress["exam_id"],
@@ -126,9 +125,10 @@ class ExamStartPage extends Component {
       const time = getTimeRemaining(this.state.exam_in_progress.time_started, this.state.exam_in_progress.duration);
 
       localStorage.setItem('time_started', time_started_f);
-      localStorage.setItem('exam_duration', time);
+      localStorage.setItem('time_left', time);
+      localStorage.setItem('duration', this.state.exam_in_progress.duration)
       localStorage.setItem('exam_recording_id', this.state.exam_in_progress.exam_recording_id);
-      localStorage.setItem('document_link', this.state.document_link);
+      localStorage.setItem('document_link', this.state.exam_in_progress.document_link);
       // localStorage.setItem('document_url'), this.state.document_link);
       window.location.href = `/examinee/exam/${this.state.exam_in_progress.exam_recording_id}`
     } else {
@@ -136,8 +136,12 @@ class ExamStartPage extends Component {
       let exam_id = this.state.exam_id;
       if (user_id === null || exam_id === -1) return;
       let new_exam_recording = await createExamRecording(exam_id, user_id);
+      
       if(new_exam_recording !== null) {
-        localStorage.setItem('exam_duration', this.state.duration);
+        // console.log(new_exam_recording)
+        const time = getTimeRemaining(new_exam_recording.time_started, this.state.duration);
+        localStorage.setItem('time_left', time);
+        localStorage.setItem('duration', this.state.duration)
         localStorage.setItem('exam_recording_id', new_exam_recording.exam_recording_id);
         localStorage.setItem('document_link', this.state.document_link);
         window.location.href = `/examinee/exam/${new_exam_recording.exam_recording_id}`

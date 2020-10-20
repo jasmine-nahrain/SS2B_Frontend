@@ -43,7 +43,7 @@ export default class ExamWarnings extends Component {
         let duration = this.props.data.duration;
         let latest_time_ended = this.props.data.time_ended;
         if (latest_time_ended === null || !latest_time_ended) latest_time_ended = getLatestEndTime(time_started_string, duration);
-
+        
         this.state = {
             exam_recording_id: props.data.exam_recording_id,
             exam_warnings: [],
@@ -71,6 +71,7 @@ export default class ExamWarnings extends Component {
     }
 
     getExamWarnings = async () => {
+
         let params = {'exam_recording_id': this.state.exam_recording_id };
         if (!this.state.is_examiner) params['user_id'] = this.state.user_id;
         let exam_warning_data = await getExamWarning(params);
@@ -158,7 +159,7 @@ export default class ExamWarnings extends Component {
 
     render() {
         return (
-            <div style={{ width: '30%', marginLeft: 'auto', marginRight: 'auto' }}>
+            <div style={{ width: '80%', marginLeft: 'auto', marginRight: 'auto' }}>
                 {this.state.is_examiner &&
                     <div class="my-3">
                         <button type="button" hidden={this.state.create_new} onClick={this.toggleCreate} class="btn btn-lg btn-block btn-danger">Give Warning</button>
@@ -210,7 +211,7 @@ export default class ExamWarnings extends Component {
                     </div>
                 }
                 {!this.state.is_examiner &&
-                    <h2>Warnings: {this.state.exam_warnings.length} of 3</h2>
+                    <h5>Warnings: {this.state.exam_warnings.length} of 3</h5>
                 }
                 {
                     this.state.exam_warnings.map((warning) =>

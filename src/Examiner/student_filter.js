@@ -13,7 +13,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import { Form, Col, Tab, Tabs } from 'react-bootstrap';
 import { RightCaretIcon, LeftCaretIcon } from '../Examinee/scripts/Icons';
-import { formatDateToLocalString, getTimeRemaining, formatDateToLocal } from '../functions.js';
+import { formatDateToLocalString, getTimeRemaining, formatDateToLocal, logout} from '../functions.js';
 
 const Header = styled.header`
 background-color: #2196f3;
@@ -134,6 +134,12 @@ class StudentFilter extends Component {
       results_length: 10
     };
   }
+
+  onLogout = (e) => {
+    e.preventDefault();
+    logout();
+  }
+
 
   SearchFields = () => (
     <div class="mt-4">
@@ -295,19 +301,18 @@ class StudentFilter extends Component {
             <Header >
             <div class="d-flex" style={{marginLeft: "auto", marginRight: "auto", width: "70%"}}>
               <div class="align-self-center" style={{ marginLeft: "10px"}}>              
-                  <h2><b> Student List </b></h2>
+                  <h2><b> Exam Attempt </b></h2>
               </div>
               <div class="ml-auto align-self-center">
                 <div class="logout-btn">
-                    <a href="/" ><Button className="button" style={{width: '80px', position: 'right', marginTop: '10px', marginBottom: '20px', fontSize: '15px', backgroundColor: '#82CAFF', outlineColor: 'black', color: 'black'}}>
+                    <button class="btn btn-light" onClick={this.onLogout}>
                         Logout
-                    </Button></a>
+                    </button>
                 </div>
               </div>
             </div>
             </Header>
         
-        <h1>Exam Attempt List</h1>
             <a href="/examiner/manage" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-4 btn-block" style={{width:'90%', marginLeft:'auto', marginRight: 'auto'}}>View Exams</button></a>
             <Tabs defaultActiveKey={1} id="manage" style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}
               onSelect={this.handleTabSelect}>

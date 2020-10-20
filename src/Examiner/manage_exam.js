@@ -4,7 +4,7 @@ import { BrowserRouter, withRouter } from "react-router-dom";
 import styled from 'styled-components';
 import EditIcon from '../images/edit.svg';
 import { getExams } from '../api_caller.js';
-import { inProgress, getCurrentDate, datetimeformat, formatDateToLocalString, formatDateToLocal } from '../functions.js';
+import { inProgress, getCurrentDate, datetimeformat, formatDateToLocalString, logout, formatDateToLocal } from '../functions.js';
 // Main Components
 import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -178,6 +178,12 @@ class ManageExam extends Component {
     await this.getFilteredExams(null, this.state.in_progress, this.state.page_number - 1)
   };
 
+  onLogout = (e) => {
+    e.preventDefault();
+    logout();
+  }
+
+
   SearchFields = () => (
     <div class="mt-4">
       <Form.Row>
@@ -267,14 +273,14 @@ class ManageExam extends Component {
               </div>
               <div class="ml-auto align-self-center">
                   <div class="logout-btn">
-                      <Button className="button" style={{width: '80px', position: 'right', marginTop: '10px', marginBottom: '20px', fontSize: '15px', backgroundColor: '#82CAFF', color: 'black'}}  href='/'>
+                      <button class="btn btn-light" onClick={this.onLogout}>
                           Logout
-                      </Button>
+                      </button>
                   </div>
               </div>
             </div>
             </Header>
-            <a href="/examiner" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-4 btn-block" style={{width:'80%', marginLeft:'auto', marginRight: 'auto'}}>View Student Exams</button></a>
+            <a href="/examiner" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-4 btn-block" style={{width:'80%', marginLeft:'auto', marginRight: 'auto'}}>View Exam Attempts</button></a>
             <a href='/examiner/create'><button class="btn btn-primary btn-block my-3" style={{width:'80%', marginLeft:'auto', marginRight: 'auto'}}>Create New Exam</button></a>
             <br />
             <Tabs onSelect={this.handleTabSelect} defaultActiveKey={2} id="manage" style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}>

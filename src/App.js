@@ -17,7 +17,6 @@ import ExaminerPortal from './Examiner/examiner_portal.js';
 import ExamineeEndPage from './Examinee/exam_endpage.js';
 import Redirect from './Examinee/redirect_page.js';
 import VideoStreaming from './Examiner/video_streaming.js';
-import PDFViewer from './Examinee/pdf_viewer.js';
 
 class App extends Component {
   render() {
@@ -107,11 +106,6 @@ class App extends Component {
           <Route exact={true} path='/examinee/stream' render={() => (
             <div className="App">
               <VideoStreaming />
-            </div>
-          )} />
-          <Route exact={true} path='/examinee/pdfviewer' render={() => (
-            <div className="App">
-              <PDFViewer/>
             </div>
           )} />
         </React.Fragment>

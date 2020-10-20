@@ -56,7 +56,7 @@ class EditExam extends Component {
       duration_hours: Number,
       duration_minutes: Number,
       can_edit_exam: true,
-      pdf_url: "",
+      document_link: "",
     }
   }
 
@@ -86,7 +86,7 @@ class EditExam extends Component {
       subjectID: exam.subject_id,
       duration_hours: duration[0],
       duration_minutes: duration[1],
-      pdf_url: exam.pdf_url,
+      document_link: exam.document_link,
     });
 
     console.log(exam);
@@ -137,7 +137,7 @@ onChangeDurationMinutes(e) {
 
 onChangePDFUrl(e) {
   this.setState({
-    pdf_url: e.target.value
+    document_link: e.target.value
   })
 }
 
@@ -147,7 +147,7 @@ onChangePDFUrl(e) {
     const duration = getTime(this.state.duration_hours, this.state.duration_minutes);
     let end_date = getDate(this.state.end_date, this.state.end_time);
 
-    let success = await editExam(this.state.exam_id, this.state.name, this.state.subjectID, start_date, end_date, duration, this.state.pdf_url);
+    let success = await editExam(this.state.exam_id, this.state.name, this.state.subjectID, start_date, end_date, duration, this.state.document_link);
     if (success) window.location.href = '/examiner/manage';
     else {
       alert('Something went wrong!');
@@ -259,9 +259,9 @@ onChangePDFUrl(e) {
                   <Form.Group controlId="formName">
                   <Form.Control 
                     type="text" 
-                    name="pdf_url" 
+                    name="document_link" 
                     placeholder="e.g. https://www.uts.edu.au/exam/maths.pdf" 
-                    value={this.state.pdf_url} 
+                    value={this.state.document_link} 
                     onChange={this.onChangePDFUrl} required/>
                   </Form.Group>
                   

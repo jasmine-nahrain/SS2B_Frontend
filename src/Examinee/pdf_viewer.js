@@ -3,11 +3,10 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import { Button } from "react-bootstrap";
 import styled from "styled-components";
 
-const url = 
-"https://cors-anywhere.herokuapp.com/https://www.education.vic.gov.au/Documents/school/parents/secondary/mathspractice.pdf"
 
-export default function PDFview() { 
-	
+export default function PDFview(props) { 
+const url = "https://cors-anywhere.herokuapp.com/"+props.document;
+
 pdfjs.GlobalWorkerOptions.workerSrc = 
 `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`; 
 const [numPages, setNumPages] = useState(null); 

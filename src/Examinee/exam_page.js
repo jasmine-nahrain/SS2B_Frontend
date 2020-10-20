@@ -90,6 +90,7 @@ class ExamPage extends React.Component {
     const exam_name = localStorage.getItem("exam_name");
     const student_name = localStorage.getItem("student_name");
     const time_started = localStorage.getItem("time_started");
+    const document_link = localStorage.getItem("document_link");
     this.setState({
       is_examiner: is_examiner,
       user_id: user_id,
@@ -97,7 +98,8 @@ class ExamPage extends React.Component {
       duration: duration,
       exam_name: exam_name,
       student_name: student_name,
-      time_started: time_started
+      time_started: time_started,
+      document_link: document_link
     });
   }
 
@@ -329,12 +331,9 @@ class ExamPage extends React.Component {
               </section>
             </div>
             <div class="col-md">
-            <PDFview/>
-              {/* <div class="pdf-btn">
-                <Button variant="outline-dark" className="button" style={{width: '150px', marginTop: '20px', marginBottom: '20px', backgroundColor: '#bfbfbf'}}  href='/examinee/pdfviewer'>
-                    View PDF
-                </Button>
-              </div>       */}
+            {this.state.isActive &&
+              <PDFview document={this.state.document_link}/>
+            }
             </div>
           </div>
         </div>

@@ -53,7 +53,7 @@ class CreateExam extends Component {
       subjectID: Number,
       duration_hours: Number,
       duration_minutes: Number,
-      pdf_url: ''
+      document_link: ''
     }
     console.log(this.state);
   }
@@ -106,7 +106,7 @@ class CreateExam extends Component {
 
   onChangePDFUrl(e) {
     this.setState({
-      pdf_url: e.target.value
+      document_link: e.target.value
     })
   }
 
@@ -116,7 +116,7 @@ class CreateExam extends Component {
     let start_date = getDate(this.state.start_date, this.state.start_time);
     const duration = getTime(this.state.duration_hours, this.state.duration_minutes);
     let end_date = getDate(this.state.end_date, this.state.end_time);
-    let parsedData = createExam(this.state.name, this.state.subjectID, start_date, end_date, duration, this.state.pdf_url);
+    let parsedData = createExam(this.state.name, this.state.subjectID, start_date, end_date, duration, this.state.document_link);
 
     if(parsedData) {
       alert("Successfully created exam.");
@@ -219,9 +219,9 @@ class CreateExam extends Component {
                   <Form.Group controlId="formName">
                   <Form.Control 
                     type="text" 
-                    name="pdf_url" 
+                    name="document_link" 
                     placeholder="e.g. https://www.uts.edu.au/exam/maths.pdf" 
-                    value={this.state.pdf_url} 
+                    value={this.state.document_link} 
                     onChange={this.onChangePDFUrl} required/>
                   </Form.Group>
               </Col>

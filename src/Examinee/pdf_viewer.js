@@ -1,53 +1,62 @@
-import React, { useState } from "react";
-import { Document, Page } from "react-pdf";
+import React, { useState } from 'react'; 
+import { Document, Page, pdfjs } from 'react-pdf'; 
+import { Button } from "react-bootstrap";
+import styled from "styled-components";
 
-export default function PDFViewer(props) {
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1); //setting 1 to show fisrt page
+const url = 
+"https://cors-anywhere.herokuapp.com/https://www.education.vic.gov.au/Documents/school/parents/secondary/mathspractice.pdf"
 
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
-    setPageNumber(1);
-  }
+export default function PDFview() { 
+	
+pdfjs.GlobalWorkerOptions.workerSrc = 
+`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`; 
+const [numPages, setNumPages] = useState(null); 
+const [pageNumber, setPageNumber] = useState(1); 
 
-  function changePage(offset) {
-    setPageNumber(prevPageNumber => prevPageNumber + offset);
-  }
+document.addEventListener("contextmenu", (event) => { 
+	event.preventDefault(); 
+}); 
+	
+/*When document gets loaded successfully*/
+function onDocumentLoadSuccess({ numPages }) { 
+	setNumPages(numPages); 
+	setPageNumber(1); 
+} 
 
-  function previousPage() {
-    changePage(-1);
-  }
+function changePage(offset) { 
+	setPageNumber(prevPageNumber => prevPageNumber + offset); 
+} 
 
-  function nextPage() {
-    changePage(1);
-  }
+function previousPage() { 
+	changePage(-1); 
+} 
 
-  const { pdf } = props;
+function nextPage() { 
+	changePage(1); 
+} 
 
-  return (
-    <>
-      <Document
-        file={pdf}
-        options={{ workerSrc: "pdfjs-dist/build/pdf.worker.js" }}
-        onLoadSuccess={onDocumentLoadSuccess}
-      >
-        <Page pageNumber={pageNumber} />
-      </Document>
-      <div>
-        <p>
-          Page {pageNumber || (numPages ? 1 : "--")} of {numPages || "--"}
-        </p>
-        <button type="button" disabled={pageNumber <= 1} onClick={previousPage}>
-          Previous
-        </button>
-        <button
-          type="button"
-          disabled={pageNumber >= numPages}
-          onClick={nextPage}
-        >
-          Next
-        </button>
-      </div>
-    </>
-  );
+return ( 
+	<> 
+	<div class="container" style={{marginLeft: "auto", marginRight: "auto", width: "80%"}}>
+		<div >
+			<div className="pagec">
+				Page {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'} 
+			</div>
+			<div className="buttonc" style={{marginTop:"10px"}}>
+				<Button type="button" disabled={pageNumber <= 1} onClick={previousPage} className="Pre" style={{marginRight:"10px"}}> 
+				Previous 
+				</Button> 
+				<Button type="button" disabled={pageNumber >= numPages} onClick={nextPage}> 
+				Next 
+				</Button> 
+			</div>
+			<div class="row justify-content-start" style={{marginLeft: "-100px"}} >
+				<Document file={url} onLoadSuccess={onDocumentLoadSuccess}> 
+					<Page size="A5" pageNumber={pageNumber}/> 
+				</Document> 
+			</div>
+		</div>
+	</div>
+	</> 
+); 
 }

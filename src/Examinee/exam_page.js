@@ -9,6 +9,7 @@ import { Button, Alert } from "react-bootstrap";
 import { getDisplayStream } from "./scripts/MediaAccess";
 import io from "socket.io-client";
 import "./exampage.css";
+import PDFview from "./pdf_viewer"
 
 import {
   ShareScreenIcon,
@@ -215,7 +216,7 @@ class ExamPage extends React.Component {
     this.setState({duration_warning: value});
   }
 
-  render() {
+  render() {    
     return (
       <div className="App">
         <Header>
@@ -241,7 +242,7 @@ class ExamPage extends React.Component {
         </div>
         </Header>
 
-        <div class="container-fluid" style={{marginLeft: "auto", marginRight: "auto", width: "70%"}}>
+        <div class="container-fluid" style={{marginLeft: "auto", marginRight: "auto", width: "80%"}}>
           <div class="row">
             <div class="col-sm">
               <video width="350" 
@@ -328,14 +329,13 @@ class ExamPage extends React.Component {
               </section>
             </div>
             <div class="col-md">
-              <div class="react-component centre" style={{display:"block", backgroundColor:"#F3F3F3", marginLeft:"auto", marginRight:"auto", width:"95%", height:"500px" }}
-              ></div>
-                <div class="pdf-btn">
-                  <Button variant="outline-dark" className="button" style={{width: '150px', marginTop: '20px', marginBottom: '20px', backgroundColor: '#bfbfbf'}}  href='/examinee/pdfviewer'>
-                      View PDF
-                  </Button>
-                </div>            
-              </div>
+            <PDFview/>
+              {/* <div class="pdf-btn">
+                <Button variant="outline-dark" className="button" style={{width: '150px', marginTop: '20px', marginBottom: '20px', backgroundColor: '#bfbfbf'}}  href='/examinee/pdfviewer'>
+                    View PDF
+                </Button>
+              </div>       */}
+            </div>
           </div>
         </div>
       </div>

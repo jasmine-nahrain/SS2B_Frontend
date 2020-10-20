@@ -48,6 +48,7 @@ class ExamStartPage extends Component {
       login_code: null,
       start_date: null,
       subject_id: -1,
+      pdf_url: -1, //NEW
       not_found: false,
       exam_in_progress: null
     }
@@ -92,6 +93,7 @@ class ExamStartPage extends Component {
           "subject_id": exam_in_progress["subject_id"],
           "time_started": time_started.toLocaleString(),
           "duration":exam_in_progress["duration"],
+          "pdf_url":exam_in_progress["pdf_url"],
           "latest_end_time": latest_end_time.toLocaleString(),
           "user_id": exam_in_progress["user_id"]
         }
@@ -119,6 +121,7 @@ class ExamStartPage extends Component {
         exam_name: exam['exam_name'],
         start_date: start_date.toLocaleString(),
         subject_id: exam['subject_id'],
+        pdf_url: exam['pdf_url'],
         not_found: false
       });
     } else {

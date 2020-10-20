@@ -18,7 +18,6 @@ import ExamineeEndPage from './Examinee/exam_endpage.js';
 import Redirect from './Examinee/redirect_page.js';
 import VideoStreaming from './Examiner/video_streaming.js';
 import PDFViewer from './Examinee/pdf_viewer.js';
-import samplePDF from "./Examinee/MathsExam.pdf";
 
 class App extends Component {
   render() {
@@ -112,7 +111,7 @@ class App extends Component {
           )} />
           <Route exact={true} path='/examinee/pdfviewer' render={() => (
             <div className="App">
-              <PDFViewer pdf={samplePDF}/>
+              <PDFViewer/>
             </div>
           )} />
         </React.Fragment>

@@ -234,9 +234,7 @@ class ManageExam extends Component {
             <div>
               <div class="containerAdmin admin-table">
                 <this.SearchFields />
-                {upcoming &&
-                  <a href='/examiner/create'><button class="btn btn-primary btn-block my-3" style={{ float: 'left' }}>Create New Exam</button></a>
-                }
+                {upcoming }
                 <br />
                 {this.state.table_data.length == 0 ? <p>{empty_message}</p> :
                   <div>
@@ -278,8 +276,8 @@ class ManageExam extends Component {
               </div>
             </div>
             </Header>
-
-            <a href="/examiner" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-4 btn-block" style={{width:'90%', marginLeft:'auto', marginRight: 'auto'}}>View Student Exams</button></a>
+            <a href="/examiner" style={{textDecoration: 'none'}}><button  class="btn btn-success mb-4 btn-block" style={{width:'80%', marginLeft:'auto', marginRight: 'auto'}}>View Student Exams</button></a>
+            <a href='/examiner/create'><button class="btn btn-primary btn-block my-3" style={{width:'80%', marginLeft:'auto', marginRight: 'auto'}}>Create New Exam</button></a>
             <br />
             <Tabs onSelect={this.handleTabSelect} defaultActiveKey={2} id="manage" style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}>
               <Tab eventKey={2} title="Upcoming" style={{ backgroundColor: 'white' }} >

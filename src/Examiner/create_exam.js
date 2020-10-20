@@ -1,5 +1,3 @@
-/*create_exam*/
-
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -42,6 +40,7 @@ class CreateExam extends Component {
     this.onChangeSubjectID = this.onChangeSubjectID.bind(this);
     this.onChangeEndDate = this.onChangeEndDate.bind(this);
     this.onChangeEndTime = this.onChangeEndTime.bind(this);
+    this.onChangePDFUrl = this.onChangePDFUrl.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
@@ -54,7 +53,7 @@ class CreateExam extends Component {
       subjectID: Number,
       duration_hours: Number,
       duration_minutes: Number,
-      exam_file: null,
+      pdf_url: ''
     }
     console.log(this.state);
   }
@@ -77,38 +76,39 @@ class CreateExam extends Component {
     });
   }
 
-onChangeSubjectID(e) {
-  this.setState({
-    subjectID: e.target.value
-  });
-}
-onChangeDurationHours(e) {
-  this.setState({
-    duration_hours: e.target.value
-  });
-}
-onChangeDurationMinutes(e) {
-  this.setState({
-    duration_minutes: e.target.value
-  });
-}
+  onChangeSubjectID(e) {
+    this.setState({
+      subjectID: e.target.value
+    });
+  }
+  onChangeDurationHours(e) {
+    this.setState({
+      duration_hours: e.target.value
+    });
+  }
+  onChangeDurationMinutes(e) {
+    this.setState({
+      duration_minutes: e.target.value
+    });
+  }
 
-onChangeEndDate(e) {
-  this.setState({
-    end_date: e.target.value
-  });
-}
+  onChangeEndDate(e) {
+    this.setState({
+      end_date: e.target.value
+    });
+  }
 
-onChangeEndTime(e) {
-  this.setState({
-    end_time: e.target.value
-  });
-}
+  onChangeEndTime(e) {
+    this.setState({
+      end_time: e.target.value
+    });
+  }
 
-onFileChange = event => { 
-  // Update the state 
-  this.setState({ exam_file: event.target.files[0] }); 
-};
+  onChangePDFUrl(e) {
+    this.setState({
+      pdf_url: e.target.value
+    })
+  }
 
   onSubmit = async (e) => {
     e.preventDefault();
@@ -116,20 +116,7 @@ onFileChange = event => {
     let start_date = getDate(this.state.start_date, this.state.start_time);
     const duration = getTime(this.state.duration_hours, this.state.duration_minutes);
     let end_date = getDate(this.state.end_date, this.state.end_time);
-    let parsedData = createExam(this.state.name, this.state.subjectID, start_date, end_date, duration);
-
-          // Create an object of formData 
-          const formData = new FormData(); 
-     
-          // Update the formData object 
-          formData.append( 
-            "examFile", 
-            this.state.exam_file, 
-            this.state.exam_file.name 
-          ); 
-         
-    console.log(this.state.exam_file);
-    /* Include this.state.exam_file */
+    let parsedData = createExam(this.state.name, this.state.subjectID, start_date, end_date, duration, this.state.pdf_url);
 
     if(parsedData) {
       alert("Successfully created exam.");
@@ -228,11 +215,14 @@ onFileChange = event => {
                       required />
                   </Form.Group>
 
-                  <h6>Upload Exam PDF</h6>
-                  <Form.Group>
-                    <div class="form-group" style={{fontSize: '16px',  width: '49%', float: 'left'}}>
-                      <input type="file" class="form-control-file" accept=".pdf" id="exampleFormControlFile1" onChange={this.onFileChange} />
-                    </div>
+                  <h6>Exam PDF URL</h6>
+                  <Form.Group controlId="formName">
+                  <Form.Control 
+                    type="text" 
+                    name="pdf_url" 
+                    placeholder="e.g. https://www.uts.edu.au/exam/maths.pdf" 
+                    value={this.state.pdf_url} 
+                    onChange={this.onChangePDFUrl} required/>
                   </Form.Group>
               </Col>
 

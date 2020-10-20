@@ -76,7 +76,7 @@ export const getExaminees = async (parameters=null) => {
 API Create Exam to save new exam to db
 Status codes: 200 OK
 */
-export const createExam = async (exam_name, subject_id, start_date, end_date, duration) => {
+export const createExam = async (exam_name, subject_id, start_date, end_date, duration, pdf_url) => {
     try {
         let token = getToken();
 
@@ -87,6 +87,7 @@ export const createExam = async (exam_name, subject_id, start_date, end_date, du
             "start_date": start_date,
             "end_date": end_date,
             "duration": duration,
+            "pdf_url": pdf_url
         });
 
         const response = await fetch(url, {
@@ -201,7 +202,7 @@ export const uploadFaceImage = async(user_id, image, authenticate=true) => {
 API Edit Exam to save new exam to db
 Status codes: 200 OK
 */
-export const editExam = async (exam_id, exam_name, subject_id, start_date, end_date, duration) => {
+export const editExam = async (exam_id, exam_name, subject_id, start_date, end_date, duration, pdf_url) => {
     try {
         let token = getToken();
 
@@ -213,6 +214,7 @@ export const editExam = async (exam_id, exam_name, subject_id, start_date, end_d
             "start_date": start_date,
             "end_date": end_date,
             "duration": duration,
+            "pdf_url": pdf_url
         });
 
         const response = await fetch(url, {

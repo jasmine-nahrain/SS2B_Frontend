@@ -5,7 +5,7 @@ import { Form, Button, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
-import {getUserID, getMonth, getTime, getDate} from '../functions.js'
+import {getUserID, getMonth, getTime, getDate, formatDateToLocal} from '../functions.js'
 import {editExam, deleteExam} from '../api_caller.js';
 
 const Body = styled.body`
@@ -62,20 +62,12 @@ class EditExam extends Component {
 
   async componentDidMount() {
     const exam = JSON.parse(localStorage.getItem('exam'));
-    var start_date = exam.start_date.split(" ");
-    var end_date = exam.start_date.split(" ");
+    var start_date = formatDateToLocal(exam.start_date).split(" ");
+    var end_date = formatDateToLocal(exam.end_date).split(" ");
     var duration = exam.duration.split(':');
     var currentDate = new Date();
     var has_started = start_date[0].split('-');
-    for(var i = 0; i < has_started.length; i++) {
-      has_started[i] = parseInt(has_started[i]);
-    }
-    if(has_started[0] >= currentDate.getYear() && has_started[1] >= currentDate.getMonth() &&
-      has_started[0] >= currentDate.getDay()) {
-         this.setState({can_edit_exam: true});
-     } else {
-       this.setState({can_edit_exam: false});
-     }
+
     this.setState({
       name: exam.exam_name,
       start_date: start_date[0],

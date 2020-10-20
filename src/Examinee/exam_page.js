@@ -12,6 +12,7 @@ import "./exampage.css";
 import PDFview from "./pdf_viewer"
 import ExamWarnings from './exam_warnings.js';
 import { getExamRecording, editExamRecording } from '../api_caller.js'
+import { getTimeRemaining, datetimeformat, formatDate, formatDateToLocal, formatDateToLocalString, getLatestEndTime} from '../functions.js';
 
 import {
   ShareScreenIcon,
@@ -35,7 +36,8 @@ class ExamPage extends React.Component {
     const is_examiner = parseInt(localStorage.getItem("is_examiner"));
     const user_id = localStorage.getItem("user_id");
     const exam_id = localStorage.getItem("exam_id");
-    const duration = localStorage.getItem("exam_duration");
+    const time_left = localStorage.getItem("time_left");
+    const duration = localStorage.getItem("duration");
     const exam_name = localStorage.getItem("exam_name");
     const student_name = localStorage.getItem("student_name");
     const time_started = localStorage.getItem("time_started");
@@ -63,6 +65,7 @@ class ExamPage extends React.Component {
       student_name: student_name,
       video: "",
       duration: duration,
+      time_left: time_left,
       duration_warning: "",
       stream_visible: true,
       document_link: document_link
@@ -71,13 +74,33 @@ class ExamPage extends React.Component {
   videoCall = new VideoCall();
 
   async componentDidMount() {
-    let exams_in_progress_data = await getExamRecording({ "user_id": this.state.user_id, "in_progress": 1 });
-    if (exams_in_progress_data.exam_recordings.length===0 && !this.state.is_examiner) window.location.href = '/examinee/redirect';
+    let exams_in_progress_data = null;
+    let params = {"exam_recording_id": this.state.exam_recording_id} 
+    if (!this.state.is_examiner) {
+      params["in_progress"] = 1;
+      params["user_id"] = this.state.user_id;
+    }
+    exams_in_progress_data = await getExamRecording(params);
+
+    if (exams_in_progress_data.exam_recordings.length === 0 && !this.state.is_examiner) window.location.href = '/examinee/redirect';
+    else if (exams_in_progress_data.exam_recordings !== 0) {
+      let er = exams_in_progress_data.exam_recordings[0]
+      this.setState({
+        exam_id: er.exam_id,
+        exam_name: er.exam_name,
+        time_started: formatDateToLocal(er.time_started),
+        exam_recording_id: er.exam_recording_id,
+        time_left: getTimeRemaining(er.time_started, er.duration),
+        document_link: er.document_link,
+        duration: er.duration,
+        time_ended: formatDateToLocal(er.time_ended)
+      });
+    }
     const socket = io('http://localhost:8080');
     const component = this;
     this.setState({ socket });
     const { roomId } = this.props.match.params;
-    console.log(this.props.match.params)
+    //console.log(this.props.match.params)
 
     this.getUserMedia().then(() => {
       socket.emit("join", { roomId: roomId });
@@ -102,25 +125,25 @@ class ExamPage extends React.Component {
     });
   }
 
-  setAudioLocal(){
-    if(this.state.localStream.getAudioTracks().length>0){
+  setAudioLocal() {
+    if (this.state.localStream.getAudioTracks().length > 0) {
       this.state.localStream.getAudioTracks().forEach(track => {
-        track.enabled=!track.enabled;
+        track.enabled = !track.enabled;
       });
     }
     this.setState({
-      micState:!this.state.micState
+      micState: !this.state.micState
     })
   }
 
-  setVideoLocal(){
-    if(this.state.localStream.getVideoTracks().length>0){
+  setVideoLocal() {
+    if (this.state.localStream.getVideoTracks().length > 0) {
       this.state.localStream.getVideoTracks().forEach(track => {
-        track.enabled=!track.enabled;
+        track.enabled = !track.enabled;
       });
     }
     this.setState({
-      camState:!this.state.camState
+      camState: !this.state.camState
     })
   }
 
@@ -144,7 +167,7 @@ class ExamPage extends React.Component {
           this.localVideo.srcObject = stream;
           resolve();
         },
-        () => {}
+        () => { }
       );
     });
   }
@@ -179,18 +202,18 @@ class ExamPage extends React.Component {
       };
       this.state.socket.emit('signal', signal);
     });
-      peer.on('stream', stream => {
-        if(this.state.is_examiner) {
-          this.remoteVideo.srcObject = stream;
-          this.localVideo.setAttribute("display", "none");
-        }
-        this.setState({ connecting: false, waiting: false });
-      });
-    peer.on('error', function(err) {
+    peer.on('stream', stream => {
+      if (this.state.is_examiner) {
+        this.remoteVideo.srcObject = stream;
+        this.localVideo.setAttribute("display", "none");
+      }
+      this.setState({ connecting: false, waiting: false });
+    });
+    peer.on('error', function (err) {
       console.log(err);
     });
-    if(this.state.is_examiner && this.remoteVideo.srcObject === null) {
-      this.setState({stream_visible: false});
+    if (this.state.is_examiner && this.remoteVideo.srcObject === null) {
+      this.setState({ stream_visible: false });
     }
   };
 
@@ -203,18 +226,9 @@ class ExamPage extends React.Component {
     }
   };
 
-  handleToggle = () => {
-    this.setState({
-      isActive: !this.state.isActive,
-    });
-    console.log(this.state);
-
-    // this.btnReview.setAttribute("disabled", "disabled");
-    this.btnReview.setAttribute("visibility", "hidden");
-  };
 
   handleDurationWarning = (value) => {
-    this.setState({duration_warning: value});
+    this.setState({ duration_warning: value });
   }
 
   endExam = async () => {
@@ -226,120 +240,121 @@ class ExamPage extends React.Component {
     window.location.href = '/examinee/endpage'
   }
 
-  render() {    
+  render() {
     return (
       <div className="App">
         <Header>
-        <div class="d-flex" style={{marginLeft: "auto", marginRight: "auto", width: "70%"}}>
-          <div class="align-self-center">
+          <div class="d-flex" style={{ marginLeft: "auto", marginRight: "auto", width: "70%" }}>
+            <div class="align-self-center">
               <img
                 src={logo}
                 className="move"
                 alt="logo"
-                style={{ marginLeft: "auto", marginRight: "auto", height: "50px"}}
+                style={{ height: "50px", marginBottom: "4%" }}
               ></img>
-          </div>
-          <div class="align-self-center" style={{ marginLeft: "10px"}}>              
+            </div>
+            <div class="align-self-center" style={{ marginLeft: "10px" }}>
               <h3>Examination Page</h3>
-          </div>
-          <div class="ml-auto align-self-center">
+            </div>
+            <div class="ml-auto align-self-center">
               <div class="end-exam-btn">
+                {!this.state.is_examiner &&
                   <button class="btn btn-light" onClick={this.endExam}>
-                      <strong>End Exam</strong>
+                    End Exam
                   </button>
+                }
+                {this.state.is_examiner &&
+                  <a href='/examiner'> 
+                    <button class="btn btn-light" >
+                      Return to Exam Attempts
+                    </button>
+                  </a>
+
+                }
+
               </div>
+            </div>
           </div>
-        </div>
         </Header>
 
-        <div class="container-fluid" style={{marginLeft: "auto", marginRight: "auto", width: "80%"}}>
+        <div class="container-fluid" style={{ marginLeft: "auto", marginRight: "auto", width: "80%" }}>
           <div class="row">
             <div class="col-sm">
-              <video width="350" 
+              <video width="350"
                 autoPlay
                 id="localVideo"
                 muted
-                style={{display: this.state.is_examiner ? 'none' : 'inline'}}
+                style={{ display: this.state.is_examiner ? 'none' : 'inline' }}
                 ref={(video) => (this.localVideo = video)}
               />
-              <h6 style={{visibility: this.state.stream_visible && this.state.is_examiner ? 'visible' : 'hidden'}}>Video stream has not started</h6>
-            
-              <div className="controls" style={{marginTop: "-10px", marginBottom: "20px"}}>
-                  <button
-                    className="control-btn"
-                    onClick={() => {
-                      this.getDisplay();
-                    }}
-                  >
-                    <ShareScreenIcon />
-                  </button>
+              <h6 style={{ visibility: this.state.stream_visible && this.state.is_examiner ? 'visible' : 'hidden' }}>Video stream has not started</h6>
 
-                  <button
-                    className="control-btn"
-                    onClick={() => {
-                      this.setAudioLocal();
-                    }}
-                  >
-                    {this.state.micState ? <MicOnIcon /> : <MicOffIcon />}
-                  </button>
+              <div className="controls" style={{ marginTop: "-10px", marginBottom: "20px" }}>
+                <button
+                  className="control-btn"
+                  onClick={() => {
+                    this.getDisplay();
+                  }}
+                >
+                  <ShareScreenIcon />
+                </button>
 
-                  <button
-                    className="control-btn"
-                    onClick={() => {
-                      this.setVideoLocal();
-                    }}
-                  >
-                    {this.state.camState ? <CamOnIcon /> : <CamOffIcon />}
-                    
-                  </button>
-                </div>
+                <button
+                  className="control-btn"
+                  onClick={() => {
+                    this.setAudioLocal();
+                  }}
+                >
+                  {this.state.micState ? <MicOnIcon /> : <MicOffIcon />}
+                </button>
+
+                <button
+                  className="control-btn"
+                  onClick={() => {
+                    this.setVideoLocal();
+                  }}
+                >
+                  {this.state.camState ? <CamOnIcon /> : <CamOffIcon />}
+
+                </button>
+              </div>
               <section class="experiment">
                 {!this.state.is_examiner ? (
                   <div id="createBroadcast">
                     <section>
                       <h5 type="text" id="user_id" style={{marginBottom: "20px"}} disabled> 
-                      Student ID: {this.state.user_id} 
+                        Student ID: {this.state.user_id}
                       </h5>
-                      {this.state.isActive ? <CountDownTimer duration={this.state.duration} duration_warning={this.handleDurationWarning}/> : null}
-                      {this.state.duration_warning ? <Alert variant='danger' style={{width: "30%", marginRight: 'auto', marginLeft: 'auto'}}>{this.state.duration_warning}</Alert> : ""}
-                      { !this.state.isActive ? <Button style={{marginBottom: "20px"}}
-                        type="button"
-                        class="btn btn-success"
-                        id="setup-new-broadcast"
-                        onClick={this.handleToggle}
-                        ref={(btnReview) => {
-                          this.btnReview = btnReview;
-                        }}> Start Exam </Button>
-                        : ""}
+                      <CountDownTimer duration={this.state.time_left} duration_warning={this.handleDurationWarning} />
+                      {this.state.duration_warning ? <Alert variant='danger' style={{ width: "30%", marginRight: 'auto', marginLeft: 'auto' }}>{this.state.duration_warning}</Alert> : ""}
                       <br></br>
-
-                      <ExamWarnings data={this.state}/>
                     </section>
                   </div>
                 ) : (
-                  <div id="listStudents">
-                  <video
-                      autoPlay
-                      id='remoteVideo'
-                      muted
-                      ref={video => (this.remoteVideo = video)}
-                    />
-                    <table style={{ width: "100%" }} id="rooms-list"></table>
-                    <h6><b>Student ID:</b> {this.state.user_id}</h6>
-                    <h6><b>Student Name:</b> {this.state.student_name}</h6>
-                    <h6><b>Exam Name:</b> {this.state.exam_name}</h6>
-                    <h6><b>Exam ID: </b>{this.state.exam_id}</h6>
-                    <h6><b>Duration:</b> {this.state.duration}</h6>
-                    <h6><b>Time Started:</b> {this.state.time_started}</h6>
-                  </div>
-                )}
+                    <div id="listStudents">
+                      <video
+                        autoPlay
+                        id='remoteVideo'
+                        muted
+                        ref={video => (this.remoteVideo = video)}
+                      />
+                      <table style={{ width: "100%" }} id="rooms-list"></table>
+                      <h6><b>Student ID:</b> {this.state.user_id}</h6>
+                      <h6><b>Student Name:</b> {this.state.student_name}</h6>
+                      <h6><b>Exam Name:</b> {this.state.exam_name}</h6>
+                      <h6><b>Duration:</b> {this.state.duration}</h6>
+                      <h6><b>Time Started:</b> {this.state.time_started}</h6>
+                      {this.state.is_examiner && this.state.time_ended !== "1970-01-01 21:00:00" &&
+                        <h6><b>Time Ended:</b> {this.state.time_ended}</h6>
+                      }
+                    </div>
+                  )}
               </section>
+              <ExamWarnings data={this.state} />
             </div>
             <div class="col-md">
-            {this.state.isActive &&
-              <PDFview document={this.state.document_link}/>
-            }            
-              </div>
+                <PDFview document={this.state.document_link} />
+            </div>
           </div>
         </div>
       </div>

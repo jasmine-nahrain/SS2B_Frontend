@@ -301,7 +301,7 @@ class StudentFilter extends Component {
             <Header >
             <div class="d-flex" style={{marginLeft: "auto", marginRight: "auto", width: "70%"}}>
               <div class="align-self-center" style={{ marginLeft: "10px"}}>              
-                  <h2><b> Exam Attempt </b></h2>
+                  <h2><b> Exam Attempts List </b></h2>
               </div>
               <div class="ml-auto align-self-center">
                 <div class="logout-btn">

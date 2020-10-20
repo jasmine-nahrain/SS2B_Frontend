@@ -13,7 +13,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import { Form, Col, Tab, Tabs } from 'react-bootstrap';
 import { RightCaretIcon, LeftCaretIcon } from '../Examinee/scripts/Icons';
-import { formatDateToLocalString, getTimeRemaining, formatDateToLocal } from '../functions.js';
+import { formatDateToLocalString, getTimeRemaining, formatDateToLocal, logout} from '../functions.js';
 
 const Header = styled.header`
 background-color: #2196f3;
@@ -134,6 +134,12 @@ class StudentFilter extends Component {
       results_length: 10
     };
   }
+
+  onLogout = (e) => {
+    e.preventDefault();
+    logout();
+  }
+
 
   SearchFields = () => (
     <div class="mt-4">
@@ -299,9 +305,9 @@ class StudentFilter extends Component {
               </div>
               <div class="ml-auto align-self-center">
                 <div class="logout-btn">
-                    <a href="/" ><button class="btn btn-light">
+                    <button class="btn btn-light" onClick={this.onLogout}>
                         Logout
-                    </button></a>
+                    </button>
                 </div>
               </div>
             </div>

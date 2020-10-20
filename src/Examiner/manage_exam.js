@@ -4,7 +4,7 @@ import { BrowserRouter, withRouter } from "react-router-dom";
 import styled from 'styled-components';
 import EditIcon from '../images/edit.svg';
 import { getExams } from '../api_caller.js';
-import { inProgress, getCurrentDate, datetimeformat, formatDateToLocalString, formatDateToLocal } from '../functions.js';
+import { inProgress, getCurrentDate, datetimeformat, formatDateToLocalString, logout, formatDateToLocal } from '../functions.js';
 // Main Components
 import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -178,6 +178,12 @@ class ManageExam extends Component {
     await this.getFilteredExams(null, this.state.in_progress, this.state.page_number - 1)
   };
 
+  onLogout = (e) => {
+    e.preventDefault();
+    logout();
+  }
+
+
   SearchFields = () => (
     <div class="mt-4">
       <Form.Row>
@@ -267,7 +273,7 @@ class ManageExam extends Component {
               </div>
               <div class="ml-auto align-self-center">
                   <div class="logout-btn">
-                      <button class="btn btn-light" href='/'>
+                      <button class="btn btn-light" onClick={this.onLogout}>
                           Logout
                       </button>
                   </div>

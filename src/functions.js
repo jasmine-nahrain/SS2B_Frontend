@@ -149,6 +149,11 @@ export const getTimeRemaining = (timeStartedString, durationString) => {
   let remaining_seconds = Math.ceil(seconds_to_end%60);
   // console.log([remaining_hours, remaining_minutes, remaining_seconds])
   return remaining_hours+":"+remaining_minutes+":"+remaining_seconds;
+
+export const logout = () => {
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = '/';
 }
 
 export const datetimeformat = 'YYYY-MM-DD HH:mm:ss';

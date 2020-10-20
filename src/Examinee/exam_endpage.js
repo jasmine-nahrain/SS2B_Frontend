@@ -5,6 +5,7 @@ import { Button } from 'react-bootstrap';
 import '../App.css';
 import styled from 'styled-components';
 import logo from '../images/logo.png';
+import {logout} from '../functions'
 
 const Body = styled.body`
   // background-color: white;
@@ -22,9 +23,7 @@ class ExamineeEndPage extends Component {
 
     onLogout = (e) => {
       e.preventDefault();
-      localStorage.clear();
-      sessionStorage.clear();
-      window.location.href = '/';
+      logout();
     }
 
     render() {

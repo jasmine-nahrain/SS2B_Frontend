@@ -68,7 +68,7 @@ class CountDownTimer extends React.Component {
           (window.location.href = "/examinee/endpage")
         ) : (
           <h5 id="timer" style={{marginBottom: "20px"}}>
-            Time Remaining: {hours}:{minutes < 10 ? `0${minutes}` : minutes}:
+            <b>Time Remaining:</b> {hours}:{minutes < 10 ? `0${minutes}` : minutes}:
             {seconds < 10 ? `0${seconds}` : seconds}
           </h5>
         )}

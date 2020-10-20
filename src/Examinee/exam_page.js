@@ -12,7 +12,7 @@ import "./exampage.css";
 import PDFview from "./pdf_viewer"
 import ExamWarnings from './exam_warnings.js';
 import { getExamRecording, editExamRecording } from '../api_caller.js'
-import { getTimeRemaining, datetimeformat, formatDate, formatDateToLocal, formatDateToLocalString, getLatestEndTime} from '../functions.js';
+import { getTimeRemaining, datetimeformat, formatDate, formatDateToLocal, formatDateToLocalString, getLatestEndTime } from '../functions.js';
 
 import {
   ShareScreenIcon,
@@ -75,7 +75,7 @@ class ExamPage extends React.Component {
 
   async componentDidMount() {
     let exams_in_progress_data = null;
-    let params = {"exam_recording_id": this.state.exam_recording_id} 
+    let params = { "exam_recording_id": this.state.exam_recording_id }
     if (!this.state.is_examiner) {
       params["in_progress"] = 1;
       params["user_id"] = this.state.user_id;
@@ -264,7 +264,7 @@ class ExamPage extends React.Component {
                   </button>
                 }
                 {this.state.is_examiner &&
-                  <a href='/examiner'> 
+                  <a href='/examiner'>
                     <button class="btn btn-light" >
                       Return to Exam Attempts
                     </button>
@@ -289,46 +289,48 @@ class ExamPage extends React.Component {
               />
               <h6 style={{ visibility: this.state.stream_visible && this.state.is_examiner ? 'visible' : 'hidden' }}>Video stream has not started</h6>
 
-              <div className="controls" style={{ marginTop: "-10px", marginBottom: "20px" }}>
-                <button
-                  className="control-btn"
-                  onClick={() => {
-                    this.getDisplay();
-                  }}
-                >
-                  <ShareScreenIcon />
-                </button>
-
-                <button
-                  className="control-btn"
-                  onClick={() => {
-                    this.setAudioLocal();
-                  }}
-                >
-                  {this.state.micState ? <MicOnIcon /> : <MicOffIcon />}
-                </button>
-
-                <button
-                  className="control-btn"
-                  onClick={() => {
-                    this.setVideoLocal();
-                  }}
-                >
-                  {this.state.camState ? <CamOnIcon /> : <CamOffIcon />}
-
-                </button>
-              </div>
               <section class="experiment">
                 {!this.state.is_examiner ? (
-                  <div id="createBroadcast">
-                    <section>
-                      <h5 type="text" id="user_id" style={{marginBottom: "20px"}} disabled> 
-                        Student ID: {this.state.user_id}
-                      </h5>
-                      <CountDownTimer duration={this.state.time_left} duration_warning={this.handleDurationWarning} />
-                      {this.state.duration_warning ? <Alert variant='danger' style={{ width: "30%", marginRight: 'auto', marginLeft: 'auto' }}>{this.state.duration_warning}</Alert> : ""}
-                      <br></br>
-                    </section>
+                  <div>
+                    <div className="controls" style={{ marginTop: "-10px", marginBottom: "20px" }}>
+                      <button
+                        className="control-btn"
+                        onClick={() => {
+                          this.getDisplay();
+                        }}
+                      >
+                        <ShareScreenIcon />
+                      </button>
+
+                      <button
+                        className="control-btn"
+                        onClick={() => {
+                          this.setAudioLocal();
+                        }}
+                      >
+                        {this.state.micState ? <MicOnIcon /> : <MicOffIcon />}
+                      </button>
+
+                      <button
+                        className="control-btn"
+                        onClick={() => {
+                          this.setVideoLocal();
+                        }}
+                      >
+                        {this.state.camState ? <CamOnIcon /> : <CamOffIcon />}
+
+                      </button>
+                    </div>
+                    <div id="createBroadcast">
+                      <section>
+                        <h5 type="text" id="user_id" style={{ marginBottom: "20px" }} disabled>
+                          <b>Student ID:</b> {this.state.user_id}
+                        </h5>
+                        <CountDownTimer duration={this.state.time_left} duration_warning={this.handleDurationWarning} />
+                        {this.state.duration_warning ? <Alert variant='danger' style={{ width: "30%", marginRight: 'auto', marginLeft: 'auto' }}>{this.state.duration_warning}</Alert> : ""}
+                        <br></br>
+                      </section>
+                    </div>
                   </div>
                 ) : (
                     <div id="listStudents">
@@ -352,9 +354,12 @@ class ExamPage extends React.Component {
               </section>
               <ExamWarnings data={this.state} />
             </div>
-            <div class="col-md">
+            {!this.state.is_examiner &&
+              <div class="col-md">
                 <PDFview document={this.state.document_link} />
-            </div>
+              </div>
+            }
+
           </div>
         </div>
       </div>

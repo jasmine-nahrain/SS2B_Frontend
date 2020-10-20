@@ -192,7 +192,7 @@ class ExamPage extends React.Component {
       this.state.initiator
     );
 
-    console.log("hfytuhj")
+    // console.log("hfytuhj")
     this.setState({ peer });
 
     peer.on('signal', data => {

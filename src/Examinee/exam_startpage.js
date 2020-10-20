@@ -76,7 +76,7 @@ class ExamStartPage extends Component {
       let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
 
       var latest_end_time = getLatestEndTime(exam_in_progress["time_started"], exam_in_progress["duration"])
-      console.log("EX", exam_in_progress);
+      // console.log("EX", exam_in_progress);
       this.setState({
         exam_in_progress: {
           "exam_id": exam_in_progress["exam_id"],
@@ -138,7 +138,7 @@ class ExamStartPage extends Component {
       let new_exam_recording = await createExamRecording(exam_id, user_id);
       
       if(new_exam_recording !== null) {
-        console.log(new_exam_recording)
+        // console.log(new_exam_recording)
         const time = getTimeRemaining(new_exam_recording.time_started, this.state.duration);
         localStorage.setItem('time_left', time);
         localStorage.setItem('duration', this.state.duration)

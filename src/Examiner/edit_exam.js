@@ -65,8 +65,6 @@ class EditExam extends Component {
     var start_date = formatDateToLocal(exam.start_date).split(" ");
     var end_date = formatDateToLocal(exam.end_date).split(" ");
     var duration = exam.duration.split(':');
-    var currentDate = new Date();
-    var has_started = start_date[0].split('-');
 
     this.setState({
       name: exam.exam_name,
@@ -93,7 +91,6 @@ class EditExam extends Component {
     this.setState({
       start_date: e.target.value
     });
-    console.log(e.target.value)
   }
   onChangeEndDate(e) {
     this.setState({
@@ -148,8 +145,11 @@ onChangePDFUrl(e) {
 
   onDelete = async (e) => {
     if(window.confirm("Are you sure you want to delete exam #" + this.state.exam_id)) {
-      deleteExam(this.state.exam_id);
-      window.location.href = '/examiner/manage'
+      let success = await deleteExam(this.state.exam_id);
+      if (success) window.location.href = '/examiner/manage'
+      else {
+        alert('Something went wrong!');
+      }
     } else {
       return;
     }

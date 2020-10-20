@@ -69,7 +69,7 @@ class CreateExam extends Component {
     });
   }
   onChangeStartTime(e) {
-    console.log(e.target.value)
+    // console.log(e.target.value)
 
     this.setState({
       start_time: e.target.value

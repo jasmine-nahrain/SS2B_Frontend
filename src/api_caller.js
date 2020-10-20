@@ -138,7 +138,7 @@ export const deskcheck = async(image) => {
         const response = await fetch(url, requestOptions);
 
         const status = response.status;
-        console.log(status);
+        // console.log(status);
 
         if (status === 200) {
             let parsedData = await response.json();
@@ -182,7 +182,7 @@ export const uploadFaceImage = async(user_id, image, authenticate=true) => {
         const response = await fetch(url, requestOptions);
 
         const status = response.status;
-        console.log(status);
+        // console.log(status);
 
         // If an upload of a new image, return True if successful
         if (!authenticate) return status === 200;

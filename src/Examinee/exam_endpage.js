@@ -6,12 +6,6 @@ import '../App.css';
 import styled from 'styled-components';
 import logo from '../images/logo.png';
 
-const Text = styled.span`
-font-size: calc(20px + 2vmax);
-font-family: "Times New Roman";
-font-weight: bold;
-`;
-
 const Body = styled.body`
   // background-color: white;
   // background-blend-mode: multiply;

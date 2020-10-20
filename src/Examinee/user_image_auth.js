@@ -13,6 +13,13 @@ const videoConstraints = {
   facingMode: "user"
 };
 
+const Header = styled.header`
+  background-color: #2196f3;
+  color: white;
+  padding: 1%;
+  margin-bottom: 3%;
+`;
+
 const WebcamCapture = React.forwardRef((props, ref) => (
   <>
     <Webcam
@@ -32,7 +39,6 @@ const WebcamCapture = React.forwardRef((props, ref) => (
 const Content = styled.div`
   background-color: white;
   background-blend-mode: multiply;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -103,8 +109,8 @@ class FaceAuth extends Component {
     this.draw();
   }
 
-  onSubmit = async (e) => {
-    e.preventDefault();
+  continue = () => {
+    window.location.href = '/examinee/rules';
   }
 
   draw = () => {
@@ -134,10 +140,10 @@ class FaceAuth extends Component {
     return (
       <BrowserRouter>
         <div className="App">
+          <Header>
+            <h1>Authenticate Face</h1>
+          </Header>
           <Content>
-            <Title style={{ textAlign: "center" }}>
-              <h1>Authenticate Face</h1>
-            </Title>
             <WebcamContainer ref={this.container}>
               <div className="deskcheck-video-container">
                 <WebcamCapture ref={this.webcam}></WebcamCapture>
@@ -150,8 +156,8 @@ class FaceAuth extends Component {
             <div className="detection-info">
               {this.state.camera_error &&
                 <h3 className="fail-text" style={{ color: 'var(--danger)' }}>
-                  Something went wrong with trying to use your camera. 
-                  <br/> Please try reloading the page and allowing camera permissions.
+                  Something went wrong with trying to use your camera.
+                  <br /> Please try reloading the page and allowing camera permissions.
                 </h3>
               }
               {this.state.valid &&

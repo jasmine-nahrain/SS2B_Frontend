@@ -55,7 +55,7 @@ class CreateExam extends Component {
       duration_minutes: Number,
       document_link: ''
     }
-    console.log(this.state);
+    //console.log(this.state);
   }
 
   onChangeName(e) {
@@ -227,8 +227,10 @@ class CreateExam extends Component {
               </Col>
 
               <Button variant="outline-dark" type="submit" className="button" style={{width: '100%'}}>
-                Create Exam
+                Create New Exam
           </Button>
+          <Button variant="outline-secondary" href='/examiner/manage' className="button" style={{width: '100%'}}>Cancel</Button>
+
             </Form>
           </Body>
         </div>

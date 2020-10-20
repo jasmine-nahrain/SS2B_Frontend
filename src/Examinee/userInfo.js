@@ -25,14 +25,14 @@ export const register = async (newUser) => {
         body: data
     });
 
-    const status = await res.status;
+    const status = res.status;
     let parsedData = await res.json();
-    console.log(parsedData)
-    console.log(res)
+    // console.log(parsedData)
+    // console.log(res)
     if(status == 400) {
-      localStorage.setItem('error', parsedData.message);
+      localStorage.setItem('error', parsedData.message + '.');
     }
-    return status == 200 || status == 201;
+    return status === 200 || status === 201;
 
   } catch (error) {
       console.log(error);
@@ -62,8 +62,8 @@ export const login = async (user_id, password) => {
 
     const status = await res.status;
     let parsedData = await res.json();
-    console.log(parsedData)
-    console.log(res)
+    // console.log(parsedData)
+    // console.log(res)
 
     if (status === 200) {
         localStorage.setItem('token', parsedData.token);

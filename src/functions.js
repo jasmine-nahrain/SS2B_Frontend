@@ -101,7 +101,7 @@ export const convertToParamString = (parameters) => {
   return params;
 }
 
-export const formatDateToLocal = (dateString) => {
+export const formatDateToLocalString = (dateString) => {
   if (dateString) {
     var offset = - (new Date()).getTimezoneOffset();
     let date = (new Date(dateString));
@@ -109,6 +109,22 @@ export const formatDateToLocal = (dateString) => {
     return date.toLocaleString();
   }
   return '-';
+}
+
+export const formatDateToLocal = (dateString) => {
+  let m = new Date(dateString);
+  m.setMinutes(m.getMinutes() - (new Date()).getTimezoneOffset());
+  return moment(m).format(datetimeformat);
+}
+
+export const formatDateToUTC = (dateString) => {
+  let m = new Date(dateString);
+  m.setMinutes(m.getMinutes() + (new Date()).getTimezoneOffset());
+  return moment(m).format(datetimeformat);
+}
+
+export const formatDate = (dateString) => {
+  return moment(dateString).format(datetimeformat);
 }
 
 export const getLatestEndTime = (timeStartedString, durationString) => {

@@ -89,7 +89,7 @@ class EditExam extends Component {
       document_link: exam.document_link,
     });
 
-    console.log(exam);
+    // console.log(exam);
   }
 
   onChangeName(e) {

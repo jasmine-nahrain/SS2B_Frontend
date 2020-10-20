@@ -40,7 +40,7 @@ class ExamStartPage extends Component {
     this.getExamsInProgress = this.getExamsInProgress.bind(this);
 
     this.state = {
-      document_link: null,
+      document_link: -1,
       duration: null,
       end_date: null,
       exam_id: -1,
@@ -88,6 +88,7 @@ class ExamStartPage extends Component {
           'time_started': exam_in_progress["time_started"],
           "time_started_fstring": formatDateToLocalString(exam_in_progress["time_started"]),
           "duration":exam_in_progress["duration"],
+          "document_link":exam_in_progress["document_link"],
           "latest_end_time": latest_end_time.toLocaleString(),
           "user_id": exam_in_progress["user_id"]
         }
@@ -127,6 +128,8 @@ class ExamStartPage extends Component {
       localStorage.setItem('time_started', time_started_f);
       localStorage.setItem('exam_duration', time);
       localStorage.setItem('exam_recording_id', this.state.exam_in_progress.exam_recording_id);
+      localStorage.setItem('document_link', this.state.document_link);
+      // localStorage.setItem('document_url'), this.state.document_link);
       window.location.href = `/examinee/exam/${this.state.exam_in_progress.exam_recording_id}`
     } else {
       let user_id = localStorage.getItem("user_id");
@@ -136,7 +139,7 @@ class ExamStartPage extends Component {
       if(new_exam_recording !== null) {
         localStorage.setItem('exam_duration', this.state.duration);
         localStorage.setItem('exam_recording_id', new_exam_recording.exam_recording_id);
-        //console.log(new_exam_recording);
+        localStorage.setItem('document_link', this.state.document_link);
         window.location.href = `/examinee/exam/${new_exam_recording.exam_recording_id}`
       } else {
         alert("The exam has been previously attempted.");
@@ -164,9 +167,9 @@ class ExamStartPage extends Component {
                     </Form>
                     {this.state.not_found &&
                       <div class="my-3">
-                        <h2 style={{ color: 'var(--light)' }}>
+                        <h5 style={{color: 'var(--light)'}}>
                           <strong>An exam with the login code provided could not be found. <br />Please try again.</strong>
-                        </h2>
+                        </h5>
                       </div>
                     }
                   </div>

@@ -32,7 +32,7 @@ class ExamineeEndPage extends Component {
         <div className="App">
           <Body>
             <img src={logo} class="Uts-logo"/>
-            <h1 class="my-2">Exam Ended</h1>
+            <h2><strong> Your exam is ended.</strong></h2>
             <a href="/login" class="nav-link" onClick={this.onLogout}>
               <Button variant="outline-dark" type="submit" style={{width: '100%'}} >
                 Logout

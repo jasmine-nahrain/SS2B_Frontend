@@ -9,6 +9,7 @@ import { Button, Alert } from "react-bootstrap";
 import { getDisplayStream } from "./scripts/MediaAccess";
 import io from "socket.io-client";
 import "./exampage.css";
+import PDFview from "./pdf_viewer"
 import ExamWarnings from './exam_warnings.js';
 import { getExamRecording } from '../api_caller.js'
 
@@ -39,6 +40,7 @@ class ExamPage extends React.Component {
     const student_name = localStorage.getItem("student_name");
     const time_started = localStorage.getItem("time_started");
     const exam_recording_id = localStorage.getItem("exam_recording_id");
+    const document_link = localStorage.getItem("document_link");
 
     this.state = {
       localStream: {},
@@ -214,48 +216,45 @@ class ExamPage extends React.Component {
     this.setState({duration_warning: value});
   }
 
-  render() {
+  render() {    
     return (
       <div className="App">
         <Header>
-          <img
-            src={logo}
-            className="move"
-            alt="logo"
-            style={{ marginLeft: "auto", marginRight: "auto" }}
-          />
-          <h1>Examination Page</h1>
+        <div class="d-flex" style={{marginLeft: "auto", marginRight: "auto", width: "70%"}}>
+          <div class="align-self-center">
+              <img
+                src={logo}
+                className="move"
+                alt="logo"
+                style={{ marginLeft: "auto", marginRight: "auto", height: "50px"}}
+              ></img>
+          </div>
+          <div class="align-self-center" style={{ marginLeft: "10px"}}>              
+              <h3>Examination Page</h3>
+          </div>
+          <div class="ml-auto align-self-center">
+              <div class="end-exam-btn">
+                  <Button className="button" style={{width: '100px', position: 'right', marginTop: '10px', marginBottom: '20px', fontSize: '16px', backgroundColor: '#82CAFF', color: 'black'}}  href='/examinee/endpage'>
+                      <strong>End Exam</strong>
+                  </Button>
+              </div>
+          </div>
+        </div>
         </Header>
-        <video
-          autoPlay
-          id="localVideo"
-          muted
-          style={{display: this.state.is_examiner ? 'none' : 'inline'}}
-          ref={(video) => (this.localVideo = video)}
-        />
-        <h6 style={{visibility: this.state.stream_visible && this.state.is_examiner ? 'visible' : 'hidden'}}>Video stream has not started</h6>
-        <section class="experiment">
-          {!this.state.is_examiner ? (
-            <div id="createBroadcast">
-              <section>
-                <h6
-                  type="text"
-                  id="user_id"
-                  disabled
-                >User ID: {this.state.user_id}</h6>
-                {this.state.isActive ? <CountDownTimer duration={this.state.duration} duration_warning={this.handleDurationWarning}/> : null}
-                {this.state.duration_warning ? <Alert variant='danger' style={{width: "30%", marginRight: 'auto', marginLeft: 'auto'}}>{this.state.duration_warning}</Alert> : ""}
-                { !this.state.isActive ? <Button
-                  type="button"
-                  id="setup-new-broadcast"
-                  variant="outline-dark"
-                  onClick={this.handleToggle}
-                  ref={(btnReview) => {
-                    this.btnReview = btnReview;
-                  }}> Start Exam </Button>
-                  : ""}
 
-                <div className="controls">
+        <div class="container-fluid" style={{marginLeft: "auto", marginRight: "auto", width: "80%"}}>
+          <div class="row">
+            <div class="col-sm">
+              <video width="350" 
+                autoPlay
+                id="localVideo"
+                muted
+                style={{display: this.state.is_examiner ? 'none' : 'inline'}}
+                ref={(video) => (this.localVideo = video)}
+              />
+              <h6 style={{visibility: this.state.stream_visible && this.state.is_examiner ? 'visible' : 'hidden'}}>Video stream has not started</h6>
+            
+              <div className="controls" style={{marginTop: "-10px", marginBottom: "20px"}}>
                   <button
                     className="control-btn"
                     onClick={() => {
@@ -284,28 +283,55 @@ class ExamPage extends React.Component {
                     
                   </button>
                 </div>
-                <ExamWarnings data={this.state}/>
+              <section class="experiment">
+                {!this.state.is_examiner ? (
+                  <div id="createBroadcast">
+                    <section>
+                      <h5 type="text" id="user_id" style={{marginBottom: "20px"}} disabled> 
+                      Student ID: {this.state.user_id} 
+                      </h5>
+                      {this.state.isActive ? <CountDownTimer duration={this.state.duration} duration_warning={this.handleDurationWarning}/> : null}
+                      {this.state.duration_warning ? <Alert variant='danger' style={{width: "30%", marginRight: 'auto', marginLeft: 'auto'}}>{this.state.duration_warning}</Alert> : ""}
+                      { !this.state.isActive ? <Button style={{marginBottom: "20px"}}
+                        type="button"
+                        class="btn btn-success"
+                        id="setup-new-broadcast"
+                        onClick={this.handleToggle}
+                        ref={(btnReview) => {
+                          this.btnReview = btnReview;
+                        }}> Start Exam </Button>
+                        : ""}
+                      <br></br>
+
+                      <ExamWarnings data={this.state}/>
+                    </section>
+                  </div>
+                ) : (
+                  <div id="listStudents">
+                  <video
+                      autoPlay
+                      id='remoteVideo'
+                      muted
+                      ref={video => (this.remoteVideo = video)}
+                    />
+                    <table style={{ width: "100%" }} id="rooms-list"></table>
+                    <h6><b>Student ID:</b> {this.state.user_id}</h6>
+                    <h6><b>Student Name:</b> {this.state.student_name}</h6>
+                    <h6><b>Exam Name:</b> {this.state.exam_name}</h6>
+                    <h6><b>Exam ID: </b>{this.state.exam_id}</h6>
+                    <h6><b>Duration:</b> {this.state.duration}</h6>
+                    <h6><b>Time Started:</b> {this.state.time_started}</h6>
+                  </div>
+                )}
               </section>
             </div>
-          ) : (
-            <div id="listStudents">
-            <video
-                autoPlay
-                id='remoteVideo'
-                muted
-                ref={video => (this.remoteVideo = video)}
-              />
-              <table style={{ width: "100%" }} id="rooms-list"></table>
-              <h6><b>Student ID:</b> {this.state.user_id}</h6>
-              <h6><b>Student Name:</b> {this.state.student_name}</h6>
-              <h6><b>Exam Name:</b> {this.state.exam_name}</h6>
-              <h6><b>Exam ID: </b>{this.state.exam_id}</h6>
-              <h6><b>Duration:</b> {this.state.duration}</h6>
-              <h6><b>Time Started:</b> {this.state.time_started}</h6>
-              <ExamWarnings data={this.state}/>
-            </div>
-          )}
-        </section>
+            <div class="col-md">
+            {this.state.isActive &&
+              <PDFview document={this.state.document_link}/>
+            }            
+              </div>
+          </div>
+        </div>
       </div>
     );
   }

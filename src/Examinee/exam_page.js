@@ -11,7 +11,7 @@ import io from "socket.io-client";
 import "./exampage.css";
 import PDFview from "./pdf_viewer"
 import ExamWarnings from './exam_warnings.js';
-import { getExamRecording } from '../api_caller.js'
+import { getExamRecording, editExamRecording } from '../api_caller.js'
 
 import {
   ShareScreenIcon,
@@ -64,7 +64,8 @@ class ExamPage extends React.Component {
       video: "",
       duration: duration,
       duration_warning: "",
-      stream_visible: true
+      stream_visible: true,
+      document_link: document_link
     };
   }
   videoCall = new VideoCall();
@@ -216,6 +217,15 @@ class ExamPage extends React.Component {
     this.setState({duration_warning: value});
   }
 
+  endExam = async () => {
+    let response = await editExamRecording(this.state.exam_recording_id, "end", this.state.user_id);
+    if (response === null) {
+      alert('Something went wrong while trying to end the exam.')
+      return;
+    }
+    window.location.href = '/examinee/endpage'
+  }
+
   render() {    
     return (
       <div className="App">
@@ -234,9 +244,9 @@ class ExamPage extends React.Component {
           </div>
           <div class="ml-auto align-self-center">
               <div class="end-exam-btn">
-                  <Button className="button" style={{width: '100px', position: 'right', marginTop: '10px', marginBottom: '20px', fontSize: '16px', backgroundColor: '#82CAFF', color: 'black'}}  href='/examinee/endpage'>
+                  <button class="btn btn-light" onClick={this.endExam}>
                       <strong>End Exam</strong>
-                  </Button>
+                  </button>
               </div>
           </div>
         </div>

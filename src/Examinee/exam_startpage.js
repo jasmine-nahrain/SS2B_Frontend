@@ -77,7 +77,7 @@ class ExamStartPage extends Component {
       let exam_in_progress = exams_in_progress_data["exam_recordings"][0];
 
       var latest_end_time = getLatestEndTime(exam_in_progress["time_started"], exam_in_progress["duration"])
-
+      console.log("EX", exam_in_progress);
       this.setState({
         exam_in_progress: {
           "exam_id": exam_in_progress["exam_id"],
@@ -128,7 +128,7 @@ class ExamStartPage extends Component {
       localStorage.setItem('time_started', time_started_f);
       localStorage.setItem('exam_duration', time);
       localStorage.setItem('exam_recording_id', this.state.exam_in_progress.exam_recording_id);
-      localStorage.setItem('document_link', this.state.document_link);
+      localStorage.setItem('document_link', this.state.exam_in_progress.document_link);
       // localStorage.setItem('document_url'), this.state.document_link);
       window.location.href = `/examinee/exam/${this.state.exam_in_progress.exam_recording_id}`
     } else {

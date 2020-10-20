@@ -210,7 +210,7 @@ export default class ExamWarnings extends Component {
                     </div>
                 }
                 {!this.state.is_examiner &&
-                    <h2>Warnings: {this.state.exam_warnings.length} of 3</h2>
+                    <h5>Warnings: {this.state.exam_warnings.length} of 3</h5>
                 }
                 {
                     this.state.exam_warnings.map((warning) =>
